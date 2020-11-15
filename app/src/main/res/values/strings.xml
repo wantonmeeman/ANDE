@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CA1</string>
+    <string name="location">location</string>
+    <string name="calendar">calendar</string>
+    <string name="qrscanner">qrscanner</string>
+    <string name="msg">msg</string>
+    <string name="settings">settings</string>
+    <string name="create_button">Add New Task</string>
+    <dimen name="vector_size">36dp</dimen><!--Dimension for vector icon-->
+</resources>
