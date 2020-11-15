@@ -2,6 +2,9 @@ package com.example.ca1;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -72,14 +75,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         BottomNavigationView botNavView;
         FileOutputStream fOut = null;
-        txtDate = (TextView) findViewById(R.id.date);
-        txtDay = (TextView) findViewById(R.id.day);
-        txtTaskTitle = (TextView) findViewById(R.id.taskTitle);
-        txtTaskTime = (TextView) findViewById(R.id.taskTime);
+//        txtDate = (TextView) findViewById(R.id.date);
+//        txtDay = (TextView) findViewById(R.id.day);
+//        txtTaskTitle = (TextView) findViewById(R.id.taskTitle);
+//        txtTaskTime = (TextView) findViewById(R.id.taskTime);
 
-        txtDate.setText(currentDate);
-        txtDay.setText(currentDay);
-        txtTaskTime.setText(currentTime);
+//        txtDate.setText(currentDate);
+//        txtDay.setText(currentDay);
+        //txtTaskTime.setText(currentTime);
 
         try {//Make new file,
             fOut = openFileOutput("JSON STORAGE", Context.MODE_PRIVATE);
@@ -124,8 +127,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             String JSONtime = tfhrTimeFormat.format(jObject.getInt("time")*1000L);
             String JSONtitle = jObject.getString("title");
 
-            ArrListAlarm.add(new Alarm(JSONtitle,"","", (int) (jObject.getInt("time")*1000L)));
+            ArrListAlarm.add(new Alarm("Test Title","","", (int) (jObject.getInt("time")*1000L)));
 
+            RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
+            RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(this,ArrListAlarm);
+            myrv.setLayoutManager(new LinearLayoutManager(this));
+            myrv.setAdapter(myAdapter);
 
 //            txtTaskTitle.setText(JSONtitle);
 //            txtTaskTime.setText(JSONtime);
@@ -136,26 +143,26 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
 
 
-        Button button = findViewById(R.id.addNewTask);
+        //Button button = findViewById(R.id.addNewTask);
 
         createNotificationChannel();
-        button.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this,ReminderBroadcast.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this,0,intent,0);
+//        button.setOnClickListener(v -> {
+//            Intent intent = new Intent(MainActivity.this,ReminderBroadcast.class);
+//            PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this,0,intent,0);
+//
+//            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+//
+//            long timeAtButtonClick = System.currentTimeMillis();
+//
+//            long tenSecondsInMillis = 5000 ;
+//            //No idea how this works alarmManager.setAlarmClock(new AlarmManager.AlarmClockInfo(System.currentTimeMillis()+2,pendingIntent.getActivity(MainActivity.this,0,intent,0)),pendingIntent);
+//            //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,timeAtButtonClick ,2*1000,pendingIntent);
+//            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,timeAtButtonClick + tenSecondsInMillis,pendingIntent);
+//            Toast.makeText(this,"Reminder!",Toast.LENGTH_LONG).show();
+//        });
 
-            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-            long timeAtButtonClick = System.currentTimeMillis();
-
-            long tenSecondsInMillis = 5000 ;
-            //No idea how this works alarmManager.setAlarmClock(new AlarmManager.AlarmClockInfo(System.currentTimeMillis()+2,pendingIntent.getActivity(MainActivity.this,0,intent,0)),pendingIntent);
-            //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,timeAtButtonClick ,2*1000,pendingIntent);
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,timeAtButtonClick + tenSecondsInMillis,pendingIntent);
-            Toast.makeText(this,"Reminder!",Toast.LENGTH_LONG).show();
-        });
-
-
-        botNavView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+//        botNavView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
     }
 
     public void createNotificationChannel(){

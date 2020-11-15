@@ -30,19 +30,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         View view;
         LayoutInflater mInflater = LayoutInflater.from(mContext);
-        view = mInflater.inflate(R.layout.activity_main,parent,false);
+        view = mInflater.inflate(R.layout.homepage_task,parent,false);
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.taskTitle.setText(mData.get(position).getTitle());
-        holder.taskTime.setText(mData.get(position).getUnixTime());
+       // holder.taskTime.setText(mData.get(position).getUnixTime());
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mData.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
