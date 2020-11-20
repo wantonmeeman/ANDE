@@ -1,12 +1,16 @@
 package com.example.ca1;
 
-public class Alarm {
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+
+public class Alarm  {
     private String Title;
     private String Description;
     private String Location;
-    private int UnixTime;
+    private long UnixTime;
 
-    public Alarm(String title,String description,String location,int unixtime){
+    public Alarm(String title,String description,String location,long unixtime){
         Title = title;
         Description = description;
         Location = location;
@@ -37,11 +41,12 @@ public class Alarm {
         Location = location;
     }
 
-    public int getUnixTime() {
+    public long getUnixTime() {
         return UnixTime;
     }
 
-    public void setUnixTime(int unixTime) {
+    public void setUnixTime(long unixTime) {
         UnixTime = unixTime;
     }
+
 }

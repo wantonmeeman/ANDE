@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/holo_blue_dark">
+
+    <SurfaceView
+        android:id="@+id/cameraPreview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:backgroundTint="@color/black"
+         />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
+        <View
+            android:background="@color/black"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:alpha="0.5"/>
+
+        <View
+            android:id="@+id/rlscan"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_gravity="center"
+            android:alpha="0" />
+
+        <View
+            android:background="@color/black"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:alpha="0.5"/>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Place the QR code in the middle of the screen."
+        android:textSize="25dp"
+        android:textAlignment="center"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="227dp"
+        android:alpha="0.3"
+        android:background="@color/black" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="221dp"
+        android:layout_gravity="bottom"
+        android:layout_weight="1"
+        android:alpha="0.3"
+        android:background="@color/black" />
+
+</FrameLayout>
+<!--    <View-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="185dp"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/cameraPreview"-->
+<!--        android:background="@color/black"-->
+<!--        android:alpha="0.3"/>-->
+
+<!--    <View-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_height="290dp"-->
+<!--        android:alpha="0.3"-->
+<!--        android:background="@color/black"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintRight_toRightOf="@+id/cameraPreview"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--    <View-->
+<!--        android:id="@+id/leftView"-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_height="290dp"-->
+<!--        android:layout_gravity="center_vertical"-->
+<!--        android:alpha="0.3"-->
+<!--        android:background="@color/black"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintLeft_toLeftOf="@+id/cameraPreview"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--    <View-->
+<!--        android:id="@+id/rightView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="200dp"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_alignParentRight="true"-->
+<!--        android:alpha="0.3"-->
+<!--        android:background="@color/black"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/cameraPreview"-->
+<!--        tools:layout_editor_absoluteX="154dp" />-->
+
+
+    <!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+    <!--        android:id="@+id/bottomNavigation"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:backgroundTint="@color/white"-->
+    <!--        app:menu="@menu/menu"-->
+    <!--        app:itemIconSize="40dp"-->
+    <!--        app:itemIconTint="@drawable/bottom_navigation_selector"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:itemRippleColor="@color/black" />-->

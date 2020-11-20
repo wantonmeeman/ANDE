@@ -1,27 +1,30 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/location"
         android:enabled="true"
-        android:icon="@drawable/ic_android_black_24dp"
-        android:title="@string/location"/>
+        android:icon="@drawable/ic_baseline_location_on_24"/>
+<!--        android:title="@string/location"/>-->
     <item
         android:id="@+id/calendar"
         android:enabled="true"
-        android:icon="@drawable/ic_android_black_24dp"
-        android:title="@string/calendar"/>
+        android:icon="@drawable/ic_baseline_calendar_today_24"/>
+<!--        android:title="@string/calendar"/>-->
     <item
-        android:id="@+id/qrscanner"
+        android:id="@+id/home"
         android:enabled="true"
-        android:icon="@drawable/ic_android_black_24dp"
-        android:title="@string/qrscanner"/>
+        android:iconTint="@color/black"
+        android:icon="@drawable/ic_baseline_home_24"/>
+<!--        android:title="@string/qrscanner" />-->
+
     <item
         android:id="@+id/msg"
         android:enabled="true"
-        android:icon="@drawable/ic_android_black_24dp"
-        android:title="@string/msg"/>
+        android:icon="@drawable/ic_baseline_message_24"/>
+<!--        android:title="@string/msg"/>-->
     <item
         android:id="@+id/settings"
         android:enabled="true"
-        android:icon="@drawable/ic_android_black_24dp"
-        android:title="@string/settings"/>
+        android:icon="@drawable/ic_baseline_settings_24"/>
+<!--        android:title="@string/settings"/>-->
 </menu>

@@ -5,6 +5,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -23,6 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:fontFamily="sans-serif-black"
+                android:textColor="@android:color/darker_gray"
                 android:padding="20dp"
                 android:textSize="20dp"
                 android:text="2359"
@@ -38,6 +40,7 @@
                 android:id="@+id/taskTitle"
                 android:paddingLeft="5dp"
                 android:textSize="20dp"
+                android:textColor="@android:color/darker_gray"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
