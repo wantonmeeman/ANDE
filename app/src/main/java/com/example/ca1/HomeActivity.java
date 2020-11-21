@@ -2,33 +2,21 @@ package com.example.ca1;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
-import android.media.AudioAttributes;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.AlarmClock;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,24 +24,18 @@ import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
-import org.w3c.dom.Text;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
     SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
     SimpleDateFormat tfhrTimeFormat = new SimpleDateFormat("HHmm",Locale.ENGLISH);
@@ -75,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.homepage_act);
 
         this.getSupportActionBar().hide();//Remove Title, probably not very good
 
@@ -234,8 +216,8 @@ public class MainActivity extends AppCompatActivity {
         createNotificationChannel();
 
         button.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this,ReminderBroadcast.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this,0,intent,0);
+            Intent intent = new Intent(HomeActivity.this,ReminderBroadcast.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,0,intent,0);
 
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
@@ -249,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button qrButton = findViewById(R.id.qrScanner);
         qrButton.setOnClickListener(v ->{
-            Intent intent = new Intent(this, QRCode.class);
+            Intent intent = new Intent(this, QRActivity.class);
             startActivity(intent);
         });
 
@@ -290,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
             NotificationChannel channel = new NotificationChannel("Alarm",name,importance);
             channel.setDescription(description);
             channel.setImportance(importance);
+            channel.enableVibration(true);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }

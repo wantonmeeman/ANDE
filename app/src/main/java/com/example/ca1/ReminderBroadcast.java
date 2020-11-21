@@ -2,24 +2,15 @@ package com.example.ca1;
 
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.media.RingtoneManager;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.widget.Toast;
 
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
-import java.util.Random;
-
-import static android.app.Notification.EXTRA_NOTIFICATION_ID;
 
 
 public class ReminderBroadcast extends BroadcastReceiver{
@@ -27,12 +18,12 @@ public class ReminderBroadcast extends BroadcastReceiver{
     public void onReceive(Context context, Intent intent){
 
         //Intent to go to SS
-        Intent notifIntent = new Intent(context, SplashScreen.class);
+        Intent notifIntent = new Intent(context, SplashScreenActivity.class);
         notifIntent.putExtra("notifID",1);
         PendingIntent redirectIntent = PendingIntent.getActivity(context,0,notifIntent,0);
 
         //Intent to Dismiss notification
-        Intent dismissIntent = new Intent(context, NotificationActivity.class);
+        Intent dismissIntent = new Intent(context, DismissActivity.class);
 
         //Idk wtf this set flags thing does but put it here
         dismissIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -45,17 +36,20 @@ public class ReminderBroadcast extends BroadcastReceiver{
                 .setContentTitle("Alarm")
                 .setContentText("Alarm Triggered")
                 .setSubText("Alarm X Triggered")
-                .setSound(Settings.System.DEFAULT_ALARM_ALERT_URI)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setCategory(Notification.CATEGORY_CALL)
-                .setColor(Color.MAGENTA)
-                .setAutoCancel(true)
+                .setSound(Settings.System.DEFAULT_RINGTONE_URI)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(Notification.CATEGORY_ALARM)
+                .setColor(Color.BLUE)
+                .setVibrate(new long[] {0, 500, 1000})
                 .addAction(R.mipmap.ic_launcher,"Dismiss",dismissPendingIntent)
                 .addAction(R.mipmap.ic_launcher,"Get Info",redirectIntent);
 
-        Notification mNotification = builder.build();
-        //mNotification.flags |= Notification.FLAG_INSISTENT;
+        //Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        //vibrator.vibrate(2000);
 
+        Notification mNotification = builder.build();
+        mNotification.flags |= Notification.FLAG_INSISTENT;
+        mNotification.defaults|= Notification.DEFAULT_VIBRATE;
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 

@@ -3,10 +3,8 @@ package com.example.ca1;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
@@ -15,20 +13,19 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class QRCode extends AppCompatActivity {
+public class QRActivity extends AppCompatActivity {
 
     SurfaceView surfaceView;
     CameraSource cameraSource;
@@ -46,7 +43,10 @@ public class QRCode extends AppCompatActivity {
         surfaceView = ((SurfaceView) findViewById(R.id.cameraPreview));
         textView = (TextView) findViewById(R.id.textView);
 
-        barcodeDetector = new BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.QR_CODE).build();
+        barcodeDetector = new BarcodeDetector
+                .Builder(this)
+                .setBarcodeFormats(Barcode.QR_CODE)
+                .build();
 
         cameraSource = new CameraSource.Builder(this, barcodeDetector).setRequestedPreviewSize(900, 480).setAutoFocusEnabled(true).build();
 
@@ -56,7 +56,7 @@ public class QRCode extends AppCompatActivity {
             public void surfaceCreated(SurfaceHolder holder) {
 
                 if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(QRCode.this, new String[]{Manifest.permission.CAMERA}, PackageManager.PERMISSION_GRANTED);
+                    ActivityCompat.requestPermissions(QRActivity.this, new String[]{Manifest.permission.CAMERA}, PackageManager.PERMISSION_GRANTED);
                     return;
                 }
                 //onRequestPermissionsResult(holder);
@@ -88,29 +88,40 @@ public class QRCode extends AppCompatActivity {
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 SparseArray<Barcode> qrCodes = detections.getDetectedItems();
+                Frame.Metadata meta = detections.getFrameMetadata();
+                double nearestDistance = Double.MAX_VALUE;
                 if(qrCodes.size()!= 0){
-                    textView.post(new Runnable(){
-                        public void run(){
-                            //Stops the camera,detector and remvoes the surfaceView
-                            //barcodeDetector.release();
-                            //cameraSource.stop();
-                            //surfaceView.setVisibility(View.GONE);
-                            Vibrator vibrator = (Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                            vibrator.vibrate(1000);
-                            String qrcode = qrCodes.valueAt(0).displayValue;
-                            JSONObject jObject = null;
+                    for (int i = 0; i < qrCodes.size(); ++i) {
+                        int id = qrCodes.keyAt(i);
+                        Barcode qrCode = qrCodes.get(id);
+                        Log.e("Bounding Box",qrCode.getBoundingBox().toString());
+                        Log.e("Center Y", String.valueOf(qrCode.getBoundingBox().centerY()));
+                        Log.e("Center X", String.valueOf(qrCode.getBoundingBox().centerX()));
 
-                            try {
-                                jObject = new JSONObject(qrcode);//Converts to JSON
-                                //jObject.getString("format")
-                                textView.setText(jObject.toString());
-                                textView.setTextColor(Color.RED);
-                            } catch (JSONException e) {
-                                textView.setText("Error");
-                                Log.e("YOUR_APP_LOG_TAG", "Error",e);
-                            }
+                        if(qrCode.getBoundingBox().centerY() > 325 && qrCode.getBoundingBox().centerY() < 575){
+                            textView.post(new Runnable(){
+                                public void run(){
+
+                                    Vibrator vibrator = (Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                    vibrator.vibrate(1000);
+                                    String qrcode = qrCodes.valueAt(0).displayValue;
+                                    JSONObject jObject = null;
+
+//                            try {
+//                                //jObject = new JSONObject(qrcode);//Converts to JSON
+//                                //jObject.getString("format")
+//                                //textView.setText(jObject.toString());
+//                                //textView.setTextColor(Color.RED);
+//                            } catch (JSONException e) {
+//                                textView.setText("Error");
+//                                Log.e("YOUR_APP_LOG_TAG", "Error",e);
+//                            }
+                                }
+                            });
                         }
-                    });
+
+                    }
+
                 }
             }
         });

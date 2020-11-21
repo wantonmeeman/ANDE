@@ -11,7 +11,7 @@ import android.os.Bundle;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 
-public class NotificationActivity extends Activity {
+public class DismissActivity extends Activity {
 
     //This handles dismissing of a notification
     @Override
