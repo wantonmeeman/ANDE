@@ -165,5 +165,7 @@
         app:itemIconSize="32dp"
         app:itemIconTint="@drawable/bottom_navigation_selector"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:itemRippleColor="@color/blue" />
+        app:itemRippleColor="@color/blue"
+        app:labelVisibilityMode="unlabeled"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
