@@ -22,9 +22,9 @@
         android:id="@+id/txtFields"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="220dp"
         android:gravity="center_horizontal"
         android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/splashscreen"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_editor_absoluteX="0dp">
 
@@ -52,10 +52,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:fontFamily="@font/giib"
             android:layout_marginLeft="45dp"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="10dp"
+            android:fontFamily="@font/giib"
             android:text="Password"
             android:textColor="@color/white"
             android:textSize="22.5dp" />
@@ -78,13 +78,13 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/Register"
                 android:layout_width="0dp"
-                android:layout_marginLeft="40dp"
                 android:layout_height="70dp"
+                android:layout_marginLeft="40dp"
                 android:layout_marginRight="20dp"
-                android:fontFamily="@font/giib"
-                android:backgroundTint="#B8B8B8"
-                android:text="Register"
                 android:layout_weight="1"
+                android:backgroundTint="#B8B8B8"
+                android:fontFamily="@font/giib"
+                android:text="Register"
                 android:textColor="@color/white"
                 android:textSize="17.5dp"
                 app:cornerRadius="200dp" />
@@ -92,8 +92,8 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/Login"
                 android:layout_width="0dp"
-                android:layout_marginRight="40dp"
                 android:layout_height="70dp"
+                android:layout_marginRight="40dp"
                 android:layout_weight="1"
                 android:backgroundTint="#3d8eff"
                 android:fontFamily="@font/giib"

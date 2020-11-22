@@ -23,6 +23,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        app:layout_constrainedHeight="true"
         android:id="@+id/linearLayout"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
@@ -112,6 +113,7 @@
         android:layout_width="350dp"
         android:layout_height="75dp"
         android:orientation="horizontal"
+        android:layout_marginTop="10dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
