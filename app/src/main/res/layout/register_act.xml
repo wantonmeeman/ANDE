@@ -96,20 +96,10 @@
             <com.google.android.material.button.MaterialButton
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginLeft="20dp"
-                android:text="Register"
-                android:backgroundTint="@android:color/darker_gray"
-                app:cornerRadius="200dp"
-                android:layout_weight="2"
-                />
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="70dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="55dp"
+                android:layout_marginRight="55dp"
                 android:textAllCaps="true"
-                android:text="Login"
+                android:text="Register"
                 android:backgroundTint="@android:color/holo_blue_bright"
                 app:cornerRadius="200dp"
                 android:layout_weight="2"
