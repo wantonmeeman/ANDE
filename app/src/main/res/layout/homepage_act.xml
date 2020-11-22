@@ -70,7 +70,7 @@
                     android:layout_gravity="center"
                     android:id="@+id/editTask"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/ic_baseline_edit_24" />
+                    android:src="@drawable/edit_icon" />
             </FrameLayout>
         </RelativeLayout>
 
@@ -107,9 +107,7 @@
         app:itemIconSize="40dp"
         app:itemIconTint="@drawable/bottom_navigation_selector"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:itemRippleColor="@color/black"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="649dp" />
+        app:itemRippleColor="@color/blue" />
     <LinearLayout
         android:layout_width="350dp"
         android:layout_height="100dp"
@@ -132,7 +130,7 @@
         android:theme="@style/Theme.MaterialComponents"
         android:layout_marginRight="25dp"
         app:backgroundTint="@color/white"
-        app:icon="@drawable/ic_baseline_add_circle_24"
+        app:icon="@drawable/add_circle"
         app:iconGravity="textStart"
         app:iconPadding="16dp"
         app:iconTint="@color/black"
@@ -144,7 +142,7 @@
             android:textSize="15dp"
             android:padding="0dp"
             app:backgroundTint="@color/white"
-            app:icon="@drawable/ic_baseline_qr_code_scanner_24"
+            app:icon="@drawable/qr_icon"
             app:iconGravity="textStart"
             app:iconSize="70dp"
             app:iconPadding="0dp"

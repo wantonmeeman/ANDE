@@ -32,7 +32,7 @@ public class ReminderBroadcast extends BroadcastReceiver{
         PendingIntent dismissPendingIntent = PendingIntent.getActivity(context, 0, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"Alarm")
-                .setSmallIcon(R.drawable.ic_baseline_calendar_today_24)
+                .setSmallIcon(R.drawable.calendar_icon)
                 .setContentTitle("Alarm")
                 .setContentText("Alarm Triggered")
                 .setSubText("Alarm X Triggered")

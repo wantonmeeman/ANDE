@@ -12,76 +12,93 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/scheduler_logo"
+        app:layout_constraintBottom_toTopOf="@+id/txtFields"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/txtFields"/>
+        app:layout_constraintVertical_bias="0.83" />
 
     <LinearLayout
         android:id="@+id/txtFields"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="220dp"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/splashscreen">
+        tools:layout_editor_absoluteX="0dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Username/Email"
-            android:layout_marginLeft="55dp"
-            android:layout_marginBottom="10dp"
             android:layout_gravity="left"
+            android:layout_marginLeft="45dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/kanit_thin"
+            android:text="Username/Email"
             android:textColor="@color/white"
-            android:textSize="22.5dp"/>
+            android:textSize="22.5dp" />
+
         <EditText
-            android:layout_width="300dp"
+            android:layout_width="350dp"
             android:layout_height="50dp"
             android:background="@drawable/rounded_edit_text"
-            />
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="2"
+            android:textColor="@color/black" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Password"
-            android:layout_marginLeft="55dp"
+            android:layout_gravity="left"
+            android:layout_marginLeft="45dp"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="10dp"
-            android:layout_gravity="left"
+            android:text="Password"
             android:textColor="@color/white"
-            android:textSize="22.5dp"/>
+            android:textSize="22.5dp" />
 
         <EditText
-            android:layout_width="300dp"
+            android:layout_width="350dp"
             android:layout_height="50dp"
-            android:background="@drawable/rounded_edit_text"/>
-        <LinearLayout
-            android:layout_marginTop="50dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:background="@drawable/rounded_edit_text"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="2"
+            android:textColor="@color/black" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/Register"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="20dp"
-            android:text="Register"
-            android:backgroundTint="@android:color/darker_gray"
-            app:cornerRadius="200dp"
-            android:layout_weight="2"
-        />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:gravity="center">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/Register"
+                android:layout_width="0dp"
+                android:layout_marginLeft="40dp"
+                android:layout_height="70dp"
+                android:layout_marginRight="20dp"
+                android:backgroundTint="#B8B8B8"
+                android:text="Register"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:textSize="17.5dp"
+                app:cornerRadius="200dp" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/Login"
-                android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:textAllCaps="true"
+                android:layout_width="0dp"
+                android:layout_marginRight="40dp"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:backgroundTint="#3d8eff"
                 android:text="Login"
-                android:backgroundTint="@android:color/holo_blue_bright"
-                app:cornerRadius="200dp"
-                android:layout_weight="2"
-                />
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="17.5dp"
+                app:cornerRadius="200dp" />
         </LinearLayout>
     </LinearLayout>
 

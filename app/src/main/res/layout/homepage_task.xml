@@ -34,7 +34,7 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="100dp"
-                android:src="@drawable/ic_timeline" />
+                android:src="@drawable/homescreen_timeline" />
 
             <TextView
                 android:id="@+id/taskTitle"

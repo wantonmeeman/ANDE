@@ -3,28 +3,27 @@
     <item
         android:id="@+id/location"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_location_on_24"/>
+        android:icon="@drawable/location_icon"/>
 <!--        android:title="@string/location"/>-->
     <item
         android:id="@+id/calendar"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_calendar_today_24"/>
+        android:icon="@drawable/calendar_icon"/>
 <!--        android:title="@string/calendar"/>-->
     <item
         android:id="@+id/home"
         android:enabled="true"
-        android:iconTint="@color/black"
-        android:icon="@drawable/ic_baseline_home_24"/>
+        android:icon="@drawable/home_icon"/>
 <!--        android:title="@string/qrscanner" />-->
 
     <item
         android:id="@+id/msg"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_message_24"/>
+        android:icon="@drawable/msg_icon"/>
 <!--        android:title="@string/msg"/>-->
     <item
         android:id="@+id/settings"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_settings_24"/>
+        android:icon="@drawable/setting_icon"/>
 <!--        android:title="@string/settings"/>-->
 </menu>
