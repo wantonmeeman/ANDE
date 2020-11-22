@@ -36,7 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class HomeActivity extends AppCompatActivity {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
     SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
     SimpleDateFormat tfhrTimeFormat = new SimpleDateFormat("HHmm",Locale.ENGLISH);
     //SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

@@ -3,43 +3,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@drawable/background"
+    android:background="@drawable/backgroundpurple"
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
+
     <TextView
         android:id="@+id/greeting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingRight="30dp"
-        android:paddingTop="20dp"
-        android:paddingBottom="30dp"
-        android:paddingLeft="20dp"
         android:fontFamily="sans-serif-black"
+        android:paddingLeft="20dp"
+        android:paddingTop="30dp"
+        android:paddingRight="30dp"
+        android:paddingBottom="20dp"
         android:text="Your Tasks for Today: "
-        android:textSize="30dp"
         android:textColor="@android:color/white"
-        android:textStyle="bold" />
+        android:textSize="30dp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="350dp"
-        android:layout_height="460dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/ic_display"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/addNewTask"
+        app:layout_constraintBottom_toTopOf="@+id/buttons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/greeting"
-        app:layout_constraintVertical_bias="0.267">
+        app:layout_constraintTop_toBottomOf="@+id/greeting">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/linearLayoutRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingLeft="15dp"
-            android:paddingTop="15dp"
-            android:paddingRight="15dp"
+
             app:layout_constraintBottom_toTopOf="@+id/button2"
             app:layout_constraintTop_toBottomOf="@+id/greeting">
 
@@ -47,54 +46,53 @@
                 android:id="@+id/day"
                 android:layout_width="240dp"
                 android:layout_height="50dp"
-                android:fontFamily="sans-serif-black"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="5"
+                android:fontFamily="@font/giib"
                 android:text="Monday"
-                android:textColor="@android:color/background_dark"
                 android:textAllCaps="true"
-                android:textSize="40dp"
+                android:textColor="#47525E"
+                android:textSize="40sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_alignParentEnd="true"
-                android:layout_toEndOf="@+id/day"
-                android:layout_gravity="center">
 
-                <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:id="@+id/editTask"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/edit_icon" />
-            </FrameLayout>
-        </RelativeLayout>
+            <ImageButton
+                android:id="@+id/editTask"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="15px"
+                android:layout_marginRight="15dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/edit_icon" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
+            android:layout_marginBottom="15dp"
+            android:fontFamily="@font/gireg"
+            android:paddingLeft="30dp"
             android:text="1/1/1970"
-            android:textSize="20dp"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="#47525E"
+            android:textSize="15dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-<androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/recyclerViewTask"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-</androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewTask"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+        </androidx.recyclerview.widget.RecyclerView>
 
     </LinearLayout>
 
@@ -103,49 +101,54 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:backgroundTint="@color/white"
-        app:menu="@menu/menu"
         app:itemIconSize="40dp"
         app:itemIconTint="@drawable/bottom_navigation_selector"
+        app:itemRippleColor="@color/blue"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:itemRippleColor="@color/blue" />
+        app:menu="@menu/menu" />
+
     <LinearLayout
+        android:id="@+id/buttons"
         android:layout_width="350dp"
-        android:layout_height="100dp"
+        android:layout_height="75dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent">
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/addNewTask"
-        android:layout_width="224dp"
-        android:layout_height="match_parent"
-        android:fontFamily="sans-serif-black"
-        android:gravity="center"
-        android:text="@string/create_button"
-        android:textAllCaps="true"
-        android:textColor="@color/black"
-        android:textSize="16dp"
-        android:theme="@style/Theme.MaterialComponents"
-        android:layout_marginRight="25dp"
-        app:backgroundTint="@color/white"
-        app:icon="@drawable/add_circle"
-        app:iconGravity="textStart"
-        app:iconPadding="16dp"
-        app:iconTint="@color/black"
-        app:strokeWidth="0.5dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/addNewTask"
+            android:layout_width="250dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="25dp"
+            android:fontFamily="@font/giib"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="@string/create_button"
+            android:textAllCaps="false"
+            android:textColor="#47525E"
+            android:textSize="20sp"
+            android:theme="@style/Theme.MaterialComponents"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/add_circle"
+            app:iconGravity="start"
+            app:iconSize="30dp"
+            app:iconTint="@color/black"
+            app:strokeWidth="0.5dp" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/qrScanner"
-            android:layout_width="100dp"
+            android:layout_width="75dp"
             android:layout_height="match_parent"
-            android:textSize="15dp"
             android:padding="0dp"
+            android:textSize="15dp"
             app:backgroundTint="@color/white"
             app:icon="@drawable/qr_icon"
             app:iconGravity="textStart"
-            app:iconSize="70dp"
             app:iconPadding="0dp"
+            app:iconSize="50dp"
             app:iconTint="@color/black"
             app:strokeWidth="0.5dp" />
     </LinearLayout>

@@ -19,7 +19,7 @@
     <item
         android:id="@+id/msg"
         android:enabled="true"
-        android:icon="@drawable/msg_icon"/>
+        android:icon="@drawable/ic_qr_code_icon"/>
 <!--        android:title="@string/msg"/>-->
     <item
         android:id="@+id/settings"
