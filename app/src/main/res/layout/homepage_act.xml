@@ -3,30 +3,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@drawable/background"
     android:layout_height="match_parent"
-    tools:context=".HomeActivity">
+    tools:context=".HomeActivity"
+    android:background="@color/lightgrey_background">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_home_purple_background" />
+
     <TextView
         android:id="@+id/greeting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingRight="30dp"
-        android:paddingTop="20dp"
-        android:paddingBottom="30dp"
+        android:fontFamily="@font/glacial_indifference_bold"
         android:paddingLeft="20dp"
-        android:fontFamily="sans-serif-black"
+        android:paddingTop="25dp"
+        android:paddingRight="30dp"
+        android:paddingBottom="30dp"
         android:text="Your Tasks for Today: "
-        android:textSize="30dp"
         android:textColor="@android:color/white"
-        android:textStyle="bold" />
+        android:textSize="30dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="350dp"
-        android:layout_height="460dp"
+        android:layout_height="390dp"
         android:background="@drawable/ic_display"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/addNewTask"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/greeting"
@@ -37,50 +49,46 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingLeft="15dp"
+            android:paddingLeft="25dp"
             android:paddingTop="15dp"
-            android:paddingRight="15dp"
+            android:paddingRight="20dp"
             app:layout_constraintBottom_toTopOf="@+id/button2"
             app:layout_constraintTop_toBottomOf="@+id/greeting">
 
             <TextView
                 android:id="@+id/day"
                 android:layout_width="240dp"
-                android:layout_height="50dp"
-                android:fontFamily="sans-serif-black"
+                android:layout_height="55dp"
+                android:fontFamily="@font/kanit_extrabold"
                 android:text="Monday"
-                android:textColor="@android:color/background_dark"
                 android:textAllCaps="true"
-                android:textSize="40dp"
+                android:textColor="@color/light_black"
+                android:textSize="45sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
+            <ImageButton
+                android:id="@+id/editTask"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_alignParentEnd="true"
-                android:layout_toEndOf="@+id/day"
-                android:layout_gravity="center">
-
-                <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:id="@+id/editTask"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/edit_icon" />
-            </FrameLayout>
+                android:layout_marginEnd="0dp"
+                android:layout_marginTop="15dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/edit_icon"
+                android:tint="@color/light_black"/>
         </RelativeLayout>
 
         <TextView
             android:id="@+id/date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
+            android:fontFamily="@font/kanit_light"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:paddingTop="5dp"
             android:text="1/1/1970"
             android:textSize="20dp"
             android:textColor="@android:color/darker_gray"
@@ -89,64 +97,73 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-<androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/recyclerViewTask"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-</androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewTask"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
 
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.0">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/addNewTask"
+            android:layout_width="254dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="25dp"
+            android:fontFamily="@font/kanit_medium"
+            android:gravity="center"
+            android:text="@string/create_button"
+            android:textAllCaps="true"
+            android:textColor="@color/light_black"
+            android:textSize="20sp"
+            android:theme="@style/Theme.MaterialComponents"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/add_circle"
+            app:iconGravity="textStart"
+            app:iconPadding="16dp"
+            app:iconTint="@color/light_black"
+            app:strokeWidth="0.5dp"
+            app:strokeColor="@color/lightgrey_border"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/qrScanner"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:padding="0dp"
+            android:textSize="15dp"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/ic_qr_code_icon"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="45dp"
+            app:iconTint="@color/light_black"
+            app:strokeWidth="0.5dp"
+            app:strokeColor="@color/lightgrey_border" />
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="65dp"
         app:backgroundTint="@color/white"
         app:menu="@menu/menu"
-        app:itemIconSize="40dp"
+        app:itemIconSize="32dp"
         app:itemIconTint="@drawable/bottom_navigation_selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:itemRippleColor="@color/blue" />
-    <LinearLayout
-        android:layout_width="350dp"
-        android:layout_height="100dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent">
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/addNewTask"
-        android:layout_width="224dp"
-        android:layout_height="match_parent"
-        android:fontFamily="sans-serif-black"
-        android:gravity="center"
-        android:text="@string/create_button"
-        android:textAllCaps="true"
-        android:textColor="@color/black"
-        android:textSize="16dp"
-        android:theme="@style/Theme.MaterialComponents"
-        android:layout_marginRight="25dp"
-        app:backgroundTint="@color/white"
-        app:icon="@drawable/add_circle"
-        app:iconGravity="textStart"
-        app:iconPadding="16dp"
-        app:iconTint="@color/black"
-        app:strokeWidth="0.5dp" />
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/qrScanner"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:textSize="15dp"
-            android:padding="0dp"
-            app:backgroundTint="@color/white"
-            app:icon="@drawable/qr_icon"
-            app:iconGravity="textStart"
-            app:iconSize="70dp"
-            app:iconPadding="0dp"
-            app:iconTint="@color/black"
-            app:strokeWidth="0.5dp" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

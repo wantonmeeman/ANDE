@@ -30,7 +30,7 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
                 return true;
             case R.id.home:
                 return true;
-            case R.id.msg:
+            case R.id.qr:
                 return true;
             case R.id.settings:
                 return true;

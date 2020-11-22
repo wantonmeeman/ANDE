@@ -3,27 +3,27 @@
     <item
         android:id="@+id/location"
         android:enabled="true"
-        android:icon="@drawable/location_icon"/>
-<!--        android:title="@string/location"/>-->
+        android:icon="@drawable/location_icon"
+        android:title="@string/location"/>
     <item
         android:id="@+id/calendar"
         android:enabled="true"
-        android:icon="@drawable/calendar_icon"/>
-<!--        android:title="@string/calendar"/>-->
+        android:icon="@drawable/calendar_icon"
+        android:title="@string/calendar"/>
     <item
         android:id="@+id/home"
         android:enabled="true"
-        android:icon="@drawable/home_icon"/>
-<!--        android:title="@string/qrscanner" />-->
+        android:icon="@drawable/home_icon"
+        android:title="@string/home" />
 
     <item
-        android:id="@+id/msg"
+        android:id="@+id/qr"
         android:enabled="true"
-        android:icon="@drawable/msg_icon"/>
-<!--        android:title="@string/msg"/>-->
+        android:icon="@drawable/ic_qr_code_icon"
+        android:title="@string/qrscanner"/>
     <item
         android:id="@+id/settings"
         android:enabled="true"
-        android:icon="@drawable/setting_icon"/>
-<!--        android:title="@string/settings"/>-->
+        android:icon="@drawable/setting_icon"
+        android:title="@string/settings"/>
 </menu>
