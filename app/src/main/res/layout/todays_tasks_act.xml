@@ -14,9 +14,11 @@
         android:background="#625bc2">
 
         <LinearLayout
+            android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/progressBar">
 
             <ImageButton
@@ -32,14 +34,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="100dp"
                 android:layout_marginLeft="40dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="100dp"
+                android:layout_weight="2"
                 android:background="@drawable/rounded_edit_text"
-                android:text="Monday, 16/11"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
-                android:layout_weight="2"
-                android:layout_marginTop="20dp"
+                android:text="Monday, 16/11"
                 android:textAlignment="center"
                 android:textColor="#625bc2"
                 android:textSize="23dp" />
@@ -56,7 +58,8 @@
             android:max="100"
             android:progress="30"
             android:progressDrawable="@drawable/circular_progress_bar"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout2"
+            app:layout_constraintBottom_toBottomOf="@+id/textView4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -104,9 +107,65 @@
             app:layout_constraintStart_toStartOf="@+id/progressBar"
             app:layout_constraintTop_toBottomOf="@+id/myTextProgress"
             app:layout_constraintVertical_bias="0.205" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You have completed X/X tasks Today!"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:layout_marginBottom="20dp" _
+            android:textSize="23dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progressBar" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <LinearLayout
-        android:layout_width="30dp"
-        android:layout_height="30dp"></LinearLayout>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/Monthly"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_weight="1"
+            android:backgroundTint="#B8B8B8"
+            android:fontFamily="@font/giib"
+            android:text="Today"
+            android:textColor="@color/white"
+            android:textSize="17.5dp"
+            app:cornerRadius="200dp"
+            app:enabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/Today" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/Today"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_weight="1"
+            android:backgroundTint="#B8B8B8"
+            android:fontFamily="@font/giib"
+            android:text="Today"
+            android:textColor="@color/white"
+            android:textSize="17.5dp"
+            app:cornerRadius="200dp"
+            app:enabled="true"
+            app:layout_constraintEnd_toStartOf="@+id/Monthly"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="0dp" />
+    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewTask"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>
