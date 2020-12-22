@@ -1,10 +1,17 @@
 package com.example.ca1;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +33,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class ScheduleActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+
+public class ScheduleActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener,View.OnClickListener{
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
     SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
     SimpleDateFormat tfhrTimeFormat = new SimpleDateFormat("HHmm",Locale.ENGLISH);
@@ -62,7 +71,7 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
             String temp = "";
 
             while ((c = fin.read()) != -1) {
-                temp = temp + Character.toString((char) c);
+                temp = temp + (char) c;
             }
             fin.close();
 
@@ -83,46 +92,45 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
 
             Log.i("Time", Long.toString(cal.getTimeInMillis()));
 
-            for(int i = 0; jArray.length() > i;i++) {
-                for(int j = i+1; jArray.length() > j;j++) {
-                    if(jArray.getJSONObject(i).getLong("time") > jArray.getJSONObject(j).getLong("time"))
-                    {
+            for (int i = 0; jArray.length() > i; i++) {
+                for (int j = i + 1; jArray.length() > j; j++) {
+                    if (jArray.getJSONObject(i).getLong("time") > jArray.getJSONObject(j).getLong("time")) {
                         tempTime = jArray.getJSONObject(i).getLong("time");
                         tempTitle = jArray.getJSONObject(i).getString("title");
                         tempDesc = jArray.getJSONObject(i).getString("description");
 
-                        jArray.getJSONObject(i).put("time",jArray.getJSONObject(j).getLong("time"));
-                        jArray.getJSONObject(i).put("title",jArray.getJSONObject(j).getString("title"));
-                        jArray.getJSONObject(i).put("description",jArray.getJSONObject(j).getString("description"));
+                        jArray.getJSONObject(i).put("time", jArray.getJSONObject(j).getLong("time"));
+                        jArray.getJSONObject(i).put("title", jArray.getJSONObject(j).getString("title"));
+                        jArray.getJSONObject(i).put("description", jArray.getJSONObject(j).getString("description"));
 
-                        jArray.getJSONObject(j).put("time",tempTime);
-                        jArray.getJSONObject(j).put("title",tempTitle);
-                        jArray.getJSONObject(j).put("description",tempDesc);
+                        jArray.getJSONObject(j).put("time", tempTime);
+                        jArray.getJSONObject(j).put("title", tempTitle);
+                        jArray.getJSONObject(j).put("description", tempDesc);
                     }
                 }
             }
 
             //Loop to populate ArrListAlarm
-            for(int i = 0; jArray.length() > i;i++) {
+            for (int i = 0; jArray.length() > i; i++) {
 
                 jObject = jArray.getJSONObject(i);
                 JSONtime = jObject.getInt("time");
-                Log.i("Start of Day",Long.toString(startOfDay));
-                Log.i("End of Day",Long.toString(endOfDay));
-                Log.i("JSON TIME",Long.toString(JSONtime));
+                Log.i("Start of Day", Long.toString(startOfDay));
+                Log.i("End of Day", Long.toString(endOfDay));
+                Log.i("JSON TIME", Long.toString(JSONtime));
 
-                if(startOfDay < JSONtime && endOfDay > JSONtime) {//Get only today's date
+                if (startOfDay < JSONtime && endOfDay > JSONtime) {//Get only today's date
                     JSONtitle = jObject.getString("title");
                     JSONdesc = jObject.getString("description");
-                    Log.i("Loop","Loop"+i);
+                    Log.i("Loop", "Loop" + i);
                     ArrListAlarm.add(new Alarm(JSONtitle, JSONdesc, "", JSONtime * 1000L));
                 }
 
             }
-            RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
+            RecyclerView myrv = findViewById(R.id.recyclerViewTask);
 
             //Gets the Adapter from the JAVA file
-            RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(this,ArrListAlarm);
+            RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(this, ArrListAlarm);
 
             //Set Layout for the RecyclerView
             myrv.setLayoutManager(new LinearLayoutManager(this));
@@ -130,24 +138,38 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
             //Set an adapter for the View
             myrv.setAdapter(myAdapter);
 
+            Button button = findViewById(R.id.Today);
+            button.setOnClickListener(this);
+
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Log.i("Error",e.toString());
+            Log.i("Error", e.toString());
         } catch (IOException e) {
             e.printStackTrace();
-            Log.i("Error",e.toString());
+            Log.i("Error", e.toString());
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.i("Error",e.toString());
+            Log.i("Error", e.toString());
         }
-
     }
-        //@Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.Today:
+
+                break;
+            case R.id.Monthly:
+
+                break;
+            default:
+
+                break;
+        }
+    }
     public boolean onNavigationItemSelected(@NonNull MenuItem item){
         switch(item.getItemId()){
             case R.id.location:
                 return true;
-
             case R.id.calendar:
                 return true;
             case R.id.home:
@@ -160,8 +182,6 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         }
         return false;
     }
-
-
 
 
 }

@@ -211,9 +211,12 @@ public class HomeActivity extends AppCompatActivity {
         }
 
 
-        Button button = findViewById(R.id.addNewTask);
+
 
         createNotificationChannel();
+
+
+        Button button = findViewById(R.id.addNewTask);
 
         button.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this,ReminderBroadcast.class);
