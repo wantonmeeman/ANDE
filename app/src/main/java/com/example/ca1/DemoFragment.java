@@ -27,18 +27,19 @@ import java.util.ArrayList;
 public class DemoFragment extends Fragment {
     private TextView textView;
     ArrayList<Alarm> ArrListAlarm;
+
     public DemoFragment() {
         // Required empty public constructor
     }
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, Context context) {
-        View view = inflater.inflate(R.layout.fragment_demo,container,false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    View view = inflater.inflate(R.layout.fragment_demo, container, false);
 //        textView = view.findViewById(R.id.textdisplay);
 //        textView.setText(getArguments().getString("message"));
 //
 //
-//
 //        return view;
+        ArrListAlarm = new ArrayList<Alarm>();
         long JSONtime;
         JSONObject jObject;
         String JSONtitle;
@@ -48,7 +49,7 @@ public class DemoFragment extends Fragment {
         String tempDesc;
         try {//Read File
 
-            FileInputStream fin = context.openFileInput("JSON STORAGE");
+            FileInputStream fin = getActivity().openFileInput("JSON STORAGE");
             int c;
             String temp = "";
 
@@ -137,5 +138,4 @@ public class DemoFragment extends Fragment {
         }
         return view;
     }
-//        return inflater.inflate(R.layout.fragment_demo, container, false);
 }

@@ -10,12 +10,14 @@
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent"-->
 <!--        android:id="@+id/textdisplay"-->
+<!--        android:textSize="300dp"-->
+<!--        android:textColor="@color/black"-->
 <!--        android:text="BLANK FRAGMENT1" />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewTask"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1">
 
     </androidx.recyclerview.widget.RecyclerView>
