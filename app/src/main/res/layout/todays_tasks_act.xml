@@ -209,12 +209,11 @@
 
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewTask"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+    <androidx.viewpager.widget.ViewPager
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pager">
 
-    </androidx.recyclerview.widget.RecyclerView>
+    </androidx.viewpager.widget.ViewPager>
 
 </LinearLayout>

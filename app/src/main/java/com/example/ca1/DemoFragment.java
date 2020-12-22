@@ -1,26 +1,18 @@
 package com.example.ca1;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.icu.text.SimpleDateFormat;
+import android.content.Context;
 import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-import android.widget.Button;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.button.MaterialButton;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,23 +24,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-
-public class ScheduleActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{/*,View.OnClickListener{*/
+public class DemoFragment extends Fragment {
+    private TextView textView;
     ArrayList<Alarm> ArrListAlarm;
+    public DemoFragment() {
+        // Required empty public constructor
+    }
 
-    private ViewPager viewPager;
-    private ViewPagerAdapter adapter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.todays_tasks_act);
-        this.getSupportActionBar().hide();
-
-        viewPager = findViewById(R.id.pager);
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(adapter);
-        ArrListAlarm = new ArrayList<Alarm>();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, Context context) {
+        View view = inflater.inflate(R.layout.fragment_demo,container,false);
+//        textView = view.findViewById(R.id.textdisplay);
+//        textView.setText(getArguments().getString("message"));
+//
+//
+//
+//        return view;
         long JSONtime;
         JSONObject jObject;
         String JSONtitle;
@@ -56,10 +46,9 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         long tempTime;
         String tempTitle;
         String tempDesc;
-
         try {//Read File
 
-            FileInputStream fin = openFileInput("JSON STORAGE");
+            FileInputStream fin = context.openFileInput("JSON STORAGE");
             int c;
             String temp = "";
 
@@ -82,6 +71,7 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
             //Get Start and end of date.
             long startOfDay = cal.getTimeInMillis() / 1000;
             long endOfDay = startOfDay + 86400;
+
 
             Log.i("Time", Long.toString(cal.getTimeInMillis()));
 
@@ -120,19 +110,19 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
                 }
 
             }
-            RecyclerView myrv = findViewById(R.id.recyclerViewTask);
+            RecyclerView myrv = view.findViewById(R.id.recyclerViewTask);
 
             //Gets the Adapter from the JAVA file
-            RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(this, ArrListAlarm);
+            RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getContext(), ArrListAlarm);
 
             //Set Layout for the RecyclerView
-            myrv.setLayoutManager(new LinearLayoutManager(this));
+            myrv.setLayoutManager(new LinearLayoutManager(getContext()));
 
             //Set an adapter for the View
             myrv.setAdapter(myAdapter);
 
             //Button button = findViewById(R.id.Today);
-           // button.setOnClickListener(this);
+            // button.setOnClickListener(this);
 
 
         } catch (FileNotFoundException e) {
@@ -145,37 +135,7 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
             e.printStackTrace();
             Log.i("Error", e.toString());
         }
+        return view;
     }
-    //For Button?
-//    public void onClick(View v) {
-//        switch (v.getId()) {
-//            case R.id.Today:
-//
-//                break;
-//            case R.id.Monthly:
-//
-//                break;
-//            default:
-//
-//                break;
-//        }
-//    }
-    public boolean onNavigationItemSelected(@NonNull MenuItem item){
-        switch(item.getItemId()){
-            case R.id.location:
-                return true;
-            case R.id.calendar:
-                return true;
-            case R.id.home:
-                return true;
-            case R.id.qr:
-                return true;
-            case R.id.settings:
-                return true;
-
-        }
-        return false;
-    }
-
-
+//        return inflater.inflate(R.layout.fragment_demo, container, false);
 }

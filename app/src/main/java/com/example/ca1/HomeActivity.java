@@ -126,7 +126,6 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         try {//Read File
-
             FileInputStream fin = openFileInput("JSON STORAGE");
             int c;
             String temp = "";
