@@ -55,14 +55,44 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         Button Today = (Button)findViewById(R.id.Today);
         Today.setOnClickListener(this);
     }
+
+    public void onClick(View v) {
+        Button Monthly = (Button)findViewById(R.id.Monthly);
+        Button Today = (Button)findViewById(R.id.Today);
+        switch (v.getId()) {
+            case R.id.Today:
+                Log.i("String","Today");
+                viewPager.setCurrentItem(getItem(-1), true);
+                Today.setEnabled(false);
+                Monthly.setEnabled(true);
+                break;
+            case R.id.Monthly:
+                Log.i("String","Monthly");
+                viewPager.setCurrentItem(getItem(+1), true);
+                Today.setEnabled(true);
+                Monthly.setEnabled(false);
+                break;
+            default:
+                Log.i("Error","There has been an error");
+                break;
+        }
+    }
+
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         Button Monthly = (Button)findViewById(R.id.Monthly);
         Button Today = (Button)findViewById(R.id.Today);
-        if (position == 1){
+        //Log.i("Page Scrolled","True");
+        Log.i("Position",Integer.toString(position));
+        Log.i("PositionOffset",Float.toString(positionOffset));
+        Log.i("PositionOffsetB",Boolean.toString(positionOffset > 0));
+        //Position == 0 will make the buttons flicker due to Incosistent trigger area.
+        //This makes it so the buttons only change when the pager is swiped fully to the other page
+        //from monthly to today
+        if (position+positionOffset == 0){
             Today.setEnabled(false);
             Monthly.setEnabled(true);
-        }else{
+        }else if(position == 1 ){
             Today.setEnabled(true);
             Monthly.setEnabled(false);
         }
@@ -82,25 +112,7 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         return viewPager.getCurrentItem() + i;
     }
 
-    public void onClick(View v) {
-        Button Monthly = (Button)findViewById(R.id.Monthly);
-        Button Today = (Button)findViewById(R.id.Today);
-        switch (v.getId()) {
-            case R.id.Today:
-                viewPager.setCurrentItem(getItem(+1), true);
-                Today.setEnabled(false);
-                Monthly.setEnabled(true);
-                break;
-            case R.id.Monthly:
-                viewPager.setCurrentItem(getItem(-1), true);
-                Today.setEnabled(true);
-                Monthly.setEnabled(false);
-                break;
-            default:
-                Log.i("Error","There has been an error");
-                break;
-        }
-    }
+
     public boolean onNavigationItemSelected(@NonNull MenuItem item){
         switch(item.getItemId()){
             case R.id.location:
