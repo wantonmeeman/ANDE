@@ -33,7 +33,7 @@ import java.util.ArrayList;
 
 
 
-public class ScheduleActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{/*,View.OnClickListener{*/
+public class ScheduleActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener,View.OnClickListener,ViewPager.OnPageChangeListener{
 
     private ViewPager viewPager;
     private ViewPagerAdapter adapter;
@@ -47,21 +47,60 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         viewPager = findViewById(R.id.pager);
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
+        viewPager.setOnPageChangeListener(this);
+
+        Button Monthly = (Button)findViewById(R.id.Monthly);
+        Monthly.setOnClickListener(this);
+
+        Button Today = (Button)findViewById(R.id.Today);
+        Today.setOnClickListener(this);
     }
-    //For Button?
-//    public void onClick(View v) {
-//        switch (v.getId()) {
-//            case R.id.Today:
-//
-//                break;
-//            case R.id.Monthly:
-//
-//                break;
-//            default:
-//
-//                break;
-//        }
-//    }
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        Button Monthly = (Button)findViewById(R.id.Monthly);
+        Button Today = (Button)findViewById(R.id.Today);
+        if (position == 1){
+            Today.setEnabled(false);
+            Monthly.setEnabled(true);
+        }else{
+            Today.setEnabled(true);
+            Monthly.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    private int getItem(int i) {
+        return viewPager.getCurrentItem() + i;
+    }
+
+    public void onClick(View v) {
+        Button Monthly = (Button)findViewById(R.id.Monthly);
+        Button Today = (Button)findViewById(R.id.Today);
+        switch (v.getId()) {
+            case R.id.Today:
+                viewPager.setCurrentItem(getItem(+1), true);
+                Today.setEnabled(false);
+                Monthly.setEnabled(true);
+                break;
+            case R.id.Monthly:
+                viewPager.setCurrentItem(getItem(-1), true);
+                Today.setEnabled(true);
+                Monthly.setEnabled(false);
+                break;
+            default:
+                Log.i("Error","There has been an error");
+                break;
+        }
+    }
     public boolean onNavigationItemSelected(@NonNull MenuItem item){
         switch(item.getItemId()){
             case R.id.location:

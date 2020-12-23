@@ -25,7 +25,6 @@ import java.util.ArrayList;
 
 
 public class DemoFragment extends Fragment {
-    private TextView textView;
     ArrayList<Alarm> ArrListAlarm;
 
     public DemoFragment() {
@@ -33,12 +32,7 @@ public class DemoFragment extends Fragment {
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.fragment_demo, container, false);
-//        textView = view.findViewById(R.id.textdisplay);
-//        textView.setText(getArguments().getString("message"));
-//
-//
-//        return view;
+        View view = inflater.inflate(R.layout.fragment_demo, container, false);
         ArrListAlarm = new ArrayList<Alarm>();
         long JSONtime;
         JSONObject jObject;
@@ -72,7 +66,6 @@ public class DemoFragment extends Fragment {
             //Get Start and end of date.
             long startOfDay = cal.getTimeInMillis() / 1000;
             long endOfDay = startOfDay + 86400;
-
 
             Log.i("Time", Long.toString(cal.getTimeInMillis()));
 
@@ -121,10 +114,6 @@ public class DemoFragment extends Fragment {
 
             //Set an adapter for the View
             myrv.setAdapter(myAdapter);
-
-            //Button button = findViewById(R.id.Today);
-            // button.setOnClickListener(this);
-
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
