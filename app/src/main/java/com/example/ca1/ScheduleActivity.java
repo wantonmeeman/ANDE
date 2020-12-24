@@ -56,20 +56,19 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         Today.setOnClickListener(this);
     }
 
-    public void onClick(View v) {
+    public void onClick(View v) {//Handle When the Monthly/Today buttons are clicked
         Button Monthly = (Button)findViewById(R.id.Monthly);
         Button Today = (Button)findViewById(R.id.Today);
+
         switch (v.getId()) {
-            case R.id.Today:
-                Log.i("String","Today");
-                viewPager.setCurrentItem(getItem(-1), true);
-                Today.setEnabled(false);
+            case R.id.Today://When Today is clicked
+                viewPager.setCurrentItem(getItem(-1), true);//Move to the Today's Tab
+                Today.setEnabled(false);//Change button states
                 Monthly.setEnabled(true);
                 break;
-            case R.id.Monthly:
-                Log.i("String","Monthly");
-                viewPager.setCurrentItem(getItem(+1), true);
-                Today.setEnabled(true);
+            case R.id.Monthly://When Monthly is clicked
+                viewPager.setCurrentItem(getItem(+1), true);//Move to the Monthly's Tab
+                Today.setEnabled(true);//Change button states
                 Monthly.setEnabled(false);
                 break;
             default:
@@ -79,13 +78,9 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {//This handles when the user swipes.
         Button Monthly = (Button)findViewById(R.id.Monthly);
         Button Today = (Button)findViewById(R.id.Today);
-        //Log.i("Page Scrolled","True");
-        Log.i("Position",Integer.toString(position));
-        Log.i("PositionOffset",Float.toString(positionOffset));
-        Log.i("PositionOffsetB",Boolean.toString(positionOffset > 0));
         //Position == 0 will make the buttons flicker due to Incosistent trigger area.
         //This makes it so the buttons only change when the pager is swiped fully to the other page
         //from monthly to today
@@ -97,7 +92,7 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
             Monthly.setEnabled(false);
         }
     }
-
+    //Compulsory Methods
     @Override
     public void onPageSelected(int position) {
 

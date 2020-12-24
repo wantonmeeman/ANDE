@@ -51,7 +51,6 @@ public class HomeActivity extends AppCompatActivity {
     ArrayList<Alarm> ArrListAlarm;
 
     String currentDate = dateFormat.format(new Date());
-    String currentTime = tfhrTimeFormat.format(new Date());
     String currentDay = dayFormat.format(calendar.getTime());
 
     @Override

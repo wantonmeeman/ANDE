@@ -19,7 +19,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         DemoFragment demoFragment = new DemoFragment();
         position = position+1;
         Bundle bundle = new Bundle();
-        bundle.putString("message","Fragment:"+position);
+        bundle.putString("Position",Integer.toString(position));
         demoFragment.setArguments(bundle);
         return demoFragment;
     }

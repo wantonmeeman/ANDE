@@ -105,16 +105,20 @@ public class DemoFragment extends Fragment {
 
             }
             RecyclerView myrv = view.findViewById(R.id.recyclerViewTask);
-
-            //Gets the Adapter from the JAVA file
-            RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getContext(), ArrListAlarm);
-
-            //Set Layout for the RecyclerView
+            //set Layout
             myrv.setLayoutManager(new LinearLayoutManager(getContext()));
+            Log.i("Position",getArguments().getString("Position"));
+            if(getArguments().getString("Position").equals("2")){
+                MonthlyRecyclerViewAdapter myAdapter = new MonthlyRecyclerViewAdapter(getContext(), ArrListAlarm);
 
-            //Set an adapter for the View
-            myrv.setAdapter(myAdapter);
+                //Set an adapter for the View
+                myrv.setAdapter(myAdapter);
+            }else{
+                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getContext(), ArrListAlarm);
 
+                //Set an adapter for the View
+                myrv.setAdapter(myAdapter);
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Log.i("Error", e.toString());
