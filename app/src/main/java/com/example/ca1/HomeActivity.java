@@ -109,6 +109,24 @@ public class HomeActivity extends AppCompatActivity {
 
                     "},{" +
 
+                    "time: " + ((System.currentTimeMillis() / 1000L)+ 1440 * 60) +
+                    ",title:" + "'Yesterdays task'" +
+                    ",description:" + "' '" +
+
+                    "},{" +
+
+                    "time: " + ((System.currentTimeMillis() / 1000L)- 1440 * 60) +
+                    ",title:" + "'Tomorrows task'" +
+                    ",description:" + "' '" +
+
+                    "},{" +
+
+                    "time: " + ((System.currentTimeMillis() / 1000L)- 10 * 60) +
+                    ",title:" + "'Task that is overdue'" +
+                    ",description:" + "' '" +
+
+                    "},{" +
+
                     "time: " + ((System.currentTimeMillis() / 1000L)+ 20 * 60) +
                     ",title:" + "'You have to Scroll to view this!'" +
                     ",description:" + "' '" +

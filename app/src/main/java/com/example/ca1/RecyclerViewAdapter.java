@@ -39,6 +39,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.taskTitle.setText(mData.get(position).getTitle());
+        if(mData.get(position).getUnixTime() < System.currentTimeMillis()){//If the Time is beyond the time right now
+            holder.taskIcon.setImageResource(R.drawable.add_circle);//This is a placeholder,its suppsoed to represent a completed task
+        }
         holder.taskTime.setText(tfhrTimeFormat.format(mData.get(position).getUnixTime()));
     }
 
@@ -50,10 +53,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         TextView taskTitle;
         TextView taskTime;
+        ImageView taskIcon;
 
         public MyViewHolder(View itemView){
             super(itemView);
-
+            taskIcon = (ImageView) itemView.findViewById(R.id.taskIcon);
             taskTitle = (TextView) itemView.findViewById(R.id.taskTitle);
             taskTime = (TextView) itemView.findViewById(R.id.taskTime);
         }

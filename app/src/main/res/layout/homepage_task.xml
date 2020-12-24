@@ -26,6 +26,7 @@
                 android:textStyle="bold" />
 
             <ImageView
+                android:id="@+id/taskIcon"
                 android:layout_width="20dp"
                 android:layout_height="100dp"
                 android:src="@drawable/homescreen_timeline"/>

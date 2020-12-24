@@ -33,6 +33,7 @@ public class DemoFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_demo, container, false);
+
         ArrListAlarm = new ArrayList<Alarm>();
         long JSONtime;
         JSONObject jObject;
@@ -67,8 +68,6 @@ public class DemoFragment extends Fragment {
             long startOfDay = cal.getTimeInMillis() / 1000;
             long endOfDay = startOfDay + 86400;
 
-            Log.i("Time", Long.toString(cal.getTimeInMillis()));
-
             for (int i = 0; jArray.length() > i; i++) {
                 for (int j = i + 1; jArray.length() > j; j++) {
                     if (jArray.getJSONObject(i).getLong("time") > jArray.getJSONObject(j).getLong("time")) {
@@ -92,9 +91,6 @@ public class DemoFragment extends Fragment {
 
                 jObject = jArray.getJSONObject(i);
                 JSONtime = jObject.getInt("time");
-                Log.i("Start of Day", Long.toString(startOfDay));
-                Log.i("End of Day", Long.toString(endOfDay));
-                Log.i("JSON TIME", Long.toString(JSONtime));
 
                 if (startOfDay < JSONtime && endOfDay > JSONtime) {//Get only today's date
                     JSONtitle = jObject.getString("title");
@@ -104,16 +100,19 @@ public class DemoFragment extends Fragment {
                 }
 
             }
+
+            //Get the RecyclerView
             RecyclerView myrv = view.findViewById(R.id.recyclerViewTask);
-            //set Layout
+
+            //Set Layout, here we set LinearLayout
             myrv.setLayoutManager(new LinearLayoutManager(getContext()));
-            Log.i("Position",getArguments().getString("Position"));
-            if(getArguments().getString("Position").equals("2")){
+
+            if(getArguments().getString("Position").equals("2")){//Monthly Tasks
                 MonthlyRecyclerViewAdapter myAdapter = new MonthlyRecyclerViewAdapter(getContext(), ArrListAlarm);
 
                 //Set an adapter for the View
                 myrv.setAdapter(myAdapter);
-            }else{
+            }else{//Today's Tasks
                 RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getContext(), ArrListAlarm);
 
                 //Set an adapter for the View

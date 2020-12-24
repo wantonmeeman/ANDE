@@ -15,7 +15,7 @@ import java.util.Locale;
 
 public class MonthlyRecyclerViewAdapter extends RecyclerView.Adapter<MonthlyRecyclerViewAdapter.MyViewHolder> {
     private SimpleDateFormat tfhrTimeFormat = new SimpleDateFormat("HHmm", Locale.ENGLISH);
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM");
 
     private Context mContext;
     private List<Alarm> mData;
