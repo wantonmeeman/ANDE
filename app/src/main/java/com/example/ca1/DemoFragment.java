@@ -69,6 +69,8 @@ public class DemoFragment extends Fragment {
             cal.set(Calendar.MILLISECOND, 0);
 
             Calendar monthlyCal = Calendar.getInstance();
+
+            //This gets the first second of the month -> 01/12/2020 00:00:00:000
             monthlyCal.set(Calendar.HOUR_OF_DAY, 0);
             monthlyCal.set(Calendar.MINUTE, 0);
             monthlyCal.set(Calendar.SECOND, 0);
@@ -76,14 +78,17 @@ public class DemoFragment extends Fragment {
             monthlyCal.set(Calendar.DAY_OF_MONTH,1);
             long startOfMonth = (monthlyCal.getTimeInMillis()/1000);
 
+            //This gets the last second of the month -> 31/12/2020 23:59:59:999
             monthlyCal.add(Calendar.MONTH,1);
             monthlyCal.add(Calendar.MILLISECOND,-1);
             long endOfMonth = (monthlyCal.getTimeInMillis()/1000);
 
-            //Get Start and end of date.
+            //Get Start and end of today's date.
             long startOfDay = cal.getTimeInMillis() / 1000;
             long endOfDay = startOfDay + 86400;
 
+            //This sorts the objects in the array based on their time,
+            //The earlier events will be at the top;
             for (int i = 0; jArray.length() > i; i++) {
                 for (int j = i + 1; jArray.length() > j; j++) {
                     if (jArray.getJSONObject(i).getLong("time") > jArray.getJSONObject(j).getLong("time")) {
@@ -115,6 +120,7 @@ public class DemoFragment extends Fragment {
                 }
 
             }
+
             //Loop to populate the MonthlyArrListAlarm
             for (int i = 0; jArray.length() > i; i++) {
 
@@ -141,11 +147,12 @@ public class DemoFragment extends Fragment {
                 //Set an adapter for the View
                 myrv.setAdapter(myAdapter);
             }else{//Today's Tasks
-                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getContext(), ArrListAlarm);
+                TodayTaskRecyclerViewAdapter myAdapter = new TodayTaskRecyclerViewAdapter(getContext(), ArrListAlarm);
 
                 //Set an adapter for the View
                 myrv.setAdapter(myAdapter);
             }
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Log.i("Error", e.toString());

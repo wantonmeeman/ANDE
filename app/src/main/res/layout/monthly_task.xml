@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+    <TextView
+        android:id="@+id/taskDate"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:fontFamily="@font/kanit_light"
+        android:textColor="@color/light_black"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingStart="20dp"
+        android:textSize="20sp"
+        android:text="2359"
+        android:textAllCaps="true"
+        android:textStyle="bold" />
+
+    <TextView
+                android:id="@+id/taskTime"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/kanit_light"
+                android:textColor="@color/light_black"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingStart="20dp"
+                android:textSize="20sp"
+                android:text="2359"
+                android:textAllCaps="true"
+                android:textStyle="bold" />
+
+    <TextView
+                android:id="@+id/taskTitle"
+                android:paddingLeft="20dp"
+                android:textSize="20dp"
+                android:textColor="@color/light_black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/kanit_light"
+                android:text="Task"
+                android:textStyle="bold" />
+    </LinearLayout>

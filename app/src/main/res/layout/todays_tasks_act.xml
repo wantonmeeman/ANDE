@@ -9,6 +9,7 @@
    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#625bc2">
@@ -121,6 +122,7 @@
             app:layout_constraintTop_toBottomOf="@+id/progressBar" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -213,5 +215,16 @@
         android:id="@+id/pager">
 
     </androidx.viewpager.widget.ViewPager>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        app:backgroundTint="@color/white"
+        app:menu="@menu/menu"
+        app:itemIconSize="32dp"
+        app:itemIconTint="@drawable/bottom_navigation_selector"
+        app:itemRippleColor="@color/blue"
+        app:labelVisibilityMode="unlabeled"
+        />
 
 </LinearLayout>
