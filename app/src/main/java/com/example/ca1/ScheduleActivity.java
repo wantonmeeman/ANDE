@@ -2,6 +2,7 @@ package com.example.ca1;
 
 
 import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -30,7 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-
+import java.util.Locale;
 
 
 public class ScheduleActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener,View.OnClickListener,ViewPager.OnPageChangeListener{
@@ -40,6 +42,7 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd/MM");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.todays_tasks_act);
         this.getSupportActionBar().hide();
@@ -128,13 +131,16 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
             ProgressBar todayProgressBar = (ProgressBar)findViewById(R.id.progressBar);
             TextView percentageCompletion = (TextView)findViewById(R.id.todayProgress);
             TextView completionStatus = (TextView)findViewById(R.id.CompletionStatus);
+            TextView todayDate = (TextView)findViewById(R.id.todayDate);
+            
+            todayDate.setText(dateFormat.format(cal));
 
             int completedTaskPercentage = (int)Math.round(((double)count/(double)ArrListAlarm.size())*100);
 
             percentageCompletion.setText(Integer.toString(completedTaskPercentage)+"%");
             todayProgressBar.setProgress(completedTaskPercentage);
             completionStatus.setText("You have completed "+count+"/"+ArrListAlarm.size()+" tasks Today");
-
+            
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -147,6 +153,9 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
             Intent intent = new Intent(this,HomeActivity.class);
             startActivity(intent);
         });
+        BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
+        botNavView.getMenu().getItem(1).setChecked(true);//Set Middle(Home) to checked
+        botNavView.setOnNavigationItemSelectedListener(this);
     }
 
     public void onClick(View v) {//Handle When the Monthly/Today buttons are clicked
@@ -201,22 +210,28 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
     }
 
 
-    public boolean onNavigationItemSelected(@NonNull MenuItem item){
-        switch(item.getItemId()){
-            case R.id.location:
-                return true;
-            case R.id.calendar:
-                return true;
-            case R.id.home:
-                return true;
-            case R.id.qr:
-                return true;
-            case R.id.settings:
-                return true;
+    
+        public boolean onNavigationItemSelected(@NonNull MenuItem item){
+            switch(item.getItemId()){
+                case R.id.location:
 
-        }
-        return false;
-    }
+                    return true;
+                case R.id.calendar:
+
+                    return true;
+                case R.id.home:
+                    Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
+                    Log.e("Clicked","Location");
+                    startActivity(intent);
+                    return true;
+                case R.id.qr:
+                    return true;
+                case R.id.settings:
+                    return true;
+
+            }
+            return false;
+        };
 
 
 }

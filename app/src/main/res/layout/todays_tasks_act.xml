@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -33,6 +33,7 @@
                 android:tint="@color/white" />
 
             <TextView
+                android:id="@+id/todayDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="40dp"
@@ -124,7 +125,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/topContainer">
 
         <LinearLayout
             android:id="@+id/LinearLayoutButtons"
@@ -190,7 +192,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:background="@drawable/rounded_edit_text"
                 android:paddingTop="5dp"
                 android:textAlignment="center"
                 android:paddingBottom="5dp"
@@ -211,14 +212,18 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.viewpager.widget.ViewPager
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/pager">
+        android:layout_height="0dp"
+        android:id="@+id/pager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerButton">
+<!--        A Recyclerview's bottom needs to be constraint to something, else it will not show,as well having layout height at 0dp-->
 
     </androidx.viewpager.widget.ViewPager>
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="65dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:backgroundTint="@color/white"
         app:menu="@menu/menu"
         app:itemIconSize="32dp"
@@ -227,4 +232,4 @@
         app:labelVisibilityMode="unlabeled"
         />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
