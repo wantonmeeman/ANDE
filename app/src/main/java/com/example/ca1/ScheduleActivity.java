@@ -1,9 +1,6 @@
 package com.example.ca1;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.icu.text.SimpleDateFormat;
+
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,8 +14,6 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;

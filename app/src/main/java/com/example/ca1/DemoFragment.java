@@ -1,6 +1,7 @@
 package com.example.ca1;
 
 import android.content.Context;
+import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 
 public class DemoFragment extends Fragment {
     ArrayList<Alarm> ArrListAlarm;
+    ArrayList<Alarm> MonthlyArrListAlarm;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy-HH:mm");
 
     public DemoFragment() {
         // Required empty public constructor
@@ -35,6 +38,7 @@ public class DemoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_demo, container, false);
 
         ArrListAlarm = new ArrayList<Alarm>();
+        MonthlyArrListAlarm = new ArrayList<Alarm>();
         long JSONtime;
         JSONObject jObject;
         String JSONtitle;
@@ -63,6 +67,18 @@ public class DemoFragment extends Fragment {
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
+
+            Calendar monthlyCal = Calendar.getInstance();
+            monthlyCal.set(Calendar.HOUR_OF_DAY, 0);
+            monthlyCal.set(Calendar.MINUTE, 0);
+            monthlyCal.set(Calendar.SECOND, 0);
+            monthlyCal.set(Calendar.MILLISECOND, 0);
+            monthlyCal.set(Calendar.DAY_OF_MONTH,1);
+            long startOfMonth = (monthlyCal.getTimeInMillis()/1000);
+
+            monthlyCal.add(Calendar.MONTH,1);
+            monthlyCal.add(Calendar.MILLISECOND,-1);
+            long endOfMonth = (monthlyCal.getTimeInMillis()/1000);
 
             //Get Start and end of date.
             long startOfDay = cal.getTimeInMillis() / 1000;
@@ -95,8 +111,20 @@ public class DemoFragment extends Fragment {
                 if (startOfDay < JSONtime && endOfDay > JSONtime) {//Get only today's date
                     JSONtitle = jObject.getString("title");
                     JSONdesc = jObject.getString("description");
-                    Log.i("Loop", "Loop" + i);
                     ArrListAlarm.add(new Alarm(JSONtitle, JSONdesc, "", JSONtime * 1000L));
+                }
+
+            }
+            //Loop to populate the MonthlyArrListAlarm
+            for (int i = 0; jArray.length() > i; i++) {
+
+                jObject = jArray.getJSONObject(i);
+                JSONtime = jObject.getInt("time");
+                Log.i("JSON TIME",Long.toString(JSONtime));
+                if (startOfMonth < JSONtime && endOfMonth > JSONtime) {//Get only this month
+                    JSONtitle = jObject.getString("title");
+                    JSONdesc = jObject.getString("description");
+                    MonthlyArrListAlarm.add(new Alarm(JSONtitle, JSONdesc, "", JSONtime * 1000L));
                 }
 
             }
@@ -108,7 +136,7 @@ public class DemoFragment extends Fragment {
             myrv.setLayoutManager(new LinearLayoutManager(getContext()));
 
             if(getArguments().getString("Position").equals("2")){//Monthly Tasks
-                MonthlyRecyclerViewAdapter myAdapter = new MonthlyRecyclerViewAdapter(getContext(), ArrListAlarm);
+                MonthlyRecyclerViewAdapter myAdapter = new MonthlyRecyclerViewAdapter(getContext(), MonthlyArrListAlarm);
 
                 //Set an adapter for the View
                 myrv.setAdapter(myAdapter);
