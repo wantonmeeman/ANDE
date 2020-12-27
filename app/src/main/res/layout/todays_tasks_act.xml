@@ -3,12 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
    >
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         >
 
@@ -233,25 +233,24 @@
             android:id="@+id/pager"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            app:layout_constraintVertical_bias="1"
-            app:layout_constraintTop_toBottomOf="@+id/headerButton">
+            app:layout_constraintTop_toBottomOf="@+id/headerButton"
+            app:layout_constraintBottom_toBottomOf="parent">
             <!--        A Recyclerview's bottom needs to be constraint to something, else it will not show,as well having layout height at 0dp-->
 
         </androidx.viewpager.widget.ViewPager>
-
+</androidx.constraintlayout.widget.ConstraintLayout>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="70dp"
         android:src="@drawable/ic_baseline_add_24"
         android:scaleType="center"
+        android:layout_gravity="bottom|right"
         app:tint="@color/white"
-        app:maxImageSize="46dp"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_behavior="com.example.ca1.FloatingButtonBehavior"
+        app:maxImageSize="46dp" />
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"

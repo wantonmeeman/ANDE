@@ -3,6 +3,7 @@ package com.example.ca1;
 import android.content.Context;
 
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -11,12 +12,14 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class BottomNavigationBehavior extends CoordinatorLayout.Behavior<BottomNavigationView> {
 
     public BottomNavigationBehavior() {
         super();
     }
+    //This handles the bottom nav bar behaviour
 
     public BottomNavigationBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);
