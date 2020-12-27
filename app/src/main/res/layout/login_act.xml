@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#625bc2">
+    android:background="@color/lightpurple">
 
     <ImageView
         android:id="@+id/splashscreen"
@@ -83,7 +83,7 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="20dp"
                 android:layout_weight="1"
-                android:backgroundTint="#B8B8B8"
+                android:backgroundTint="@color/grey"
                 android:text="Register"
                 android:textColor="@color/white"
                 android:textSize="17.5dp"
@@ -95,7 +95,7 @@
                 android:layout_height="60dp"
                 android:layout_marginRight="30dp"
                 android:layout_weight="1"
-                android:backgroundTint="#3d8eff"
+                android:backgroundTint="@color/blue"
                 android:text="Login"
                 android:textAllCaps="true"
                 android:textColor="@color/white"

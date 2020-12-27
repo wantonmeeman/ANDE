@@ -1,4 +1,0 @@
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:bottom="15dp" android:gravity="bottom" android:drawable="@drawable/home_icon"/>
-  <item android:gravity="bottom" android:drawable="@drawable/chevron"/>
-</layer-list>

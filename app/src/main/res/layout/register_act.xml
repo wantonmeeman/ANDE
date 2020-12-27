@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#625bc2">
+    android:background="@color/lightpurple">
 
 
 
@@ -115,7 +115,7 @@
                 android:textColor="@color/white"
                 android:text="Register"
                 android:textSize="17.5dp"
-                android:backgroundTint="#3d8eff"
+                android:backgroundTint="@color/blue"
                 android:layout_weight="2"
                 app:cornerRadius="200dp"
                 />

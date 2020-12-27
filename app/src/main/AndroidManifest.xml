@@ -32,6 +32,7 @@
         <activity android:name=".QRActivity"/>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".LoginActivity"/>
+        <activity android:name=".SettingsActivity"/>
         <receiver android:name=".ReminderBroadcast">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

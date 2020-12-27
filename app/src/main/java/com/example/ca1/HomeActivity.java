@@ -2,6 +2,7 @@ package com.example.ca1;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,6 +12,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Build;
@@ -231,6 +233,9 @@ public class HomeActivity extends AppCompatActivity {
         createNotificationChannel();
 
 
+
+
+
         Button button = findViewById(R.id.addNewTask);
 
         button.setOnClickListener(v -> {
@@ -253,6 +258,21 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+//        int nightModeFlags = getApplicationContext().getResources().getConfiguration().uiMode &
+//                Configuration.UI_MODE_NIGHT_MASK;
+//        switch (nightModeFlags) {
+//            case Configuration.UI_MODE_NIGHT_YES:
+//                Log.i("Darkmode","Yes");
+//                break;
+//
+//            case Configuration.UI_MODE_NIGHT_NO:
+//                Log.i("Darkmode","No");
+//                break;
+//
+//            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+//                Log.i("Darkmode","IDK");
+//                break;
+//        }
 
         botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
@@ -260,7 +280,24 @@ public class HomeActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item){
                 switch(item.getItemId()){
                     case R.id.location:
+                        int nightModeFlags = getApplicationContext().getResources().getConfiguration().uiMode &
+                                Configuration.UI_MODE_NIGHT_MASK;
+                        switch (nightModeFlags) {
+                            case Configuration.UI_MODE_NIGHT_YES:
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                                Log.i("Darkmode","Yes");
+                                break;
 
+                            case Configuration.UI_MODE_NIGHT_NO:
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                                Log.i("Darkmode","No");
+                                break;
+
+                            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                                Log.i("Darkmode","IDK");
+                                break;
+                        }
                         return true;
                     case R.id.calendar:
                         Intent intent = new Intent(getApplicationContext(),ScheduleActivity.class);
@@ -274,6 +311,8 @@ public class HomeActivity extends AppCompatActivity {
                         startActivity(intent);
                         return true;
                     case R.id.settings:
+                        intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                        startActivity(intent);
                         return true;
 
                 }
