@@ -270,6 +270,8 @@ public class HomeActivity extends AppCompatActivity {
                     case R.id.home:
                         return true;
                     case R.id.qr:
+                        intent = new Intent(getApplicationContext(), QRActivity.class);
+                        startActivity(intent);
                         return true;
                     case R.id.settings:
                         return true;

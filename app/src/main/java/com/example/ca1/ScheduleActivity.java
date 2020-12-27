@@ -22,6 +22,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -156,6 +157,10 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(1).setChecked(true);//Set Middle(Home) to checked
         botNavView.setOnNavigationItemSelectedListener(this);
+        FloatingActionButton addNewTask = (FloatingActionButton) findViewById(R.id.fab);
+        addNewTask.setOnClickListener(v ->{
+            Log.v("myTag","FAB Clicked");
+        });
     }
 
     public void onClick(View v) {//Handle When the Monthly/Today buttons are clicked
@@ -225,6 +230,8 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
                     startActivity(intent);
                     return true;
                 case R.id.qr:
+                    intent = new Intent(getApplicationContext(), QRActivity.class);
+                    startActivity(intent);
                     return true;
                 case R.id.settings:
                     return true;

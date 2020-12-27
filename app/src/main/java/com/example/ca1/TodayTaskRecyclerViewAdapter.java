@@ -37,7 +37,15 @@ public class TodayTaskRecyclerViewAdapter extends RecyclerView.Adapter<TodayTask
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.taskTitle.setText(mData.get(position).getTitle());
+
+        if(mData.get(position).getTitle().length() > 25){//if the string is too long, replace with ...
+            String str = "";
+            str = mData.get(position).getTitle().substring(0,25)+"...";
+            holder.taskTitle.setText(str);
+        }else{
+            holder.taskTitle.setText(mData.get(position).getTitle());
+        }
+        //holder.taskTitle.setText(mData.get(position).getTitle());
         holder.taskTime.setText(tfhrTimeFormat.format(mData.get(position).getUnixTime()));
     }
 

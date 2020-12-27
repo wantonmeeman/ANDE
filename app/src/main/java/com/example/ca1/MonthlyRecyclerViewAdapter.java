@@ -37,7 +37,13 @@ public class MonthlyRecyclerViewAdapter extends RecyclerView.Adapter<MonthlyRecy
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.taskTitle.setText(mData.get(position).getTitle());
+        if(mData.get(position).getTitle().length() > 16){//if the string is too long, replace with ...
+            String str = "";
+            str = mData.get(position).getTitle().substring(0,16)+"...";
+            holder.taskTitle.setText(str);
+        }else{
+            holder.taskTitle.setText(mData.get(position).getTitle());
+        }
         holder.taskTime.setText(tfhrTimeFormat.format(mData.get(position).getUnixTime()));
         holder.taskDate.setText(dateFormat.format(mData.get(position).getUnixTime()));
     }
@@ -54,7 +60,6 @@ public class MonthlyRecyclerViewAdapter extends RecyclerView.Adapter<MonthlyRecy
 
         public MyViewHolder(View itemView){
             super(itemView);
-
             taskTitle = (TextView) itemView.findViewById(R.id.taskTitle);
             taskTime = (TextView) itemView.findViewById(R.id.taskTime);
             taskDate = (TextView) itemView.findViewById(R.id.taskDate);
