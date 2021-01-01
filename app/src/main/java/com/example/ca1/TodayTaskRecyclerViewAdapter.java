@@ -2,7 +2,6 @@ package com.example.ca1;
 
 import android.content.Context;
 import android.icu.text.SimpleDateFormat;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.Locale;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
+public class TodayTaskRecyclerViewAdapter extends RecyclerView.Adapter<TodayTaskRecyclerViewAdapter.MyViewHolder> {
     private SimpleDateFormat tfhrTimeFormat = new SimpleDateFormat("HHmm", Locale.ENGLISH);
 
     private Context mContext;
     private List<Alarm> mData;
 
-    public RecyclerViewAdapter(Context mContext,List<Alarm> mData) {
+    public TodayTaskRecyclerViewAdapter(Context mContext, List<Alarm> mData) {
         this.mContext = mContext;
         this.mData = mData;
     }
@@ -32,16 +31,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         View view;
         LayoutInflater mInflater = LayoutInflater.from(mContext);
-        view = mInflater.inflate(R.layout.homepage_task,parent,false);
+        view = mInflater.inflate(R.layout.today_task,parent,false);
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.taskTitle.setText(mData.get(position).getTitle());
-        if(mData.get(position).getUnixTime() < System.currentTimeMillis()){//If the Time is beyond the time right now
-            holder.taskIcon.setImageResource(R.drawable.add_circle);//This is a placeholder,its suppsoed to represent a completed task
+
+        if(mData.get(position).getTitle().length() > 25){//if the string is too long, replace with ...
+            String str = "";
+            str = mData.get(position).getTitle().substring(0,25)+"...";
+            holder.taskTitle.setText(str);
+        }else{
+            holder.taskTitle.setText(mData.get(position).getTitle());
         }
+        //holder.taskTitle.setText(mData.get(position).getTitle());
         holder.taskTime.setText(tfhrTimeFormat.format(mData.get(position).getUnixTime()));
     }
 
@@ -53,11 +57,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         TextView taskTitle;
         TextView taskTime;
-        ImageView taskIcon;
 
         public MyViewHolder(View itemView){
             super(itemView);
-            taskIcon = (ImageView) itemView.findViewById(R.id.taskIcon);
             taskTitle = (TextView) itemView.findViewById(R.id.taskTitle);
             taskTime = (TextView) itemView.findViewById(R.id.taskTime);
         }

@@ -38,9 +38,6 @@ import org.json.JSONObject;
 public class HomeActivity extends AppCompatActivity {
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
-    SimpleDateFormat tfhrTimeFormat = new SimpleDateFormat("HHmm",Locale.ENGLISH);
-    //SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
 
     Calendar calendar = Calendar.getInstance();
 
@@ -51,7 +48,6 @@ public class HomeActivity extends AppCompatActivity {
     ArrayList<Alarm> ArrListAlarm;
 
     String currentDate = dateFormat.format(new Date());
-    String currentTime = tfhrTimeFormat.format(new Date());
     String currentDay = dayFormat.format(calendar.getTime());
 
     @Override
@@ -83,7 +79,9 @@ public class HomeActivity extends AppCompatActivity {
         txtDate.setText(currentDate);
         txtDay.setText(currentDay);
 
-        try {//Make new file,maybe put this in splashscreen
+
+        //This makes a new JSON file to be read
+        try {
             fOut = openFileOutput("JSON STORAGE", Context.MODE_PRIVATE);
             String str = "{'Data':[{" +
                     "time:" + System.currentTimeMillis() / 1000L +
@@ -110,6 +108,24 @@ public class HomeActivity extends AppCompatActivity {
 
                     "},{" +
 
+                    "time: " + ((System.currentTimeMillis() / 1000L)+ 1440 * 60) +
+                    ",title:" + "'Tomorrows task'" +
+                    ",description:" + "' '" +
+
+                    "},{" +
+
+                    "time: " + ((System.currentTimeMillis() / 1000L)- 1440 * 60) +
+                    ",title:" + "'Yesterdays task'" +
+                    ",description:" + "' '" +
+
+                    "},{" +
+
+                    "time: " + ((System.currentTimeMillis() / 1000L)- 10 * 60) +
+                    ",title:" + "'Task that is overdue'" +
+                    ",description:" + "' '" +
+
+                    "},{" +
+
                     "time: " + ((System.currentTimeMillis() / 1000L)+ 20 * 60) +
                     ",title:" + "'You have to Scroll to view this!'" +
                     ",description:" + "' '" +
@@ -126,7 +142,6 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         try {//Read File
-
             FileInputStream fin = openFileInput("JSON STORAGE");
             int c;
             String temp = "";
@@ -211,9 +226,12 @@ public class HomeActivity extends AppCompatActivity {
         }
 
 
-        Button button = findViewById(R.id.addNewTask);
+
 
         createNotificationChannel();
+
+
+        Button button = findViewById(R.id.addNewTask);
 
         button.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this,ReminderBroadcast.class);
@@ -252,6 +270,8 @@ public class HomeActivity extends AppCompatActivity {
                     case R.id.home:
                         return true;
                     case R.id.qr:
+                        intent = new Intent(getApplicationContext(), QRActivity.class);
+                        startActivity(intent);
                         return true;
                     case R.id.settings:
                         return true;
