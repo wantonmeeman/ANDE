@@ -18,6 +18,8 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -36,10 +38,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 
-public class ScheduleActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener,View.OnClickListener,ViewPager.OnPageChangeListener{
-
-    private ViewPager viewPager;
-    private ViewPagerAdapter adapter;
+public class ScheduleActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener,View.OnClickListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,16 +47,8 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         setContentView(R.layout.todays_tasks_act);
         this.getSupportActionBar().hide();
 
-        viewPager = findViewById(R.id.pager);
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(adapter);
-        viewPager.setOnPageChangeListener(this);
-
         Button Monthly = (Button) findViewById(R.id.Monthly);
         Monthly.setOnClickListener(this);
-
-        Button Today = (Button) findViewById(R.id.Today);
-        Today.setOnClickListener(this);
 
         ArrayList<Alarm> ArrListAlarm = new ArrayList<Alarm>();
 
@@ -154,64 +145,37 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
             Intent intent = new Intent(this,HomeActivity.class);
             startActivity(intent);
         });
+
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
-        botNavView.getMenu().getItem(1).setChecked(true);//Set Middle(Home) to checked
+        botNavView.getMenu().getItem(1).setChecked(true);
         botNavView.setOnNavigationItemSelectedListener(this);
         FloatingActionButton addNewTask = (FloatingActionButton) findViewById(R.id.fab);
+
+        RecyclerView myrv = findViewById(R.id.recyclerViewTask);
+
+        //Set Layout, here we set LinearLayout
+        myrv.setLayoutManager(new LinearLayoutManager(this));
+
+        TodayTaskRecyclerViewAdapter myAdapter = new TodayTaskRecyclerViewAdapter(this, ArrListAlarm);
+
+            //Set an adapter for the View
+        myrv.setAdapter(myAdapter);
+
         addNewTask.setOnClickListener(v ->{
             Log.v("myTag","FAB Clicked");
         });
     }
 
     public void onClick(View v) {//Handle When the Monthly/Today buttons are clicked
-            Button Monthly = (Button)findViewById(R.id.Monthly);
-            Button Today = (Button)findViewById(R.id.Today);
-
         switch (v.getId()) {
-            case R.id.Today://When Today is clicked
-                viewPager.setCurrentItem(getItem(-1), true);//Move to the Today's Tab
-                Today.setEnabled(false);//Change button states
-                Monthly.setEnabled(true);
-                break;
             case R.id.Monthly://When Monthly is clicked
-                viewPager.setCurrentItem(getItem(+1), true);//Move to the Monthly's Tab
-                Today.setEnabled(true);//Change button states
-                Monthly.setEnabled(false);
+                Intent intent = new Intent(getApplicationContext(),MonthlyScheduleActivity.class);
+                startActivity(intent);
                 break;
             default:
                 Log.i("Error","There has been an error");
                 break;
         }
-    }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {//This handles when the user swipes.
-        Button Monthly = (Button)findViewById(R.id.Monthly);
-        Button Today = (Button)findViewById(R.id.Today);
-        //Position == 0 will make the buttons flicker due to Incosistent trigger area.
-        //This makes it so the buttons only change when the pager is swiped fully to the other page
-        //from monthly to today
-        if (position+positionOffset == 0){
-            Today.setEnabled(false);
-            Monthly.setEnabled(true);
-        }else if(position == 1 ){
-            Today.setEnabled(true);
-            Monthly.setEnabled(false);
-        }
-    }
-    //Compulsory Methods
-    @Override
-    public void onPageSelected(int position) {
-
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-
-    }
-
-    private int getItem(int i) {
-        return viewPager.getCurrentItem() + i;
     }
 
 
