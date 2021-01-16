@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        app:layout_behavior="com.example.ca1.BottomNavigationBehavior"
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="65dp"
@@ -17,9 +16,12 @@
         app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/menu"
-
+        app:layout_behavior="com.example.ca1.BottomNavigationBehavior"
+        android:layout_gravity="bottom"
         />
-
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
@@ -249,6 +251,7 @@
             android:indeterminate="true" />
     </RelativeLayout>
     <androidx.recyclerview.widget.RecyclerView
+        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
         android:id="@+id/recyclerViewTask"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -256,4 +259,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 

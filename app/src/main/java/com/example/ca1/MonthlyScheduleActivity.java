@@ -52,6 +52,7 @@ import sun.bob.mcalendarview.MarkStyle;
 import sun.bob.mcalendarview.listeners.OnDateClickListener;
 import sun.bob.mcalendarview.listeners.OnMonthChangeListener;
 import sun.bob.mcalendarview.vo.DateData;
+import sun.bob.mcalendarview.vo.MarkedDates;
 
 
 public class MonthlyScheduleActivity extends AppCompatActivity implements View.OnClickListener{
@@ -90,7 +91,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         Today.setOnClickListener(this);
 
         MCalendarView calendarView = (MCalendarView) findViewById(R.id.calendarView); // get the reference of CalendarView
-        calendarView.hasTitle(true);
+        calendarView.hasTitle(false);
 
         //Get Start and end of date.
         long startOfDay = cal.getTimeInMillis() / 1000;
@@ -136,11 +137,38 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             }
 
         });
+        calendarView.hasTitle(false);
+
+        calendarView.markDate(
+                new DateData(2021,1,30).setMarkStyle(new MarkStyle(MarkStyle.DOT, Color.RED))
+        );
 
         calendarView.setOnDateClickListener(new OnDateClickListener() {
+            DateData prevDataDate;
             @Override
             public void onDateClick(View view, DateData date) {
-                view.setBackgroundResource(R.drawable.ripple);
+                if(prevDataDate != null) {
+                    calendarView.unMarkDate(prevDataDate);
+                }
+                //THERE IS 100% AN EASIER WAY TO DO THIS BUT IM TOO TIRED PLACEHOLDER FOR NOW.
+                for(int i = 0;calendarView.getMarkedDates().getAll().size() > i;i++) {
+                    if(date.equals(calendarView.getMarkedDates().getAll().get(i))){
+                        calendarView.unMarkDate(date);
+                        calendarView.markDate(2021, 1, 30).setMarkedStyle(MarkStyle.BACKGROUND);//When an Event is already in the date selected.
+                    }
+                    if(prevDataDate != null) {
+                        if (prevDataDate.equals(calendarView.getMarkedDates().getAll().get(i))) {
+                            calendarView.unMarkDate(prevDataDate);
+                            calendarView.markDate(
+                                    new DateData(2021, 1, 30).setMarkStyle(new MarkStyle(MarkStyle.DOT, Color.RED))
+                            );
+                        }
+                    }
+                }
+                calendarView.markDate(date).setMarkedStyle(MarkStyle.BACKGROUND);
+
+                prevDataDate = date;
+
                 cal.set(Calendar.MONTH,date.getMonth()-1);
                 cal.set(Calendar.DATE,Integer.parseInt(date.getDayString()));
 
@@ -231,20 +259,19 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 }else{
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+2, 1));
                 }
+                calendarView.hasTitle(false);
             }
         });
 
         prevMnth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("PrevOnClick","true");
-                Log.i("Something",Integer.toString(cal.get(Calendar.MONTH)));
-                Log.i("Something",Integer.toString(cal.get(Calendar.YEAR)));
                 if(cal.get(Calendar.MONTH) == 0) {
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR)-1, 12, 1));
                 }else{
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 1));
                 }
+                calendarView.hasTitle(false);
             }
         });
 
