@@ -3,6 +3,7 @@ package com.example.ca1;
 
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import sun.bob.mcalendarview.MCalendarView;
+import sun.bob.mcalendarview.MarkStyle;
 import sun.bob.mcalendarview.listeners.OnDateClickListener;
 import sun.bob.mcalendarview.listeners.OnMonthChangeListener;
 import sun.bob.mcalendarview.vo.DateData;
@@ -69,6 +71,15 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         cal.set(Calendar.MILLISECOND, 0);
         ArrayList<Alarm> ArrListAlarm = new ArrayList<Alarm>();
 
+        String userid = "";
+        GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
+
+        if(gAcc != null){
+            userid = gAcc.getId();
+        }else{
+            Log.i("Message","Cant access google account");
+        }
+
         TextView currentMonthYear = (TextView) findViewById(R.id.currentMonthYear);
         TextView currentDayMonth = (TextView)findViewById(R.id.currentDayMonth);
 
@@ -79,20 +90,103 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         Today.setOnClickListener(this);
 
         MCalendarView calendarView = (MCalendarView) findViewById(R.id.calendarView); // get the reference of CalendarView
-        calendarView.markDate(2020,12,30);
-        calendarView.hasTitle(false);
+        calendarView.hasTitle(true);
+
+        //Get Start and end of date.
+        long startOfDay = cal.getTimeInMillis() / 1000;
+        long endOfDay = startOfDay + 86400;
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
+
+        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid);
+
+        myDbRef.child("UserAlarms").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                ArrListAlarm.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Alarm alarm = snapshot.getValue(Alarm.class);
+                    if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), "","", alarm.getUnixTime() * 1000L));
+                    }
+                }
+
+                RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
+
+                //Gets the Adapter from the JAVA file
+                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
+
+                //Set Layout for the RecyclerView
+                myrv.setLayoutManager(new LinearLayoutManager(getApplication()));
+
+                //Set an adapter for the View
+                myrv.setAdapter(myAdapter);
+                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.i("Error",error.toString());
+                // Failed to read value
+            }
+
+        });
+
         calendarView.setOnDateClickListener(new OnDateClickListener() {
             @Override
             public void onDateClick(View view, DateData date) {
                 view.setBackgroundResource(R.drawable.ripple);
-
                 cal.set(Calendar.MONTH,date.getMonth()-1);
                 cal.set(Calendar.DATE,Integer.parseInt(date.getDayString()));
-                Log.i("Day string",date.getDayString());
-                currentDayMonth.setText(dayMonthFormat.format(cal));
 
+                long startOfDay = cal.getTimeInMillis() / 1000;
+                long endOfDay = startOfDay + 86400;
+
+                currentDayMonth.setText(dayMonthFormat.format(cal));
+                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+
+                //maybe make this a function
+                myDbRef.child("UserAlarms").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // This method is called once with the initial value and again
+                        // whenever data at this location is updated.
+                        findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                        ArrListAlarm.clear();
+
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            Alarm alarm = snapshot.getValue(Alarm.class);
+                            if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
+                                ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), "","", alarm.getUnixTime() * 1000L));
+                            }
+                        }
+
+                        //Get the calendar Object today's date.
+                        RecyclerView myrv = findViewById(R.id.recyclerViewTask);
+
+                        //Set Layout, here we set LinearLayout
+                        myrv.setLayoutManager(new LinearLayoutManager(getApplication()));
+
+                        RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
+
+                        //Set an adapter for the View
+                        myrv.setAdapter(myAdapter);
+                        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        Log.i("Error",error.toString());
+                        // Failed to read value
+                    }
+                });
             }
         });
+
         calendarView.setOnMonthChangeListener(new OnMonthChangeListener() {
             @Override
             public void onMonthChange(int year, int month) {
@@ -116,6 +210,11 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 if(YearA == YearB && MonthB - MonthA == 11){
                     cal.set(Calendar.YEAR, year+1);
                 }
+
+                //This resolves a bug when prev Month is clicked, then swiped forward to another year
+                if(cal.get(Calendar.YEAR) != year){
+                    calendarView.travelTo(new DateData(cal.get(Calendar.YEAR),1,1));
+                }
                 currentMonthYear.setText(monthYearFormat.format(cal));
 
             }
@@ -132,7 +231,6 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 }else{
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+2, 1));
                 }
-                calendarView.hasTitle(false);
             }
         });
 
@@ -140,80 +238,21 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             @Override
             public void onClick(View v) {
                 Log.i("PrevOnClick","true");
+                Log.i("Something",Integer.toString(cal.get(Calendar.MONTH)));
+                Log.i("Something",Integer.toString(cal.get(Calendar.YEAR)));
                 if(cal.get(Calendar.MONTH) == 0) {
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR)-1, 12, 1));
                 }else{
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 1));
                 }
-                calendarView.hasTitle(false);
             }
         });
 
-        String userid = "";
-        GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
 
-        if(gAcc != null){
-            userid = gAcc.getId();
-        }else{
-            Log.i("Message","Cant access google account");
-        }
 
-        Calendar calendarInstance = Calendar.getInstance();
-        calendarInstance.set(Calendar.HOUR_OF_DAY, 0);
-        calendarInstance.set(Calendar.MINUTE, 0);
-        calendarInstance.set(Calendar.SECOND, 0);
-        calendarInstance.set(Calendar.MILLISECOND, 0);
 
-        //Get Start and end of date.
-        long startOfDay = calendarInstance.getTimeInMillis() / 1000;
-        long endOfDay = startOfDay + 86400;
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
-        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid);
-
-        myDbRef.child("UserAlarms").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-                //try {
-                //                    e.printStackTrace();
-                //                    Thread.sleep(1000);
-                //                } catch (InterruptedException e) {
-                //                }
-                ArrListAlarm.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Alarm alarm = snapshot.getValue(Alarm.class);
-                    if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), "","", alarm.getUnixTime() * 1000L));
-                    }
-                }
-
-                //Get the calendar Object today's date.
-                refreshRecyclerView(ArrListAlarm);
-                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Log.i("Error",error.toString());
-                // Failed to read value
-            }
-        });
     }
 
-    public void refreshRecyclerView(ArrayList<Alarm> a){
-        RecyclerView myrv = findViewById(R.id.recyclerViewTask);
-
-        //Set Layout, here we set LinearLayout
-        myrv.setLayoutManager(new LinearLayoutManager(this));
-
-        RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(this,a);
-
-        //Set an adapter for the View
-        myrv.setAdapter(myAdapter);
-    }
 
     public void onClick(View v) {//Handle When the Monthly/Today buttons are clicked
         switch (v.getId()) {
