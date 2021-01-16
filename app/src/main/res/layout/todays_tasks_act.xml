@@ -68,7 +68,7 @@
                 android:background="@drawable/circle_shape"
                 android:indeterminate="false"
                 android:max="100"
-                android:progress="83"
+                android:progress="0"
                 android:progressDrawable="@drawable/circular_progress_bar"
                 app:layout_constraintBottom_toBottomOf="@+id/CompletionStatus"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -97,7 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:text="83%"
+                android:text="0%"
                 android:fontFamily="@font/gireg"
                 android:textColor="@android:color/holo_blue_dark"
                 android:textSize="40dp"
@@ -234,7 +234,19 @@
 
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
+        <RelativeLayout
+            android:id="@+id/loadingPanel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/headerButton">
 
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true" />
+        </RelativeLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewTask"
             android:layout_width="match_parent"
@@ -242,6 +254,7 @@
             app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/headerButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

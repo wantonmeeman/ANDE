@@ -22,9 +22,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,28 +58,9 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         Monthly.setOnClickListener(this);
 
         ArrayList<Alarm> ArrListAlarm = new ArrayList<Alarm>();
-
-        long JSONtime;
-        JSONObject jObject;
-        String JSONtitle;
-        String JSONdesc;
-        long tempTime;
-        String tempTitle;
-        String tempDesc;
-        try {//Read File
-
-            FileInputStream fin = openFileInput("JSON STORAGE");
-            int c;
-            String temp = "";
-
-            while ((c = fin.read()) != -1) {
-                temp = temp + (char) c;
-            }
-            fin.close();
-
-            //Get JSON Object(which is an array)
-            JSONObject pjObject = new JSONObject(temp);
-            JSONArray jArray = pjObject.getJSONArray("Data");
+        ProgressBar todayProgressBar = (ProgressBar)findViewById(R.id.progressBar);
+        TextView percentageCompletion = (TextView)findViewById(R.id.todayProgress);
+        TextView completionStatus = (TextView)findViewById(R.id.CompletionStatus);
 
             //Get the calendar Object today's date.
             Calendar cal = Calendar.getInstance();
@@ -80,65 +68,86 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
-
-            //Get Start and end of date.
+//            //Get Start and end of date.
             long startOfDay = cal.getTimeInMillis() / 1000;
             long endOfDay = startOfDay + 86400;
 
-            for (int i = 0; jArray.length() > i; i++) {
-                for (int j = i + 1; jArray.length() > j; j++) {
-                    if (jArray.getJSONObject(i).getLong("time") > jArray.getJSONObject(j).getLong("time")) {
-                        tempTime = jArray.getJSONObject(i).getLong("time");
-                        tempTitle = jArray.getJSONObject(i).getString("title");
-                        tempDesc = jArray.getJSONObject(i).getString("description");
+        String userid = "";
+        GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
+        if(gAcc != null){
+            userid = gAcc.getId();
+        }else{
+            Log.i("Message","Cant access google account");
+        }
 
-                        jArray.getJSONObject(i).put("time", jArray.getJSONObject(j).getLong("time"));
-                        jArray.getJSONObject(i).put("title", jArray.getJSONObject(j).getString("title"));
-                        jArray.getJSONObject(i).put("description", jArray.getJSONObject(j).getString("description"));
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
+        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid);
 
-                        jArray.getJSONObject(j).put("time", tempTime);
-                        jArray.getJSONObject(j).put("title", tempTitle);
-                        jArray.getJSONObject(j).put("description", tempDesc);
+
+        myDbRef.child("UserAlarms").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                int count = 0;
+                ArrListAlarm.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Alarm alarm = snapshot.getValue(Alarm.class);
+                    if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), "","", alarm.getUnixTime() * 1000L));
+                        if(alarm.getUnixTime() * 1000L < System.currentTimeMillis()){
+                            count++;
+                        }
                     }
                 }
+
+
+                int completedTaskPercentage = (int)Math.round(((double)count/(double)ArrListAlarm.size())*100);
+
+                percentageCompletion.setText(Integer.toString(completedTaskPercentage)+"%");
+                todayProgressBar.setProgress(completedTaskPercentage);
+                completionStatus.setText("You have completed "+count+"/"+ArrListAlarm.size()+" tasks Today");
+
+
+
+                //Get the calendar Object today's date.
+                //Put a loading animation here
+                //
+                //
+                //
+                RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
+
+                //Gets the Adapter from the JAVA file
+                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
+
+                //Set Layout for the RecyclerView
+                myrv.setLayoutManager(new LinearLayoutManager(getApplication()));
+
+                //Set an adapter for the View
+                myrv.setAdapter(myAdapter);
+                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+
+
             }
 
-            //Loop to populate ArrListAlarm, and for seeing which tasks havent been completed yet
-            int count = 0;
-            for (int i = 0; jArray.length() > i; i++) {
-
-                jObject = jArray.getJSONObject(i);
-                JSONtime = jObject.getInt("time");
-
-                if (startOfDay < JSONtime && endOfDay > JSONtime) {//Get only today's date
-                    JSONtitle = jObject.getString("title");
-                    JSONdesc = jObject.getString("description");
-                    ArrListAlarm.add(new Alarm(JSONtitle, JSONdesc, "", JSONtime * 1000L));
-                    if(JSONtime*1000L > System.currentTimeMillis()){//This should count Events that havent Happened yet
-                        count++;
-                    }
-                }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.i("Error",error.toString());
+                // Failed to read value
             }
+        });
 
-            ProgressBar todayProgressBar = (ProgressBar)findViewById(R.id.progressBar);
-            TextView percentageCompletion = (TextView)findViewById(R.id.todayProgress);
-            TextView completionStatus = (TextView)findViewById(R.id.CompletionStatus);
             TextView todayDate = (TextView)findViewById(R.id.todayDate);
             
             todayDate.setText(dateFormat.format(cal));
 
-            int completedTaskPercentage = (int)Math.round(((double)count/(double)ArrListAlarm.size())*100);
 
-            percentageCompletion.setText(Integer.toString(completedTaskPercentage)+"%");
-            todayProgressBar.setProgress(completedTaskPercentage);
-            completionStatus.setText("You have completed "+count+"/"+ArrListAlarm.size()+" tasks Today");
-            
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         ImageButton imgButton = findViewById(R.id.backButton);
         imgButton.setOnClickListener(v -> {
@@ -150,16 +159,6 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         botNavView.getMenu().getItem(1).setChecked(true);
         botNavView.setOnNavigationItemSelectedListener(this);
         FloatingActionButton addNewTask = (FloatingActionButton) findViewById(R.id.fab);
-
-        RecyclerView myrv = findViewById(R.id.recyclerViewTask);
-
-        //Set Layout, here we set LinearLayout
-        myrv.setLayoutManager(new LinearLayoutManager(this));
-
-        TodayTaskRecyclerViewAdapter myAdapter = new TodayTaskRecyclerViewAdapter(this, ArrListAlarm);
-
-            //Set an adapter for the View
-        myrv.setAdapter(myAdapter);
 
         addNewTask.setOnClickListener(v ->{
             Log.v("myTag","FAB Clicked");

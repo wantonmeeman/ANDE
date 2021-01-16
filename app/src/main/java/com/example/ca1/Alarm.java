@@ -9,12 +9,23 @@ public class Alarm  {
     private String Description;
     private String Location;
     private long UnixTime;
+    private String LocationX;
+    private String LocationY;
 
-    public Alarm(String title,String description,String location,long unixtime){
+    public Alarm(String title,String description,String locationX,String locationY,long unixtime){
         Title = title;
         Description = description;
-        Location = location;
+        LocationY = locationY;
+        LocationX = locationX;
         UnixTime = unixtime;
+    }
+    public Alarm(){
+        //This needs to be here for firebase data reading
+    }
+
+
+    public void setLocationX(String locationX) {
+        LocationX = locationX;
     }
 
     public String getTitle() {
@@ -47,6 +58,18 @@ public class Alarm  {
 
     public void setUnixTime(long unixTime) {
         UnixTime = unixTime;
+    }
+
+    public String getLocationY() {
+        return LocationY;
+    }
+
+    public void setLocationY(String locationY) {
+        LocationY = locationY;
+    }
+
+    public String getLocationX() {
+        return LocationX;
     }
 
 }

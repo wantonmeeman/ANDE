@@ -6,6 +6,20 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Bundle;
+import android.util.Log;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -19,6 +33,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +49,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,16 +78,23 @@ public class HomeActivity extends AppCompatActivity {
 
         //Declare Variables
         BottomNavigationView botNavView;
-        JSONObject jObject;
-        JSONObject pjObject;
-        JSONArray jArray;
-        long JSONtime;
-        String JSONtitle;
-        String JSONdesc;
-        long tempTime;
-        String tempTitle;
-        String tempDesc;
+//        JSONObject jObject;
+//        JSONObject pjObject;
+//        JSONArray jArray;
+//        long JSONtime;
+//        String JSONtitle;
+//        String JSONdesc;
+//        long tempTime;
+//        String tempTitle;
+//        String tempDesc;
         ArrListAlarm = new ArrayList<Alarm>();
+        String userid = "";
+        GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
+        if(gAcc != null){
+            userid = gAcc.getId();
+        }else{
+            Log.i("Message","Cant access google account");
+        }
 
         FileOutputStream fOut = null;
         txtDate = (TextView) findViewById(R.id.date);
@@ -81,160 +105,68 @@ public class HomeActivity extends AppCompatActivity {
         txtDate.setText(currentDate);
         txtDay.setText(currentDay);
 
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
 
-        //This makes a new JSON file to be read
-        try {
-            fOut = openFileOutput("JSON STORAGE", Context.MODE_PRIVATE);
-            String str = "{'Data':[{" +
-                    "time:" + System.currentTimeMillis() / 1000L +
-                    ",title:" + "'Wake up'" +
-                    ",description:" + "'Y SEALS AND HAVE OVER 400 CONFIRMED KILLS'" +
+        long startOfDay = cal.getTimeInMillis()/1000;
+        long endOfDay = startOfDay + 86400;
 
-                    "},{" +
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
 
-                    "time: " + ((System.currentTimeMillis() / 1000L)+ 10 * 60) +
-                    ",title:" + "'Drink Water'" +
-                    ",description:" + "' '" +
+        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid);
 
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)+ 5 * 60) +
-                    ",title:" + "'Brush Teeth'" +
-                    ",description:" + "''" +
-
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)+ 15 * 60) +
-                    ",title:" + "'Eat Breakfast'" +
-                    ",description:" + "' '" +
-
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)+ 1440 * 60) +
-                    ",title:" + "'Tomorrows task'" +
-                    ",description:" + "' '" +
-
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)- 1440 * 60) +
-                    ",title:" + "'Yesterdays task'" +
-                    ",description:" + "' '" +
-
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)- 10 * 60) +
-                    ",title:" + "'Task that is overdue'" +
-                    ",description:" + "' '" +
-
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)+ 20 * 60) +
-                    ",title:" + "'You have to Scroll to view this!'" +
-                    ",description:" + "' '" +
-
-                    "}]}";
-
-            fOut.write(str.getBytes());
-            fOut.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            Toast.makeText(this,e.toString(),Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-
-        try {//Read File
-            FileInputStream fin = openFileInput("JSON STORAGE");
-            int c;
-            String temp = "";
-
-            while( (c = fin.read()) != -1){
-                temp = temp + Character.toString((char)c);
-            }
-            fin.close();
-
-            //Get JSON Object(which is an array)
-            pjObject = new JSONObject(temp);
-            jArray = pjObject.getJSONArray("Data");
-
-            //Get the calendar Object today's date.
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-
-            //Get Start and end of date.
-            long startOfDay = cal.getTimeInMillis()/1000;
-            long endOfDay = startOfDay + 86400;
-
-            Log.i("Time",Long.toString(cal.getTimeInMillis()));
-
-
-            //Loop to Sort JSON
-            for(int i = 0; jArray.length() > i;i++) {
-                for(int j = i+1; jArray.length() > j;j++) {
-                    if(jArray.getJSONObject(i).getLong("time") > jArray.getJSONObject(j).getLong("time"))
-                    {
-                        tempTime = jArray.getJSONObject(i).getLong("time");
-                        tempTitle = jArray.getJSONObject(i).getString("title");
-                        tempDesc = jArray.getJSONObject(i).getString("description");
-
-                        jArray.getJSONObject(i).put("time",jArray.getJSONObject(j).getLong("time"));
-                        jArray.getJSONObject(i).put("title",jArray.getJSONObject(j).getString("title"));
-                        jArray.getJSONObject(i).put("description",jArray.getJSONObject(j).getString("description"));
-
-                        jArray.getJSONObject(j).put("time",tempTime);
-                        jArray.getJSONObject(j).put("title",tempTitle);
-                        jArray.getJSONObject(j).put("description",tempDesc);
+//        Alarm testAlarm = new Alarm("testTitle","testDescription","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
+//        Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
+//        User testUser = new User("testUsername","testPass","Email@email.com");
+//
+//        myDbRef.child("UserAlarms").push().setValue(testAlarm);
+//        myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
+//        myDbRef.child("UserInfomation").setValue(testUser);
+        myDbRef.child("UserAlarms").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                ArrListAlarm.clear();
+                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                //We can use this snippet to prolong the loading animation thingy
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Alarm alarm = snapshot.getValue(Alarm.class);
+                    if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), "","", alarm.getUnixTime() * 1000L));
                     }
                 }
+                //Remove Loading Animation
+                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                //Get the calendar Object today's date.
+                RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
+
+                //Gets the Adapter from the JAVA file
+                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
+
+                //Set Layout for the RecyclerView
+                myrv.setLayoutManager(new LinearLayoutManager(getApplication()));
+
+                //Set an adapter for the View
+                myrv.setAdapter(myAdapter);
             }
 
-            //Loop to populate ArrListAlarm
-            for(int i = 0; jArray.length() > i;i++) {
-
-                jObject = jArray.getJSONObject(i);
-                JSONtime = jObject.getInt("time");
-                Log.i("Start of Day",Long.toString(startOfDay));
-                Log.i("End of Day",Long.toString(endOfDay));
-                Log.i("JSON TIME",Long.toString(JSONtime));
-
-                if(startOfDay < JSONtime && endOfDay > JSONtime) {//Get only today's date
-                    JSONtitle = jObject.getString("title");
-                    JSONdesc = jObject.getString("description");
-
-                    ArrListAlarm.add(new Alarm(JSONtitle, JSONdesc, "", JSONtime * 1000L));
-                }
-
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.i("Error",error.toString());
+                // Failed to read value
             }
-
-
-            //This gets the RecyclerView from the XML File
-            RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
-
-            //Gets the Adapter from the JAVA file
-            RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(this,ArrListAlarm);
-
-            //Set Layout for the RecyclerView
-            myrv.setLayoutManager(new LinearLayoutManager(this));
-
-            //Set an adapter for the View
-            myrv.setAdapter(myAdapter);
-
-        } catch (IOException  | JSONException e) {
-            Toast.makeText(this,e.toString(),Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-
-
-
+        });
 
         createNotificationChannel();
-
-
-
-
 
         Button button = findViewById(R.id.addNewTask);
 
@@ -321,7 +253,12 @@ public class HomeActivity extends AppCompatActivity {
         });
 
     }
-
+    public void onBackPressed() {
+        if (GoogleSignIn.getLastSignedInAccount(this) == null) {
+            super.onBackPressed();
+        } else {
+        }
+    }
     public void createNotificationChannel(){
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
