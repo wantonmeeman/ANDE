@@ -45,6 +45,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 import sun.bob.mcalendarview.MCalendarView;
@@ -55,7 +56,7 @@ import sun.bob.mcalendarview.vo.DateData;
 import sun.bob.mcalendarview.vo.MarkedDates;
 
 
-public class MonthlyScheduleActivity extends AppCompatActivity implements View.OnClickListener{
+public class MonthlyScheduleActivity extends AppCompatActivity implements View.OnClickListener,BottomNavigationView.OnNavigationItemSelectedListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +65,10 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.monthly_tasks_act);
         this.getSupportActionBar().hide();
+
+        BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
+        botNavView.getMenu().getItem(1).setChecked(true);//Set Middle(Home) to checked
+        botNavView.setOnNavigationItemSelectedListener(this);
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -107,12 +112,22 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+
                 ArrListAlarm.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
                         ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), "","", alarm.getUnixTime() * 1000L));
                     }
+                    Calendar calendarInstance = Calendar.getInstance();
+                    calendarInstance.setTime(new Date((long)alarm.getUnixTime()*1000));
+                    calendarView.markDate(
+                            new DateData(
+                                    calendarInstance.get(Calendar.YEAR),
+                                    calendarInstance.get(Calendar.MONTH)+1,//January is 0 in calendar.
+                                    calendarInstance.get(Calendar.DAY_OF_MONTH)
+                            ).setMarkStyle(new MarkStyle(MarkStyle.DOT, Color.RED))
+                    );
                 }
 
                 RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
@@ -139,12 +154,9 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         });
         calendarView.hasTitle(false);
 
-        calendarView.markDate(
-                new DateData(2021,1,30).setMarkStyle(new MarkStyle(MarkStyle.DOT, Color.RED))
-        );
-
         calendarView.setOnDateClickListener(new OnDateClickListener() {
             DateData prevDataDate;
+
             @Override
             public void onDateClick(View view, DateData date) {
                 if(prevDataDate != null) {
@@ -152,15 +164,23 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 }
                 //THERE IS 100% AN EASIER WAY TO DO THIS BUT IM TOO TIRED PLACEHOLDER FOR NOW.
                 for(int i = 0;calendarView.getMarkedDates().getAll().size() > i;i++) {
-                    if(date.equals(calendarView.getMarkedDates().getAll().get(i))){
+                    if(date.equals(calendarView.getMarkedDates().getAll().get(i))) {
                         calendarView.unMarkDate(date);
-                        calendarView.markDate(2021, 1, 30).setMarkedStyle(MarkStyle.BACKGROUND);//When an Event is already in the date selected.
+                        calendarView.markDate(
+                                date.setMarkStyle(
+                                        new MarkStyle(MarkStyle.BACKGROUND, Color.parseColor("#0094f3")
+                                        )
+                                )
+                        );//When an Event is already in the date selected.
                     }
-                    if(prevDataDate != null) {
+                    if(prevDataDate != null
+                            && !(prevDataDate.equals(date))) {//The second condition resolves if a marked date is clicked twice.
                         if (prevDataDate.equals(calendarView.getMarkedDates().getAll().get(i))) {
                             calendarView.unMarkDate(prevDataDate);
                             calendarView.markDate(
-                                    new DateData(2021, 1, 30).setMarkStyle(new MarkStyle(MarkStyle.DOT, Color.RED))
+                                    prevDataDate.setMarkStyle(
+                                        new MarkStyle(MarkStyle.DOT, Color.RED)
+                                    )
                             );
                         }
                     }
@@ -279,8 +299,6 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
 
     }
-
-
     public void onClick(View v) {//Handle When the Monthly/Today buttons are clicked
         switch (v.getId()) {
             case R.id.Today://When Monthly is clicked

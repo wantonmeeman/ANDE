@@ -109,11 +109,11 @@ public class HomeActivity extends AppCompatActivity {
 
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid);
 
-//        Alarm testAlarm = new Alarm("testTitle","testDescription","","",((System.currentTimeMillis() / 1000L)+ 150 * 60));
+        //Alarm testAlarm = new Alarm("testTitle","testDescription","","",((System.currentTimeMillis() / 1000L)- 100000 * 60));
 //        Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
 //        User testUser = new User("testUsername","testPass","Email@email.com");
 //
-//        myDbRef.child("UserAlarms").push().setValue(testAlarm);
+        //myDbRef.child("UserAlarms").push().setValue(testAlarm);
 //        myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
 //        myDbRef.child("UserInfomation").setValue(testUser);
         myDbRef.child("UserAlarms").addValueEventListener(new ValueEventListener() {

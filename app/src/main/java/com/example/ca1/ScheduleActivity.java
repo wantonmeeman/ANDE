@@ -109,7 +109,9 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
 
 
                 int completedTaskPercentage = (int)Math.round(((double)count/(double)ArrListAlarm.size())*100);
-
+                if(ArrListAlarm.size() == 0){
+                    completedTaskPercentage = 100;
+                }
                 percentageCompletion.setText(Integer.toString(completedTaskPercentage)+"%");
                 todayProgressBar.setProgress(completedTaskPercentage);
                 completionStatus.setText("You have completed "+count+"/"+ArrListAlarm.size()+" tasks Today");
