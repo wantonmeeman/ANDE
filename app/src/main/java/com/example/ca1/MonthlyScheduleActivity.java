@@ -1,7 +1,9 @@
 package com.example.ca1;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -79,10 +81,12 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
         String userid = "";
         GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
+        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
 
         if(gAcc != null){
             userid = gAcc.getId();
         }else{
+            userid = pref.getString("firebaseUserId","123123");
             Log.i("Message","Cant access google account");
         }
 

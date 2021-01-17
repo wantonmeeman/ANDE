@@ -1,7 +1,9 @@
 package com.example.ca1;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Bundle;
@@ -61,7 +63,7 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         ProgressBar todayProgressBar = (ProgressBar)findViewById(R.id.progressBar);
         TextView percentageCompletion = (TextView)findViewById(R.id.todayProgress);
         TextView completionStatus = (TextView)findViewById(R.id.CompletionStatus);
-
+        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
             //Get the calendar Object today's date.
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -77,6 +79,7 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         if(gAcc != null){
             userid = gAcc.getId();
         }else{
+            userid = pref.getString("firebaseUserId","123123");
             Log.i("Message","Cant access google account");
         }
 

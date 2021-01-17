@@ -42,6 +42,7 @@
 
         <EditText
             android:layout_width="350dp"
+            android:id="@+id/username"
             android:layout_height="50dp"
             android:background="@drawable/rounded_edit_text"
             android:paddingStart="15dp"
@@ -62,6 +63,7 @@
             android:fontFamily="@font/glacial_indifference_regular" />
 
         <EditText
+            android:id="@+id/password"
             android:layout_width="350dp"
             android:layout_height="50dp"
             android:background="@drawable/rounded_edit_text"

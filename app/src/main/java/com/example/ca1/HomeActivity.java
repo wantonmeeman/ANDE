@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -66,6 +68,8 @@ public class HomeActivity extends AppCompatActivity {
     TextView txtTaskTime;
     ArrayList<Alarm> ArrListAlarm;
 
+
+
     String currentDate = dateFormat.format(new Date());
     String currentDay = dayFormat.format(calendar.getTime());
 
@@ -73,7 +77,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_act);
-
+        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         this.getSupportActionBar().hide();//Remove Title, probably not very good
 
         //Declare Variables
@@ -84,10 +88,10 @@ public class HomeActivity extends AppCompatActivity {
         if(gAcc != null){
             userid = gAcc.getId();
         }else{
+            userid = pref.getString("firebaseUserId","1");
             Log.i("Message","Cant access google account");
         }
 
-        FileOutputStream fOut = null;
         txtDate = (TextView) findViewById(R.id.date);
         txtDay = (TextView) findViewById(R.id.day);
         txtTaskTitle = (TextView) findViewById(R.id.taskTitle);
@@ -107,16 +111,16 @@ public class HomeActivity extends AppCompatActivity {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
 
-        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid);
+        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
 
-        //Alarm testAlarm = new Alarm("testTitle","testDescription","","",((System.currentTimeMillis() / 1000L)- 100000 * 60));
+        Alarm testAlarm = new Alarm("testTitle","testDescription","","",((System.currentTimeMillis() / 1000L)));
 //        Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
 //        User testUser = new User("testUsername","testPass","Email@email.com");
 //
-        //myDbRef.child("UserAlarms").push().setValue(testAlarm);
+        myDbRef.push().setValue(testAlarm);
 //        myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
 //        myDbRef.child("UserInfomation").setValue(testUser);
-        myDbRef.child("UserAlarms").addValueEventListener(new ValueEventListener() {
+        myDbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
@@ -126,7 +130,6 @@ public class HomeActivity extends AppCompatActivity {
                 Log.i("Start",Long.toString(startOfDay));
                 Log.i("EndOfDay",Long.toString(endOfDay));
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
                         ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), "","", alarm.getUnixTime() * 1000L));
@@ -154,22 +157,32 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        createNotificationChannel();
+        //createNotificationChannel();
 
         Button button = findViewById(R.id.addNewTask);
-
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                //.requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
         button.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this,ReminderBroadcast.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,0,intent,0);
-
-            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-            long timeAtButtonClick = System.currentTimeMillis();
-
-            long tenSecondsInMillis = 5000 ;
-
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,timeAtButtonClick + tenSecondsInMillis,pendingIntent);
-            Toast.makeText(this,"Reminder!",Toast.LENGTH_LONG).show();
+            GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+            mGoogleSignInClient.signOut();
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString("firebaseUserId",null);
+            editor.commit();
+            Intent intent = new Intent(this,LoginActivity.class);
+            startActivity(intent);
+//            Intent intent = new Intent(HomeActivity.this,ReminderBroadcast.class);
+//            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,0,intent,0);
+//
+//            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+//
+//            long timeAtButtonClick = System.currentTimeMillis();
+//
+//            long tenSecondsInMillis = 5000 ;
+//
+//            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,timeAtButtonClick + tenSecondsInMillis,pendingIntent);
+//            Toast.makeText(this,"Reminder!",Toast.LENGTH_LONG).show();
         });
 
         Button qrButton = findViewById(R.id.qrScanner);
@@ -247,21 +260,21 @@ public class HomeActivity extends AppCompatActivity {
         } else {
         }
     }
-    public void createNotificationChannel(){
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "LemubitReminderChannel";
-            String description = "Channel for Lemubit Reminder";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel("Alarm",name,importance);
-            channel.setDescription(description);
-            channel.setImportance(importance);
-            channel.enableVibration(true);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-    }
+//    public void createNotificationChannel(){
+//
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence name = "LemubitReminderChannel";
+//            String description = "Channel for Lemubit Reminder";
+//            int importance = NotificationManager.IMPORTANCE_HIGH;
+//            NotificationChannel channel = new NotificationChannel("Alarm",name,importance);
+//            channel.setDescription(description);
+//            channel.setImportance(importance);
+//            channel.enableVibration(true);
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//
+//    }
     //@Override
 
 

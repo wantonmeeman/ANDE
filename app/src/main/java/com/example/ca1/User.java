@@ -4,7 +4,10 @@ public class User {
     private String Username;
     private String Password;
     private String Email;
-    public User(String username,String password,String email){
+    public User(){
+        //This needs to be here for firebase data reading
+    }
+    public User(String Username,String password,String email){
         this.Username = Username;
         this.Password = password;
         this.Email = email;
