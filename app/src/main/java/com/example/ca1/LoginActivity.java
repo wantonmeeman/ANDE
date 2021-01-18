@@ -52,14 +52,13 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
 
         DatabaseReference myDbRef = database.getReference("usersInformation");
 
-        //Handles Google Signin
-        if(GoogleSignIn.getLastSignedInAccount(this) != null || pref.getString("firebaseUserId","1") != "1"){//If User is already logged in via google.
+        //Handles Google Signin, honestly, i dont even know if this is the correct way to do it
+        if(GoogleSignIn.getLastSignedInAccount(this) != null || !(pref.getString("firebaseUserId","1").equals("1"))){//If User is already logged in via google.
             Intent intent = new Intent(this,HomeActivity.class);
             startActivity(intent);
         }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                //.requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -89,10 +88,12 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
                             User user = snapshot.getValue(User.class);
                             if(user.getUsername() != null) {
                                 if (
-                                                  (user.getUsername().equals(username.getText().toString())
-                                                || user.getEmail().equals(username.getText().toString()))
-                                                && user.getPassword().equals(password.getText().toString())
+                                  (user.getUsername().equals(username.getText().toString()) || user.getEmail().equals(username.getText().toString()))
+                                  && user.getPassword().equals(password.getText().toString())
                                 ) {
+                                    SharedPreferences.Editor editor = pref.edit();
+                                    editor.putString("firebaseUserId",snapshot.getKey());
+                                    editor.commit();
                                     Intent intent = new Intent(getApplication(), HomeActivity.class);
                                     startActivity(intent);
                                 }
@@ -136,12 +137,10 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
 
     private void updateUI(GoogleSignInAccount account) {
         Toast.makeText(this,"Successfull",Toast.LENGTH_LONG);
-        if(account == null){
-
-        }else {
-            Log.i("String", "YES");
+        if(account != null) {
+            Intent intent = new Intent(getApplication(), HomeActivity.class);
+            startActivity(intent);
         }
-        Log.i("DisplayName",account.getDisplayName());
     }
 
     @Override

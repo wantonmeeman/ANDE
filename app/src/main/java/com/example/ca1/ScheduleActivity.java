@@ -64,13 +64,15 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         TextView percentageCompletion = (TextView)findViewById(R.id.todayProgress);
         TextView completionStatus = (TextView)findViewById(R.id.CompletionStatus);
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+
             //Get the calendar Object today's date.
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
-//            //Get Start and end of date.
+
+            //Get Start and end of date.
             long startOfDay = cal.getTimeInMillis() / 1000;
             long endOfDay = startOfDay + 86400;
 

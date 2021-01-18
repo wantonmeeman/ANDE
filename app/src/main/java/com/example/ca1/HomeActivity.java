@@ -68,8 +68,6 @@ public class HomeActivity extends AppCompatActivity {
     TextView txtTaskTime;
     ArrayList<Alarm> ArrListAlarm;
 
-
-
     String currentDate = dateFormat.format(new Date());
     String currentDay = dayFormat.format(calendar.getTime());
 
@@ -113,11 +111,11 @@ public class HomeActivity extends AppCompatActivity {
 
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
 
-        Alarm testAlarm = new Alarm("testTitle","testDescription","","",((System.currentTimeMillis() / 1000L)));
+        //Alarm testAlarm = new Alarm("testTitle","testDescription","","",((System.currentTimeMillis() / 1000L)));
 //        Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
 //        User testUser = new User("testUsername","testPass","Email@email.com");
 //
-        myDbRef.push().setValue(testAlarm);
+       // myDbRef.push().setValue(testAlarm);
 //        myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
 //        myDbRef.child("UserInfomation").setValue(testUser);
         myDbRef.addValueEventListener(new ValueEventListener() {
@@ -127,8 +125,6 @@ public class HomeActivity extends AppCompatActivity {
                 // whenever data at this location is updated.
                 ArrListAlarm.clear();
                 findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-                Log.i("Start",Long.toString(startOfDay));
-                Log.i("EndOfDay",Long.toString(endOfDay));
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 public class Alarm  {
     private String Title;
     private String Description;
-    private String Location;
     private long UnixTime;
     private String LocationX;
     private String LocationY;
@@ -24,9 +23,7 @@ public class Alarm  {
     }
 
 
-    public void setLocationX(String locationX) {
-        LocationX = locationX;
-    }
+
 
     public String getTitle() {
         return Title;
@@ -42,14 +39,6 @@ public class Alarm  {
 
     public void setDescription(String description) {
         Description = description;
-    }
-
-    public String getLocation() {
-        return Location;
-    }
-
-    public void setLocation(String location) {
-        Location = location;
     }
 
     public long getUnixTime() {
@@ -70,6 +59,10 @@ public class Alarm  {
 
     public String getLocationX() {
         return LocationX;
+    }
+
+    public void setLocationX(String locationX) {
+        LocationX = locationX;
     }
 
 }
