@@ -119,10 +119,14 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
                 ArrListAlarm.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    //This snippet handles before the user clicks a date.
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), "","", alarm.getUnixTime() * 1000L));
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
                     }
+
+                    //This snippet goes through every date and assigns them into the calendarView.
                     Calendar calendarInstance = Calendar.getInstance();
                     calendarInstance.setTime(new Date((long)alarm.getUnixTime()*1000));
                     calendarView.markDate(
@@ -214,7 +218,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Alarm alarm = snapshot.getValue(Alarm.class);
                             if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                                ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), "","", alarm.getUnixTime() * 1000L));
+                                ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
                             }
                         }
 

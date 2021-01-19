@@ -99,6 +99,11 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
                                 }
                             }
                         }
+
+                        if(getSharedPreferences("MyPref", Context.MODE_PRIVATE).getString("firebaseUserId","1") == "1") {//Handles No acc found
+                            Toast.makeText(getApplication(), "Invalid Login Credentials", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
 
                     @Override

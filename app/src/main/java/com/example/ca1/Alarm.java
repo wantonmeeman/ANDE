@@ -8,14 +8,14 @@ public class Alarm  {
     private String Title;
     private String Description;
     private long UnixTime;
-    private String LocationX;
-    private String LocationY;
+    private Double Longitude;
+    private Double Latitude;
 
-    public Alarm(String title,String description,String locationX,String locationY,long unixtime){
+    public Alarm(String title,String description,Double longitude,Double latitude,long unixtime){
         Title = title;
         Description = description;
-        LocationY = locationY;
-        LocationX = locationX;
+        Latitude = latitude;
+        Longitude = longitude;
         UnixTime = unixtime;
     }
     public Alarm(){
@@ -49,20 +49,20 @@ public class Alarm  {
         UnixTime = unixTime;
     }
 
-    public String getLocationY() {
-        return LocationY;
+    public Double getLatitude() {
+        return Latitude;
     }
 
-    public void setLocationY(String locationY) {
-        LocationY = locationY;
+    public void setLatitude(Double latitude) {
+        Latitude = latitude;
     }
 
-    public String getLocationX() {
-        return LocationX;
+    public Double getLongitude() {
+        return Longitude;
     }
 
-    public void setLocationX(String locationX) {
-        LocationX = locationX;
+    public void setLongitude(Double longitude) {
+        Longitude = longitude;
     }
 
 }

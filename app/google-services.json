@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1057559443345",
+    "firebase_url": "https://schedulardb-default-rtdb.firebaseio.com",
+    "project_id": "schedulardb",
+    "storage_bucket": "schedulardb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1057559443345:android:f020fe2179aebf1c078c30",
+        "android_client_info": {
+          "package_name": "com.example.ca1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1057559443345-8qvvrigko1mqjd464ovico4evdnqn27d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ca1",
+            "certificate_hash": "89cb37f85c45a27981afa4790820321b5a529808"
+          }
+        },
+        {
+          "client_id": "1057559443345-m18lpvba5aplvakud1cbtipejtt1ecpg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdzAIGhztz91Q6D6wr9wMxrTiDa0wgozA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1057559443345-m18lpvba5aplvakud1cbtipejtt1ecpg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

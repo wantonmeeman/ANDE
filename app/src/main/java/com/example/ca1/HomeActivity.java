@@ -87,7 +87,6 @@ public class HomeActivity extends AppCompatActivity {
             userid = gAcc.getId();
         }else{
             userid = pref.getString("firebaseUserId","1");
-            Log.i("Message","Cant access google account");
         }
 
         txtDate = (TextView) findViewById(R.id.date);
@@ -111,11 +110,11 @@ public class HomeActivity extends AppCompatActivity {
 
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
 
-        //Alarm testAlarm = new Alarm("testTitle","testDescription","","",((System.currentTimeMillis() / 1000L)));
+        Alarm testAlarm = new Alarm("testTitle","testDescription",103.77462387,1.32613738,((System.currentTimeMillis() / 1000L)));
 //        Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
 //        User testUser = new User("testUsername","testPass","Email@email.com");
 //
-       // myDbRef.push().setValue(testAlarm);
+          myDbRef.push().setValue(testAlarm);
 //        myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
 //        myDbRef.child("UserInfomation").setValue(testUser);
         myDbRef.addValueEventListener(new ValueEventListener() {
@@ -128,7 +127,7 @@ public class HomeActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), "","", alarm.getUnixTime() * 1000L));
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
                     }
                 }
                 //Remove Loading Animation
@@ -209,27 +208,12 @@ public class HomeActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item){
                 switch(item.getItemId()){
                     case R.id.location:
-                        int nightModeFlags = getApplicationContext().getResources().getConfiguration().uiMode &
-                                Configuration.UI_MODE_NIGHT_MASK;
-                        switch (nightModeFlags) {
-                            case Configuration.UI_MODE_NIGHT_YES:
-                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                                Log.i("Darkmode","Yes");
-                                break;
-
-                            case Configuration.UI_MODE_NIGHT_NO:
-                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                                Log.i("Darkmode","No");
-                                break;
-
-                            case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                                Log.i("Darkmode","IDK");
-                                break;
-                        }
+                        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+                        Log.e("Clicked","Location");
+                        startActivity(intent);
                         return true;
                     case R.id.calendar:
-                        Intent intent = new Intent(getApplicationContext(),ScheduleActivity.class);
+                        intent = new Intent(getApplicationContext(),ScheduleActivity.class);
                         Log.e("Clicked","Location");
                         startActivity(intent);
                         return true;
@@ -251,10 +235,15 @@ public class HomeActivity extends AppCompatActivity {
 
     }
     public void onBackPressed() {
-        if (GoogleSignIn.getLastSignedInAccount(this) == null) {
+        //If the user is logged in, he should not be able to relogin by pressing back btn
+        //He should logout, then login
+        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        if (GoogleSignIn.getLastSignedInAccount(this) == null && pref.getString("firebaseUserId","1") == "1") {//If there is no google account detected, and if there is no account detected
             super.onBackPressed();
-        } else {
+        }else{
+
         }
+        Log.i("SOMETHING","1");
     }
 //    public void createNotificationChannel(){
 //

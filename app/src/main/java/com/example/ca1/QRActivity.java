@@ -131,8 +131,8 @@ public class QRActivity extends AppCompatActivity {
                                         jObject = new JSONObject(qrcode);
                                         alarm.setTitle(jObject.getString("Title"));
                                         alarm.setDescription(jObject.getString("Description"));
-                                        alarm.setLocationX(jObject.getString("LocationX"));
-                                        alarm.setLocationY(jObject.getString("LocationY"));
+                                        alarm.setLongitude(jObject.getDouble("Longitude"));
+                                        alarm.setLatitude(jObject.getDouble("Latitude"));
                                         alarm.setUnixTime(jObject.getLong("UnixTime"));
                                         myDbRef.push().setValue(alarm);
                                         //Add some code to stop it to prevent spamming firebase
