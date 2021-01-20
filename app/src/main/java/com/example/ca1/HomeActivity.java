@@ -2,21 +2,40 @@ package com.example.ca1;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +51,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,23 +75,20 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_act);
-
+        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         this.getSupportActionBar().hide();//Remove Title, probably not very good
 
         //Declare Variables
         BottomNavigationView botNavView;
-        JSONObject jObject;
-        JSONObject pjObject;
-        JSONArray jArray;
-        long JSONtime;
-        String JSONtitle;
-        String JSONdesc;
-        long tempTime;
-        String tempTitle;
-        String tempDesc;
         ArrListAlarm = new ArrayList<Alarm>();
+        String userid = "";
+        GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
+        if(gAcc != null){
+            userid = gAcc.getId();
+        }else{
+            userid = pref.getString("firebaseUserId","1");
+        }
 
-        FileOutputStream fOut = null;
         txtDate = (TextView) findViewById(R.id.date);
         txtDay = (TextView) findViewById(R.id.day);
         txtTaskTitle = (TextView) findViewById(R.id.taskTitle);
@@ -79,172 +97,87 @@ public class HomeActivity extends AppCompatActivity {
         txtDate.setText(currentDate);
         txtDay.setText(currentDay);
 
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
 
-        //This makes a new JSON file to be read
-        try {
-            fOut = openFileOutput("JSON STORAGE", Context.MODE_PRIVATE);
-            String str = "{'Data':[{" +
-                    "time:" + System.currentTimeMillis() / 1000L +
-                    ",title:" + "'Wake up'" +
-                    ",description:" + "'Y SEALS AND HAVE OVER 400 CONFIRMED KILLS'" +
+        long startOfDay = cal.getTimeInMillis()/1000;
+        long endOfDay = startOfDay + 86400;
 
-                    "},{" +
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
 
-                    "time: " + ((System.currentTimeMillis() / 1000L)+ 10 * 60) +
-                    ",title:" + "'Drink Water'" +
-                    ",description:" + "' '" +
+        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
 
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)+ 5 * 60) +
-                    ",title:" + "'Brush Teeth'" +
-                    ",description:" + "''" +
-
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)+ 15 * 60) +
-                    ",title:" + "'Eat Breakfast'" +
-                    ",description:" + "' '" +
-
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)+ 1440 * 60) +
-                    ",title:" + "'Tomorrows task'" +
-                    ",description:" + "' '" +
-
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)- 1440 * 60) +
-                    ",title:" + "'Yesterdays task'" +
-                    ",description:" + "' '" +
-
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)- 10 * 60) +
-                    ",title:" + "'Task that is overdue'" +
-                    ",description:" + "' '" +
-
-                    "},{" +
-
-                    "time: " + ((System.currentTimeMillis() / 1000L)+ 20 * 60) +
-                    ",title:" + "'You have to Scroll to view this!'" +
-                    ",description:" + "' '" +
-
-                    "}]}";
-
-            fOut.write(str.getBytes());
-            fOut.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            Toast.makeText(this,e.toString(),Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-
-        try {//Read File
-            FileInputStream fin = openFileInput("JSON STORAGE");
-            int c;
-            String temp = "";
-
-            while( (c = fin.read()) != -1){
-                temp = temp + Character.toString((char)c);
-            }
-            fin.close();
-
-            //Get JSON Object(which is an array)
-            pjObject = new JSONObject(temp);
-            jArray = pjObject.getJSONArray("Data");
-
-            //Get the calendar Object today's date.
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-
-            //Get Start and end of date.
-            long startOfDay = cal.getTimeInMillis()/1000;
-            long endOfDay = startOfDay + 86400;
-
-            Log.i("Time",Long.toString(cal.getTimeInMillis()));
-
-
-            //Loop to Sort JSON
-            for(int i = 0; jArray.length() > i;i++) {
-                for(int j = i+1; jArray.length() > j;j++) {
-                    if(jArray.getJSONObject(i).getLong("time") > jArray.getJSONObject(j).getLong("time"))
-                    {
-                        tempTime = jArray.getJSONObject(i).getLong("time");
-                        tempTitle = jArray.getJSONObject(i).getString("title");
-                        tempDesc = jArray.getJSONObject(i).getString("description");
-
-                        jArray.getJSONObject(i).put("time",jArray.getJSONObject(j).getLong("time"));
-                        jArray.getJSONObject(i).put("title",jArray.getJSONObject(j).getString("title"));
-                        jArray.getJSONObject(i).put("description",jArray.getJSONObject(j).getString("description"));
-
-                        jArray.getJSONObject(j).put("time",tempTime);
-                        jArray.getJSONObject(j).put("title",tempTitle);
-                        jArray.getJSONObject(j).put("description",tempDesc);
+        Alarm testAlarm = new Alarm("testTitle","testDescription",103.77462387,1.32613738,((System.currentTimeMillis() / 1000L)));
+//        Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
+//        User testUser = new User("testUsername","testPass","Email@email.com");
+//
+          myDbRef.push().setValue(testAlarm);
+//        myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
+//        myDbRef.child("UserInfomation").setValue(testUser);
+        myDbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                ArrListAlarm.clear();
+                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Alarm alarm = snapshot.getValue(Alarm.class);
+                    if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
                     }
                 }
+                //Remove Loading Animation
+                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                //Get the calendar Object today's date.
+                RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
+
+                //Gets the Adapter from the JAVA file
+                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
+
+                //Set Layout for the RecyclerView
+                myrv.setLayoutManager(new LinearLayoutManager(getApplication()));
+
+                //Set an adapter for the View
+                myrv.setAdapter(myAdapter);
             }
 
-            //Loop to populate ArrListAlarm
-            for(int i = 0; jArray.length() > i;i++) {
-
-                jObject = jArray.getJSONObject(i);
-                JSONtime = jObject.getInt("time");
-                Log.i("Start of Day",Long.toString(startOfDay));
-                Log.i("End of Day",Long.toString(endOfDay));
-                Log.i("JSON TIME",Long.toString(JSONtime));
-
-                if(startOfDay < JSONtime && endOfDay > JSONtime) {//Get only today's date
-                    JSONtitle = jObject.getString("title");
-                    JSONdesc = jObject.getString("description");
-
-                    ArrListAlarm.add(new Alarm(JSONtitle, JSONdesc, "", JSONtime * 1000L));
-                }
-
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.i("Error",error.toString());
+                // Failed to read value
             }
+        });
 
-
-            //This gets the RecyclerView from the XML File
-            RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
-
-            //Gets the Adapter from the JAVA file
-            RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(this,ArrListAlarm);
-
-            //Set Layout for the RecyclerView
-            myrv.setLayoutManager(new LinearLayoutManager(this));
-
-            //Set an adapter for the View
-            myrv.setAdapter(myAdapter);
-
-        } catch (IOException  | JSONException e) {
-            Toast.makeText(this,e.toString(),Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-
-
-
-
-        createNotificationChannel();
-
+        //createNotificationChannel();
 
         Button button = findViewById(R.id.addNewTask);
-
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                //.requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
         button.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this,ReminderBroadcast.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,0,intent,0);
-
-            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-            long timeAtButtonClick = System.currentTimeMillis();
-
-            long tenSecondsInMillis = 5000 ;
-
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,timeAtButtonClick + tenSecondsInMillis,pendingIntent);
-            Toast.makeText(this,"Reminder!",Toast.LENGTH_LONG).show();
+            GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+            mGoogleSignInClient.signOut();
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString("firebaseUserId",null);
+            editor.commit();
+            Intent intent = new Intent(this,LoginActivity.class);
+            startActivity(intent);
+//            Intent intent = new Intent(HomeActivity.this,ReminderBroadcast.class);
+//            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,0,intent,0);
+//
+//            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+//
+//            long timeAtButtonClick = System.currentTimeMillis();
+//
+//            long tenSecondsInMillis = 5000 ;
+//
+//            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,timeAtButtonClick + tenSecondsInMillis,pendingIntent);
+//            Toast.makeText(this,"Reminder!",Toast.LENGTH_LONG).show();
         });
 
         Button qrButton = findViewById(R.id.qrScanner);
@@ -253,6 +186,21 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+//        int nightModeFlags = getApplicationContext().getResources().getConfiguration().uiMode &
+//                Configuration.UI_MODE_NIGHT_MASK;
+//        switch (nightModeFlags) {
+//            case Configuration.UI_MODE_NIGHT_YES:
+//                Log.i("Darkmode","Yes");
+//                break;
+//
+//            case Configuration.UI_MODE_NIGHT_NO:
+//                Log.i("Darkmode","No");
+//                break;
+//
+//            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+//                Log.i("Darkmode","IDK");
+//                break;
+//        }
 
         botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
@@ -260,10 +208,12 @@ public class HomeActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item){
                 switch(item.getItemId()){
                     case R.id.location:
-
+                        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+                        Log.e("Clicked","Location");
+                        startActivity(intent);
                         return true;
                     case R.id.calendar:
-                        Intent intent = new Intent(getApplicationContext(),ScheduleActivity.class);
+                        intent = new Intent(getApplicationContext(),ScheduleActivity.class);
                         Log.e("Clicked","Location");
                         startActivity(intent);
                         return true;
@@ -274,6 +224,8 @@ public class HomeActivity extends AppCompatActivity {
                         startActivity(intent);
                         return true;
                     case R.id.settings:
+                        intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                        startActivity(intent);
                         return true;
 
                 }
@@ -282,22 +234,32 @@ public class HomeActivity extends AppCompatActivity {
         });
 
     }
+    public void onBackPressed() {
+        //If the user is logged in, he should not be able to relogin by pressing back btn
+        //He should logout, then login
+        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        if (GoogleSignIn.getLastSignedInAccount(this) == null && pref.getString("firebaseUserId","1") == "1") {//If there is no google account detected, and if there is no account detected
+            super.onBackPressed();
+        }else{
 
-    public void createNotificationChannel(){
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "LemubitReminderChannel";
-            String description = "Channel for Lemubit Reminder";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel("Alarm",name,importance);
-            channel.setDescription(description);
-            channel.setImportance(importance);
-            channel.enableVibration(true);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
         }
-
+        Log.i("SOMETHING","1");
     }
+//    public void createNotificationChannel(){
+//
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence name = "LemubitReminderChannel";
+//            String description = "Channel for Lemubit Reminder";
+//            int importance = NotificationManager.IMPORTANCE_HIGH;
+//            NotificationChannel channel = new NotificationChannel("Alarm",name,importance);
+//            channel.setDescription(description);
+//            channel.setImportance(importance);
+//            channel.enableVibration(true);
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//
+//    }
     //@Override
 
 

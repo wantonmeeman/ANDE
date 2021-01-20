@@ -4,13 +4,12 @@
     android:layout_height="fill_parent"
     android:gravity="center_horizontal|center_vertical"
     android:orientation="vertical"
-    android:background="#625bc2">
+    android:background="@color/lightpurple">
 
     <ImageView
         android:id="@+id/splashscreen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:src="@drawable/scheduler_logo"
         />
 

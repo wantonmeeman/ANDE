@@ -3,6 +3,7 @@ package com.example.ca1;
 import android.content.Context;
 import android.icu.text.SimpleDateFormat;
 import android.media.Image;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.taskTitle.setText(mData.get(position).getTitle());
         if(mData.get(position).getUnixTime() < System.currentTimeMillis()){//If the Time is beyond the time right now
-            holder.taskIcon.setImageResource(R.drawable.add_circle);//This is a placeholder,its suppsoed to represent a completed task
+            holder.taskIcon.setImageResource(R.drawable.add_circle);//This is a placeholder,its supposed to represent a completed task
         }
         holder.taskTime.setText(tfhrTimeFormat.format(mData.get(position).getUnixTime()));
     }

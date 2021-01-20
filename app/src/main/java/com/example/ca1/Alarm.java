@@ -7,15 +7,23 @@ import java.util.ArrayList;
 public class Alarm  {
     private String Title;
     private String Description;
-    private String Location;
     private long UnixTime;
+    private Double Longitude;
+    private Double Latitude;
 
-    public Alarm(String title,String description,String location,long unixtime){
+    public Alarm(String title,String description,Double longitude,Double latitude,long unixtime){
         Title = title;
         Description = description;
-        Location = location;
+        Latitude = latitude;
+        Longitude = longitude;
         UnixTime = unixtime;
     }
+    public Alarm(){
+        //This needs to be here for firebase data reading
+    }
+
+
+
 
     public String getTitle() {
         return Title;
@@ -33,20 +41,28 @@ public class Alarm  {
         Description = description;
     }
 
-    public String getLocation() {
-        return Location;
-    }
-
-    public void setLocation(String location) {
-        Location = location;
-    }
-
     public long getUnixTime() {
         return UnixTime;
     }
 
     public void setUnixTime(long unixTime) {
         UnixTime = unixTime;
+    }
+
+    public Double getLatitude() {
+        return Latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        Latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return Longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        Longitude = longitude;
     }
 
 }
