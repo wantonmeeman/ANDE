@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,8 +110,8 @@ public class HomeActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
 
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
-
-        Alarm testAlarm = new Alarm("testTitle","testDescription",103.77462387,1.32613738,((System.currentTimeMillis() / 1000L)));
+        Random rand = new Random();
+        Alarm testAlarm = new Alarm("OverDue Date","OverDue date",103.78462387+(rand.nextDouble()/10),1.42613738+(rand.nextDouble()/10),((System.currentTimeMillis() / 1000L)+(1*60)));
 //        Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
 //        User testUser = new User("testUsername","testPass","Email@email.com");
 //

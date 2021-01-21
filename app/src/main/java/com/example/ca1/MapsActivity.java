@@ -1,11 +1,19 @@
-package com.example.ca1;
+ package com.example.ca1;
 
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.icu.util.Calendar;
 import android.location.Address;
 import android.location.Geocoder;
@@ -22,6 +30,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -100,7 +110,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
 
         mMap = googleMap;
-        mMap.setInfoWindowAdapter(new CustomInfoAdapter(MapsActivity.this));
         LocationTracker loc;
         TextView txtTitle;
         TextView txtDesc;
@@ -116,6 +125,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         myDbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                int selectedDrawable = 0;
                 int x = 0;
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
@@ -129,12 +139,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
+                    if(System.currentTimeMillis()/1000L < alarm.getUnixTime()) {
+                        selectedDrawable = R.drawable.location_pin;
+                    }else{
+                        selectedDrawable = R.drawable.location_pin_inactive;
+                    }
                     ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLongitude(), alarm.getUnixTime() * 1000L));
                     mMap.addMarker(new MarkerOptions().position(
                             new LatLng(alarm.getLatitude(),alarm.getLongitude())
                     ).title(
                             alarm.getTitle()
-                    )).setTag(x);
+                    ).icon(
+                            bitmapDescriptorFromVector(getApplicationContext(),selectedDrawable))
+                    ).setTag(x);
                     x++;
                 }
             }
@@ -146,14 +163,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         LatLng currentLoc = new LatLng(loc.getLatitude(),loc.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
+        //mMap.moveCamera();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc,12));
+
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
+                String string = "";
+                Alarm alarmObj = ArrListAlarm.get((int)(marker.getTag()));
+                Log.i("markerTag",marker.getTag().toString());
+                Log.i("markerTag",Long.toString(alarmObj.getUnixTime()));
                 txtTitle.setText(marker.getTitle());
-                txtDesc.setText(ArrListAlarm.get((int)(marker.getTag())).getDescription());
+                if(System.currentTimeMillis() < alarmObj.getUnixTime()) {
+                    string = "Event is Active";
+                }else{
+                    string = "Event is not Active";
+                }
+                txtDesc.setText(alarmObj.getDescription()+string);
                 return false;
             }
         });
     }
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+
 }
