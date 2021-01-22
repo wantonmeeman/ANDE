@@ -12,7 +12,9 @@
     com.example.ca1
 
     SHA-1 certificate fingerprint:
-    89:CB:37:F8:5C:45:A2:79:81:AF:A4:79:08:20:32:1B:5A:52:98:08
+    ~89:CB:37:F8:5C:45:A2:79:81:AF:A4:79:08:20:32:1B:5A:52:98:08~
+    ABOVE IS WRONG, BOTTOM IS CORRECT
+    AE:6B:C9:3F:F0:AD:5D:6A:FA:4A:EF:54:C4:BE:F4:11:9F:74:83:33
 
     Alternatively, follow the directions here:
     https://developers.google.com/maps/documentation/android/start#get-key

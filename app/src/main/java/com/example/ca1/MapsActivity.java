@@ -200,7 +200,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public boolean onMarkerClick(Marker marker) {
 
                 if((int)marker.getTag() != 0){
-                    editTaskBtn.setVisibility(View.VISIBLE);
                     txtTimeDate.setVisibility(View.VISIBLE);
                     String string = "";
                     Alarm alarmObj = ArrListAlarm.get((int)(marker.getTag())-1);
@@ -211,12 +210,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     txtTitle.setText(marker.getTitle());
 
                     if(System.currentTimeMillis() < alarmObj.getUnixTime()) {
+                        editTaskBtn.setVisibility(View.VISIBLE);
                         string = "Event is Active";
                     }else {
+                        editTaskBtn.setVisibility(View.INVISIBLE);
                         string = "Event is not Active";
                     }
-                    txtDesc.setText(alarmObj.getDescription()+string);
+                    if(alarmObj.getDescription().length() > 150){
+                        txtDesc.setText(alarmObj.getDescription().substring(0,105)+"...");
+                    }else{
+                        txtDesc.setText(alarmObj.getDescription()+string);
+                    }
+//                    txtDesc.setText(alarmObj.getDescription()+string);
                 }else{
+                    editTaskBtn.setVisibility(View.INVISIBLE);
+                    txtTimeDate.setVisibility(View.INVISIBLE);
                     txtTitle.setText("Your Current Location");
                     txtDesc.setText("You are Here!");
 
