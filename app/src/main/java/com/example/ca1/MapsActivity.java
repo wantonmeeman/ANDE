@@ -21,6 +21,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -42,8 +43,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -94,6 +99,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        android.icu.text.SimpleDateFormat dateFormat = new android.icu.text.SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("hh:mm - dd/MM/yy");
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         String userid = "";
         ArrayList<Alarm> ArrListAlarm = new ArrayList<Alarm>();
@@ -113,9 +120,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LocationTracker loc;
         TextView txtTitle;
         TextView txtDesc;
+        TextView txtTimeDate;
+        ImageButton editTaskBtn;
 
         txtDesc = findViewById(R.id.alarmDesc);
         txtTitle = findViewById(R.id.alarmTitle);
+        txtTimeDate = findViewById(R.id.alarmDateTime);
+        editTaskBtn = findViewById(R.id.editTaskBtn);
+        //Default invis, only when clicked on a valid task.
+        editTaskBtn.setVisibility(View.INVISIBLE);
+        txtTimeDate.setVisibility(View.INVISIBLE);
+
         loc = new LocationTracker(MapsActivity.this);
 
         Log.i("CheckingLocation", String.valueOf(loc.canGetLocation()));
@@ -123,6 +138,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.i("Longitude",Double.toString(loc.getLongitude()));
 
         myDbRef.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int selectedDrawable = 0;
@@ -131,13 +147,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // whenever data at this location is updated.
                 mMap.clear();
                 ArrListAlarm.clear();
-                Calendar cal = Calendar.getInstance();
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.MINUTE, 0);
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MILLISECOND, 0);
+
+                mMap.addMarker(new MarkerOptions().position(
+                        new LatLng(loc.getLatitude(),loc.getLongitude())
+                        ).title(
+                        "currentLocation"
+                        ).icon(
+                        bitmapDescriptorFromVector(getApplicationContext(),R.drawable.current_user_icon))
+                ).setTag(0);
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    x++;
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(System.currentTimeMillis()/1000L < alarm.getUnixTime()) {
                         selectedDrawable = R.drawable.location_pin;
@@ -152,7 +172,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     ).icon(
                             bitmapDescriptorFromVector(getApplicationContext(),selectedDrawable))
                     ).setTag(x);
-                    x++;
                 }
             }
 
@@ -165,21 +184,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng currentLoc = new LatLng(loc.getLatitude(),loc.getLongitude());
         //mMap.moveCamera();
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc,12));
+        Log.i("curLoc",Double.toString(loc.getLatitude()));
+        Log.i("curLoc",Double.toString(loc.getLongitude()));
+        //current Location Marker
+        mMap.addMarker(new MarkerOptions().position(
+                new LatLng(loc.getLatitude(),loc.getLongitude())
+        ).title(
+                "currentLocation"
+        ).icon(
+                bitmapDescriptorFromVector(getApplicationContext(),R.drawable.msg_icon))
+        ).setTag(0);
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
-                String string = "";
-                Alarm alarmObj = ArrListAlarm.get((int)(marker.getTag()));
-                Log.i("markerTag",marker.getTag().toString());
-                Log.i("markerTag",Long.toString(alarmObj.getUnixTime()));
-                txtTitle.setText(marker.getTitle());
-                if(System.currentTimeMillis() < alarmObj.getUnixTime()) {
-                    string = "Event is Active";
+
+                if((int)marker.getTag() != 0){
+                    editTaskBtn.setVisibility(View.VISIBLE);
+                    txtTimeDate.setVisibility(View.VISIBLE);
+                    String string = "";
+                    Alarm alarmObj = ArrListAlarm.get((int)(marker.getTag())-1);
+                    Log.i("markerTag",marker.getTag().toString());
+                    Log.i("markerTag",Long.toString(alarmObj.getUnixTime()));
+
+                    txtTimeDate.setText(dateTimeFormat.format(new Date((long)alarmObj.getUnixTime())));
+                    txtTitle.setText(marker.getTitle());
+
+                    if(System.currentTimeMillis() < alarmObj.getUnixTime()) {
+                        string = "Event is Active";
+                    }else {
+                        string = "Event is not Active";
+                    }
+                    txtDesc.setText(alarmObj.getDescription()+string);
                 }else{
-                    string = "Event is not Active";
+                    txtTitle.setText("Your Current Location");
+                    txtDesc.setText("You are Here!");
+
                 }
-                txtDesc.setText(alarmObj.getDescription()+string);
+
                 return false;
             }
         });
