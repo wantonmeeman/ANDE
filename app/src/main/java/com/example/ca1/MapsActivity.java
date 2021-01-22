@@ -99,7 +99,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        android.icu.text.SimpleDateFormat dateFormat = new android.icu.text.SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("hh:mm - dd/MM/yy");
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         String userid = "";

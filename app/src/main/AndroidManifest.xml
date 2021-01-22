@@ -67,7 +67,8 @@
         <activity android:name=".QRActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity" />
-        <activity android:name=".SettingsActivity" />
+        <activity android:name=".SettingsActivity"
+            android:configChanges="uiMode"/>
         <activity android:name=".MonthlyScheduleActivity" />
 
         <receiver android:name=".ReminderBroadcast">

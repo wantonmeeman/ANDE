@@ -12,10 +12,11 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="180dp"
+        app:srcCompat="@drawable/ic_home_purple_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_home_purple_background" />
+         />
 
     <TextView
         android:id="@+id/greeting"
@@ -27,7 +28,7 @@
         android:paddingRight="30dp"
         android:paddingBottom="30dp"
         android:text="Your Tasks for Today: "
-        android:textColor="@android:color/white"
+        android:textColor="@color/white"
         android:textSize="30dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -43,7 +44,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/greeting"
-        app:layout_constraintBottom_toTopOf="@id/buttonContainer">
+        app:layout_constraintBottom_toTopOf="@id/buttonContainer"
+        android:backgroundTint="@color/colorDarkGrey">
 
         <RelativeLayout
             android:id="@+id/linearLayoutRow"
@@ -63,7 +65,7 @@
                 android:fontFamily="@font/kanit_extrabold"
                 android:text="Monday"
                 android:textAllCaps="true"
-                android:textColor="@color/light_black"
+                android:textColor="@color/colorText"
                 android:textSize="45sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -79,7 +81,7 @@
                 android:layout_marginTop="15dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/edit_icon"
-                android:tint="@color/light_black"/>
+                android:tint="@color/colorText"/>
         </RelativeLayout>
 
         <TextView
@@ -92,7 +94,7 @@
             android:paddingTop="5dp"
             android:text="1/1/1970"
             android:textSize="20dp"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/colorDateTime"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -140,16 +142,16 @@
             android:gravity="center"
             android:text="@string/create_button"
             android:textAllCaps="true"
-            android:textColor="@color/light_black"
+            android:textColor="@color/colorText"
             android:textSize="20sp"
             android:theme="@style/Theme.MaterialComponents"
-            app:backgroundTint="@color/white"
+            android:backgroundTint="@color/colorDarkGrey"
             app:icon="@drawable/add_circle"
             app:iconGravity="textStart"
             app:iconPadding="16dp"
-            app:iconTint="@color/light_black"
+            app:iconTint="@color/colorText"
             app:strokeWidth="0.5dp"
-            app:strokeColor="@color/lightgrey_border"/>
+            app:strokeColor="@color/colorBorder"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/qrScanner"
@@ -157,21 +159,21 @@
             android:layout_height="match_parent"
             android:padding="0dp"
             android:textSize="15dp"
-            app:backgroundTint="@color/white"
+            android:backgroundTint="@color/colorDarkGrey"
             app:icon="@drawable/ic_qr_code_icon"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconSize="45dp"
-            app:iconTint="@color/light_black"
+            app:iconTint="@color/colorText"
             app:strokeWidth="0.5dp"
-            app:strokeColor="@color/lightgrey_border" />
+            app:strokeColor="@color/colorBorder" />
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        app:backgroundTint="@color/white"
+        app:backgroundTint="@color/colorBotNavBar"
         app:menu="@menu/menu"
         app:itemIconSize="32dp"
         app:itemIconTint="@drawable/bottom_navigation_selector"

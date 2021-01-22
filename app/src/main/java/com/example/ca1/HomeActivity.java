@@ -75,7 +75,10 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.homepage_act);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+        //This refreshes each component.
+
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         this.getSupportActionBar().hide();//Remove Title, probably not very good
 
@@ -90,6 +93,7 @@ public class HomeActivity extends AppCompatActivity {
             userid = pref.getString("firebaseUserId","1");
         }
 
+        setContentView(R.layout.homepage_act);
         txtDate = (TextView) findViewById(R.id.date);
         txtDay = (TextView) findViewById(R.id.day);
         txtTaskTitle = (TextView) findViewById(R.id.taskTitle);
@@ -111,13 +115,13 @@ public class HomeActivity extends AppCompatActivity {
 
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
         Random rand = new Random();
-        Alarm testAlarm = new Alarm("OverDue Date","OverDue date",103.78462387+(rand.nextDouble()/10),1.42613738+(rand.nextDouble()/10),((System.currentTimeMillis() / 1000L)+(1*60)));
-//        Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
-//        User testUser = new User("testUsername","testPass","Email@email.com");
+       // Alarm testAlarm = new Alarm("alarmTitle","alarmDescription",103.78462387+(rand.nextDouble()/10),1.42613738+(rand.nextDouble()/10),((System.currentTimeMillis() / 1000L)+(100*60)));
+//      Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
+//      User testUser = new User("testUsername","testPass","Email@email.com");
 //
-          myDbRef.push().setValue(testAlarm);
-//        myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
-//        myDbRef.child("UserInfomation").setValue(testUser);
+        //myDbRef.push().setValue(testAlarm);
+//      myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
+//      myDbRef.child("UserInfomation").setValue(testUser);
         myDbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -137,10 +141,10 @@ public class HomeActivity extends AppCompatActivity {
                 RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
 
                 //Gets the Adapter from the JAVA file
-                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
+                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(HomeActivity.this,ArrListAlarm);
 
                 //Set Layout for the RecyclerView
-                myrv.setLayoutManager(new LinearLayoutManager(getApplication()));
+                myrv.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
 
                 //Set an adapter for the View
                 myrv.setAdapter(myAdapter);
@@ -187,22 +191,6 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-//        int nightModeFlags = getApplicationContext().getResources().getConfiguration().uiMode &
-//                Configuration.UI_MODE_NIGHT_MASK;
-//        switch (nightModeFlags) {
-//            case Configuration.UI_MODE_NIGHT_YES:
-//                Log.i("Darkmode","Yes");
-//                break;
-//
-//            case Configuration.UI_MODE_NIGHT_NO:
-//                Log.i("Darkmode","No");
-//                break;
-//
-//            case Configuration.UI_MODE_NIGHT_UNDEFINED:
-//                Log.i("Darkmode","IDK");
-//                break;
-//        }
-
         botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
         botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -226,7 +214,9 @@ public class HomeActivity extends AppCompatActivity {
                         return true;
                     case R.id.settings:
                         intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
+                        HomeActivity.this.finish();
                         return true;
 
                 }
