@@ -171,5 +171,16 @@
                 app:cornerRadius="200dp" />
         </LinearLayout>
     </LinearLayout>
-
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        app:backgroundTint="@color/colorBotNavBar"
+        app:menu="@menu/menu"
+        app:itemIconSize="32dp"
+        app:itemIconTint="@drawable/bottom_navigation_selector"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:itemRippleColor="@color/blue"
+        app:labelVisibilityMode="unlabeled"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

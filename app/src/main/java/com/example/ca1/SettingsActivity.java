@@ -14,6 +14,7 @@ import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,15 +49,18 @@ import java.util.Date;
 import java.util.Locale;
 
 public class SettingsActivity extends AppCompatActivity{
+    private int mDayNightMode;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.settings);
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         Switch switchTheme = (Switch)findViewById(R.id.simpleSwitch);
-        Log.i("1",Boolean.toString(pref.getBoolean("UIMode",false)));
+
         switchTheme.setChecked(pref.getBoolean("UIMode",false));
+        mDayNightMode = AppCompatDelegate.getDefaultNightMode();
+
 
         switchTheme.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -73,10 +78,10 @@ public class SettingsActivity extends AppCompatActivity{
                     mode = AppCompatDelegate.MODE_NIGHT_NO;
                 }
                 editor.commit();
+                AppCompatDelegate.setDefaultNightMode(mode);
                 getDelegate().setLocalNightMode(mode);
                 getDelegate().applyDayNight();
                 recreate();
-                AppCompatDelegate.setDefaultNightMode(mode);
             }
 
         });
@@ -84,7 +89,6 @@ public class SettingsActivity extends AppCompatActivity{
         MaterialButton button = findViewById(R.id.logoutBtn);
         button.setPaintFlags(button.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
         button.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -97,6 +101,7 @@ public class SettingsActivity extends AppCompatActivity{
                 editor.putString("firebaseUserId",null);
                 editor.commit();
                 Intent intent = new Intent(getApplication(),LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
 
@@ -134,18 +139,7 @@ public class SettingsActivity extends AppCompatActivity{
         });
 
         this.getSupportActionBar().hide();//Remove Title, probably not very good
-
-
-
     }
 
-    public void onBackPressed() {
-        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-        if (GoogleSignIn.getLastSignedInAccount(this) == null && pref.getString("firebaseUserId","1") == "1") {//If there is no google account detected, and if there is no account detected
-            super.onBackPressed();
-        }else{
-
-        }
-    }
 
 }

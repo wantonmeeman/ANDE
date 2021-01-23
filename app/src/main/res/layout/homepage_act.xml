@@ -41,11 +41,12 @@
         android:layout_height="0dp"
         android:background="@drawable/ic_display"
         android:orientation="vertical"
+        android:backgroundTint="@color/colorDarkGrey"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/greeting"
         app:layout_constraintBottom_toTopOf="@id/buttonContainer"
-        android:backgroundTint="@color/colorDarkGrey">
+        >
 
         <RelativeLayout
             android:id="@+id/linearLayoutRow"

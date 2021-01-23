@@ -19,8 +19,12 @@
     <color name="colorDarkGrey">#2c2f33</color>
     <color name="colorDateTime">#e6e6e6</color>
     <color name="colorText">#e3e3e3</color>
+    <color name="colorEditText">#40444b</color>
     <color name="colorCircle">#625bc2</color>
     <color name="colorLine">#3d8eff</color>
     <color name="colorBorder">#2c2f33</color>
+    <color name="colorHeaderDate">#5b5e66</color>
+    <color name="colorDateSelected">#717780</color>
     <color name="colorBackgroundPurple">#252069</color>
+
 </resources>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightpurple">
+    android:background="@color/colorBackgroundPurple">
 
 
 
@@ -59,6 +59,7 @@
             android:layout_height="50dp"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
+            android:backgroundTint="@color/colorEditText"
             android:textColor="@color/black"
             android:background="@drawable/rounded_edit_text"
             />
@@ -80,6 +81,7 @@
             android:layout_height="50dp"
             android:background="@drawable/rounded_edit_text"
             android:paddingStart="10dp"
+            android:backgroundTint="@color/colorEditText"
             android:paddingEnd="10dp"
             android:textColor="@color/black"/>
         <TextView
@@ -98,6 +100,7 @@
             android:id="@+id/password"
             android:layout_width="300dp"
             android:layout_height="50dp"
+            android:backgroundTint="@color/colorEditText"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:textColor="@color/black"

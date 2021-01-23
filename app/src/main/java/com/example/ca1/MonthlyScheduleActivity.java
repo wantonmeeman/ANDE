@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,8 +59,15 @@ import sun.bob.mcalendarview.vo.DateData;
 import sun.bob.mcalendarview.vo.MarkedDates;
 
 
-public class MonthlyScheduleActivity extends AppCompatActivity implements View.OnClickListener,BottomNavigationView.OnNavigationItemSelectedListener{
+public class MonthlyScheduleActivity extends AppCompatActivity implements View.OnClickListener{
 
+    private int mLastDayNightMode;
+    protected void onRestart(){
+        super.onRestart();
+        if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
+            recreate();
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMM, yyyy");
@@ -70,7 +78,33 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(1).setChecked(true);//Set Middle(Home) to checked
-        botNavView.setOnNavigationItemSelectedListener(this);
+        botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
+            public boolean onNavigationItemSelected(@NonNull MenuItem item){
+                switch(item.getItemId()){
+                    case R.id.location:
+                        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.calendar:
+                        intent = new Intent(getApplicationContext(), ScheduleActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.home:
+                        intent = new Intent(getApplicationContext(),HomeActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.qr:
+                        intent = new Intent(getApplicationContext(), QRActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.settings:
+                        intent = new Intent(getApplicationContext(),SettingsActivity.class);
+                        startActivity(intent);
+                        return true;
+                }
+                return false;
+            };
+        });
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -246,6 +280,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         calendarView.setOnMonthChangeListener(new OnMonthChangeListener() {
             @Override
             public void onMonthChange(int year, int month) {
+                calendarView.hasTitle(false);
                 int YearB = cal.get(Calendar.YEAR);
                 int MonthB = cal.get(Calendar.MONTH);
                 int YearA;
@@ -318,31 +353,4 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 break;
         }
     }
-
-    
-        public boolean onNavigationItemSelected(@NonNull MenuItem item){
-            switch(item.getItemId()){
-                case R.id.location:
-
-                    return true;
-                case R.id.calendar:
-
-                    return true;
-                case R.id.home:
-                    Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
-                    Log.e("Clicked","Location");
-                    startActivity(intent);
-                    return true;
-                case R.id.qr:
-                    intent = new Intent(getApplicationContext(), QRActivity.class);
-                    startActivity(intent);
-                    return true;
-                case R.id.settings:
-                    return true;
-
-            }
-            return false;
-        };
-
-
 }

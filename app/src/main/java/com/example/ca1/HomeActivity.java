@@ -58,6 +58,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class HomeActivity extends AppCompatActivity {
+
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
 
@@ -71,19 +72,38 @@ public class HomeActivity extends AppCompatActivity {
 
     String currentDate = dateFormat.format(new Date());
     String currentDay = dayFormat.format(calendar.getTime());
+    private int mLastDayNightMode;
+
+    protected void onRestart(){
+        super.onRestart();
+        if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
+            recreate();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         //This refreshes each component.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                //.requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
 
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        if(pref.getBoolean("UIMode",true)){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            getDelegate().applyDayNight();
+        }else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            getDelegate().applyDayNight();
+        }
         this.getSupportActionBar().hide();//Remove Title, probably not very good
 
         //Declare Variables
-        BottomNavigationView botNavView;
         ArrListAlarm = new ArrayList<Alarm>();
         String userid = "";
         GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
@@ -92,15 +112,6 @@ public class HomeActivity extends AppCompatActivity {
         }else{
             userid = pref.getString("firebaseUserId","1");
         }
-
-        setContentView(R.layout.homepage_act);
-        txtDate = (TextView) findViewById(R.id.date);
-        txtDay = (TextView) findViewById(R.id.day);
-        txtTaskTitle = (TextView) findViewById(R.id.taskTitle);
-        txtTaskTime = (TextView) findViewById(R.id.taskTime);
-
-        txtDate.setText(currentDate);
-        txtDay.setText(currentDay);
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -114,14 +125,15 @@ public class HomeActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
 
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
-        Random rand = new Random();
-       // Alarm testAlarm = new Alarm("alarmTitle","alarmDescription",103.78462387+(rand.nextDouble()/10),1.42613738+(rand.nextDouble()/10),((System.currentTimeMillis() / 1000L)+(100*60)));
-//      Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
-//      User testUser = new User("testUsername","testPass","Email@email.com");
+     // Random rand = new Random();
+     // Alarm testAlarm = new Alarm("alarmTitle","alarmDescription",103.78462387+(rand.nextDouble()/10),1.42613738+(rand.nextDouble()/10),((System.currentTimeMillis() / 1000L)+(1*60)));
+      //Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
+     // User testUser = new User("testUsername","testPass","Email@email.com");
 //
-        //myDbRef.push().setValue(testAlarm);
-//      myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
+     // myDbRef.push().setValue(testAlarm);
+      //myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
 //      myDbRef.child("UserInfomation").setValue(testUser);
+
         myDbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -157,13 +169,51 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        setContentView(R.layout.homepage_act);
+        txtDate = (TextView) findViewById(R.id.date);
+        txtDay = (TextView) findViewById(R.id.day);
+        txtTaskTitle = (TextView) findViewById(R.id.taskTitle);
+        txtTaskTime = (TextView) findViewById(R.id.taskTime);
+
+        txtDate.setText(currentDate);
+        txtDay.setText(currentDay);
+
+        BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
+        botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
+        botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
+            public boolean onNavigationItemSelected(@NonNull MenuItem item){
+                switch(item.getItemId()){
+                    case R.id.location:
+                        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.calendar:
+                        intent = new Intent(getApplicationContext(), ScheduleActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.home:
+                        intent = new Intent(getApplicationContext(),HomeActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.qr:
+                        intent = new Intent(getApplicationContext(), QRActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.settings:
+                        intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                        startActivity(intent);
+                        return true;
+                }
+                return false;
+            };
+        });
+
+
+
         //createNotificationChannel();
 
         Button button = findViewById(R.id.addNewTask);
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                //.requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+
         button.setOnClickListener(v -> {
             GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
             mGoogleSignInClient.signOut();
@@ -190,40 +240,6 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(this, QRActivity.class);
             startActivity(intent);
         });
-
-        botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
-        botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
-        botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
-            public boolean onNavigationItemSelected(@NonNull MenuItem item){
-                switch(item.getItemId()){
-                    case R.id.location:
-                        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
-                        Log.e("Clicked","Location");
-                        startActivity(intent);
-                        return true;
-                    case R.id.calendar:
-                        intent = new Intent(getApplicationContext(),ScheduleActivity.class);
-                        Log.e("Clicked","Location");
-                        startActivity(intent);
-                        return true;
-                    case R.id.home:
-                        return true;
-                    case R.id.qr:
-                        intent = new Intent(getApplicationContext(), QRActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.settings:
-                        intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        HomeActivity.this.finish();
-                        return true;
-
-                }
-                return false;
-            }
-        });
-
     }
     public void onBackPressed() {
         //If the user is logged in, he should not be able to relogin by pressing back btn
@@ -234,7 +250,6 @@ public class HomeActivity extends AppCompatActivity {
         }else{
 
         }
-        Log.i("SOMETHING","1");
     }
 //    public void createNotificationChannel(){
 //
