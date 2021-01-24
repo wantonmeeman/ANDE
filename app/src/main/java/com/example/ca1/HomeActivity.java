@@ -59,7 +59,6 @@ import org.json.JSONObject;
 public class HomeActivity extends AppCompatActivity {
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
-
     Calendar calendar = Calendar.getInstance();
 
     TextView txtTaskTitle;
@@ -76,7 +75,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_act);
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-        this.getSupportActionBar().hide();//Remove Title, probably not very good
+        this.getSupportActionBar().hide(); // Remove Title, probably not very good
 
         //Declare Variables
         BottomNavigationView botNavView;
