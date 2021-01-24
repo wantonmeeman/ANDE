@@ -1,18 +1,32 @@
-package com.example.ca1;
+ package com.example.ca1;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.icu.util.Calendar;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -22,35 +36,49 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.ca1.LocationTracker;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private int mLastDayNightMode;
+    protected void onRestart(){
+        super.onRestart();
+        if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
+            recreate();
+        }
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate (Bundle savedInstanceState){
+        this.getSupportActionBar().hide();
+        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
-
         SearchView searchView = findViewById(R.id.searchLoc);
-
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -67,7 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     Address address = addressArr.get(0);
                     LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                    //mMap.addMarker(new MarkerOptions().position(latLng).title(location));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
                 }
 
@@ -85,6 +113,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("hh:mm - dd/MM/yy");
+
         String userid = "";
         ArrayList<Alarm> ArrListAlarm = new ArrayList<Alarm>();
 
@@ -100,42 +130,91 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
 
         mMap = googleMap;
-        mMap.setInfoWindowAdapter(new CustomInfoAdapter(MapsActivity.this));
         LocationTracker loc;
         TextView txtTitle;
         TextView txtDesc;
+        TextView txtTimeDate;
+        ImageButton editTaskBtn;
 
         txtDesc = findViewById(R.id.alarmDesc);
         txtTitle = findViewById(R.id.alarmTitle);
+        txtTimeDate = findViewById(R.id.alarmDateTime);
+        editTaskBtn = findViewById(R.id.editTaskBtn);
+        //Default invis, only when clicked on a valid task.
+        editTaskBtn.setVisibility(View.INVISIBLE);
+        txtTimeDate.setVisibility(View.INVISIBLE);
+
         loc = new LocationTracker(MapsActivity.this);
 
         Log.i("CheckingLocation", String.valueOf(loc.canGetLocation()));
         Log.i("Latitude",Double.toString(loc.getLatitude()));
         Log.i("Longitude",Double.toString(loc.getLongitude()));
 
+        BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
+        botNavView.getMenu().getItem(0).setChecked(true);//Set Middle(Home) to checked
+        botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
+            public boolean onNavigationItemSelected(@NonNull MenuItem item){
+                switch(item.getItemId()){
+                    case R.id.location:
+                        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.calendar:
+                        intent = new Intent(getApplicationContext(), ScheduleActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.home:
+                        intent = new Intent(getApplicationContext(),HomeActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.qr:
+                        intent = new Intent(getApplicationContext(), QRActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.settings:
+                        intent = new Intent(getApplicationContext(),SettingsActivity.class);
+                        startActivity(intent);
+                        return true;
+                }
+                return false;
+            };
+        });
+
         myDbRef.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                int selectedDrawable = 0;
                 int x = 0;
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 mMap.clear();
                 ArrListAlarm.clear();
-                Calendar cal = Calendar.getInstance();
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.MINUTE, 0);
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MILLISECOND, 0);
+
+                mMap.addMarker(new MarkerOptions().position(
+                        new LatLng(loc.getLatitude(),loc.getLongitude())
+                        ).title(
+                        "currentLocation"
+                        ).icon(
+                        bitmapDescriptorFromVector(getApplicationContext(),R.drawable.current_user_icon))
+                ).setTag(0);
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    x++;
                     Alarm alarm = snapshot.getValue(Alarm.class);
+                    if(System.currentTimeMillis()/1000L < alarm.getUnixTime()) {
+                        selectedDrawable = R.drawable.location_pin;
+                    }else{
+                        selectedDrawable = R.drawable.location_pin_inactive;
+                    }
                     ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLongitude(), alarm.getUnixTime() * 1000L));
                     mMap.addMarker(new MarkerOptions().position(
                             new LatLng(alarm.getLatitude(),alarm.getLongitude())
                     ).title(
                             alarm.getTitle()
-                    )).setTag(x);
-                    x++;
+                    ).icon(
+                            bitmapDescriptorFromVector(getApplicationContext(),selectedDrawable))
+                    ).setTag(x);
                 }
             }
 
@@ -146,14 +225,66 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         LatLng currentLoc = new LatLng(loc.getLatitude(),loc.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
+        //mMap.moveCamera();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc,12));
+        Log.i("curLoc",Double.toString(loc.getLatitude()));
+        Log.i("curLoc",Double.toString(loc.getLongitude()));
+        //current Location Marker
+        mMap.addMarker(new MarkerOptions().position(
+                new LatLng(loc.getLatitude(),loc.getLongitude())
+        ).title(
+                "currentLocation"
+        ).icon(
+                bitmapDescriptorFromVector(getApplicationContext(),R.drawable.msg_icon))
+        ).setTag(0);
+
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
-                txtTitle.setText(marker.getTitle());
-                txtDesc.setText(ArrListAlarm.get((int)(marker.getTag())).getDescription());
+
+                if((int)marker.getTag() != 0){
+                    txtTimeDate.setVisibility(View.VISIBLE);
+                    String string = "";
+                    Alarm alarmObj = ArrListAlarm.get((int)(marker.getTag())-1);
+                    Log.i("markerTag",marker.getTag().toString());
+                    Log.i("markerTag",Long.toString(alarmObj.getUnixTime()));
+
+                    txtTimeDate.setText(dateTimeFormat.format(new Date((long)alarmObj.getUnixTime())));
+                    txtTitle.setText(marker.getTitle());
+
+                    if(System.currentTimeMillis() < alarmObj.getUnixTime()) {
+                        editTaskBtn.setVisibility(View.VISIBLE);
+                        string = "Event is Active";
+                    }else {
+                        editTaskBtn.setVisibility(View.INVISIBLE);
+                        string = "Event is not Active";
+                    }
+                    if(alarmObj.getDescription().length() > 150){
+                        txtDesc.setText(alarmObj.getDescription().substring(0,105)+"...");
+                    }else{
+                        txtDesc.setText(alarmObj.getDescription()+string);
+                    }
+//                    txtDesc.setText(alarmObj.getDescription()+string);
+                }else{
+                    editTaskBtn.setVisibility(View.INVISIBLE);
+                    txtTimeDate.setVisibility(View.INVISIBLE);
+                    txtTitle.setText("Your Current Location");
+                    txtDesc.setText("You are Here!");
+
+                }
+
                 return false;
             }
         });
     }
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+
 }

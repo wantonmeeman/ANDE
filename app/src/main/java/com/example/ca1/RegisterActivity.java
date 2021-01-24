@@ -27,7 +27,7 @@ import org.w3c.dom.Text;
 import java.util.Random;
 
 
-public class RegisterActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+public class RegisterActivity extends AppCompatActivity{
 
     //This handles dismissing of a notification
     @Override
@@ -89,10 +89,5 @@ public class RegisterActivity extends AppCompatActivity implements BottomNavigat
             Intent intent = new Intent(this,LoginActivity.class);
             startActivity(intent);
         });
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
     }
 }

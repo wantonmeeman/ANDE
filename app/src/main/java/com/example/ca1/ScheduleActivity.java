@@ -19,6 +19,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,8 +48,16 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 
-public class ScheduleActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener,View.OnClickListener{
+public class ScheduleActivity extends AppCompatActivity implements View.OnClickListener{
 
+    private int mLastDayNightMode;
+
+    protected void onRestart(){
+        super.onRestart();
+        if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
+            recreate();
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd/MM");
@@ -64,7 +73,15 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         TextView percentageCompletion = (TextView)findViewById(R.id.todayProgress);
         TextView completionStatus = (TextView)findViewById(R.id.CompletionStatus);
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-
+        //Code for Night mode
+        Log.i("Mode",Boolean.toString(pref.getBoolean("UIMode",false)));
+        if(pref.getBoolean("UIMode",false)){
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            getDelegate().applyDayNight();
+        }else{
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            getDelegate().applyDayNight();
+        }
             //Get the calendar Object today's date.
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -87,7 +104,7 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
 
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid);
-
+        Log.i("ONE123",Integer.toString(AppCompatDelegate.getDefaultNightMode()));
 
         myDbRef.child("UserAlarms").addValueEventListener(new ValueEventListener() {
             @Override
@@ -163,8 +180,35 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
         });
 
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
-        botNavView.getMenu().getItem(1).setChecked(true);
-        botNavView.setOnNavigationItemSelectedListener(this);
+        botNavView.getMenu().getItem(1).setChecked(true);//Set Middle(Home) to checked
+        botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
+            public boolean onNavigationItemSelected(@NonNull MenuItem item){
+                switch(item.getItemId()){
+                    case R.id.location:
+                        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.calendar:
+                        intent = new Intent(getApplicationContext(), ScheduleActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.home:
+                        intent = new Intent(getApplicationContext(),HomeActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.qr:
+                        intent = new Intent(getApplicationContext(), QRActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.settings:
+                        intent = new Intent(getApplicationContext(),SettingsActivity.class);
+                        startActivity(intent);
+                        return true;
+                }
+                return false;
+            };
+        });
+
         FloatingActionButton addNewTask = (FloatingActionButton) findViewById(R.id.fab);
 
         addNewTask.setOnClickListener(v ->{
@@ -183,32 +227,4 @@ public class ScheduleActivity extends AppCompatActivity implements BottomNavigat
                 break;
         }
     }
-
-
-    
-        public boolean onNavigationItemSelected(@NonNull MenuItem item){
-            switch(item.getItemId()){
-                case R.id.location:
-
-                    return true;
-                case R.id.calendar:
-
-                    return true;
-                case R.id.home:
-                    Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
-                    Log.e("Clicked","Location");
-                    startActivity(intent);
-                    return true;
-                case R.id.qr:
-                    intent = new Intent(getApplicationContext(), QRActivity.class);
-                    startActivity(intent);
-                    return true;
-                case R.id.settings:
-                    return true;
-
-            }
-            return false;
-        };
-
-
 }

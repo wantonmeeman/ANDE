@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightpurple">
+    android:background="@color/colorBackgroundPurple">
 
     <ImageView
         android:id="@+id/splashscreen"
@@ -44,6 +44,7 @@
             android:layout_width="350dp"
             android:id="@+id/username"
             android:layout_height="50dp"
+            android:backgroundTint="@color/colorEditText"
             android:background="@drawable/rounded_edit_text"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
@@ -66,6 +67,7 @@
             android:id="@+id/password"
             android:layout_width="350dp"
             android:layout_height="50dp"
+            android:backgroundTint="@color/colorEditText"
             android:background="@drawable/rounded_edit_text"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"

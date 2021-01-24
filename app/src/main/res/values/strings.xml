@@ -15,5 +15,6 @@
     values-round/strings.xml for round devices.
     -->
     <string name="hello_world">Hello Square World!</string>
-    <string name="title_activity_maps">AIzaSyA-voF_yzWD4p1vGcrFNjZ6aKIo-2ep8YE</string><!--Dimension for vector icon-->
+    <string name="title_activity_maps">AIzaSyA-voF_yzWD4p1vGcrFNjZ6aKIo-2ep8YE</string>
+    <string name="title_activity_maps2">Map</string><!--Dimension for vector icon-->
 </resources>

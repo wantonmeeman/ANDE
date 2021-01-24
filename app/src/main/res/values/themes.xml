@@ -14,6 +14,17 @@
 <!--        <item name="android:statusBarColor">@color/black</item>-->
         <!-- Customize your theme here. -->
     </style>
+    <color name="colorBotNavBar">#FFFFFF</color>
     <color name="colorBackground">#FFFFFF</color>
-    <color name="colorText">@color/blue</color>
+    <color name="colorDarkGrey">#FFFFFF</color>
+    <color name="colorDateTime">#aaaaaa</color>
+    <color name="colorText">#47525E</color>
+    <color name="colorEditText">#FFFFFF</color>
+    <color name="colorCircle">#625bc2</color>
+    <color name="colorLine">#3d8eff</color>
+    <color name="colorBorder">#bbbbbb</color>
+    <color name="colorHeaderDate">#f5f7fa</color>
+    <color name="colorDateSelected">#dfdfdf</color>
+    <color name="colorBackgroundPurple">#625BC2</color>
+
 </resources>

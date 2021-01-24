@@ -15,6 +15,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.IntentCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,6 +41,14 @@ import java.util.ArrayList;
 public class LoginActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     private final static int RC_SIGN_IN = 123;
     //This handles dismissing of a notification
+    private int mLastDayNightMode;
+    protected void onRestart(){
+        super.onRestart();
+        if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
+            recreate();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +66,7 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
 
         //Handles Google Signin, honestly, i dont even know if this is the correct way to do it
         if(GoogleSignIn.getLastSignedInAccount(this) != null || !(pref.getString("firebaseUserId","1").equals("1"))){//If User is already logged in via google.
-            Intent intent = new Intent(this,HomeActivity.class);
+            Intent intent = new Intent(this,HomeActivity.class);;
             startActivity(intent);
         }
 
@@ -64,6 +75,7 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
                 .build();
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         ((SignInButton)findViewById(R.id.googleSignIn)).setSize(SignInButton.SIZE_WIDE);
+        
         findViewById(R.id.googleSignIn).setOnClickListener( v -> {
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -137,6 +149,8 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.i("Login Failed","Yes");
+            Log.i("API",e.toString());
             updateUI(null);
         }
     }
