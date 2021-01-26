@@ -107,6 +107,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
+        BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
+        botNavView.getMenu().getItem(0).setChecked(true);//Set Middle(Home) to checked
+        botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
+            public boolean onNavigationItemSelected(@NonNull MenuItem item){
+                switch(item.getItemId()){
+                    case R.id.location:
+                        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.calendar:
+                        intent = new Intent(getApplicationContext(), ScheduleActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.home:
+                        intent = new Intent(getApplicationContext(),HomeActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.qr:
+                        intent = new Intent(getApplicationContext(), QRActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.settings:
+                        intent = new Intent(getApplicationContext(),SettingsActivity.class);
+                        startActivity(intent);
+                        return true;
+                }
+                return false;
+            };
+        });
         mapFragment.getMapAsync(this);
     }
 
@@ -150,35 +179,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.i("Latitude",Double.toString(loc.getLatitude()));
         Log.i("Longitude",Double.toString(loc.getLongitude()));
 
-        BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
-        botNavView.getMenu().getItem(0).setChecked(true);//Set Middle(Home) to checked
-        botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
-            public boolean onNavigationItemSelected(@NonNull MenuItem item){
-                switch(item.getItemId()){
-                    case R.id.location:
-                        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.calendar:
-                        intent = new Intent(getApplicationContext(), ScheduleActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.home:
-                        intent = new Intent(getApplicationContext(),HomeActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.qr:
-                        intent = new Intent(getApplicationContext(), QRActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.settings:
-                        intent = new Intent(getApplicationContext(),SettingsActivity.class);
-                        startActivity(intent);
-                        return true;
-                }
-                return false;
-            };
-        });
+
 
         myDbRef.addValueEventListener(new ValueEventListener() {
 
@@ -227,16 +228,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng currentLoc = new LatLng(loc.getLatitude(),loc.getLongitude());
         //mMap.moveCamera();
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc,12));
-        Log.i("curLoc",Double.toString(loc.getLatitude()));
-        Log.i("curLoc",Double.toString(loc.getLongitude()));
         //current Location Marker
-        mMap.addMarker(new MarkerOptions().position(
-                new LatLng(loc.getLatitude(),loc.getLongitude())
-        ).title(
-                "currentLocation"
-        ).icon(
-                bitmapDescriptorFromVector(getApplicationContext(),R.drawable.msg_icon))
-        ).setTag(0);
+//        mMap.addMarker(new MarkerOptions().position(
+//                new LatLng(loc.getLatitude(),loc.getLongitude())
+//        ).title(
+//                "currentLocation"
+//        ).icon(
+//                bitmapDescriptorFromVector(getApplicationContext(),R.drawable.msg_icon))
+//        ).setTag(0);
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
@@ -246,8 +245,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     txtTimeDate.setVisibility(View.VISIBLE);
                     String string = "";
                     Alarm alarmObj = ArrListAlarm.get((int)(marker.getTag())-1);
-                    Log.i("markerTag",marker.getTag().toString());
-                    Log.i("markerTag",Long.toString(alarmObj.getUnixTime()));
 
                     txtTimeDate.setText(dateTimeFormat.format(new Date((long)alarmObj.getUnixTime())));
                     txtTitle.setText(marker.getTitle());

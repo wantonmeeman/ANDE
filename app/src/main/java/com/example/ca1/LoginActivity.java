@@ -41,13 +41,6 @@ import java.util.ArrayList;
 public class LoginActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     private final static int RC_SIGN_IN = 123;
     //This handles dismissing of a notification
-    private int mLastDayNightMode;
-    protected void onRestart(){
-        super.onRestart();
-        if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
-            recreate();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

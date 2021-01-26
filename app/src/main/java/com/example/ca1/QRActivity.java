@@ -52,7 +52,6 @@ public class QRActivity extends AppCompatActivity {
             userid = gAcc.getId();
         }else{
             userid = pref.getString("firebaseUserId","1");
-            Log.i("Message","Cant access google account");
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");

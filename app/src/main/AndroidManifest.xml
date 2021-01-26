@@ -8,8 +8,11 @@
          location permissions for the "MyLocation" functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-feature android:name="android.hardware.type.watch" />
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -23,12 +26,12 @@
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CA1"
-        android:hardwareAccelerated="true"
         android:vmSafeMode="false">
 
         <!--
@@ -44,12 +47,18 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".LocationPicker"
+            android:label="@string/title_activity_maps2"></activity>
+        <!--
+               Set to true if your app is Standalone, that is, it does not require the handheld
+               app to run.
+        -->
+
+
+        <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
 
-        <meta-data
-            android:name="com.google.android.wearable.standalone"
-            android:value="true" />
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="barcode" />
@@ -57,29 +66,41 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <activity android:name=".SplashScreenActivity"
+        <activity
+            android:name=".SplashScreenActivity"
             android:configChanges="uiMode">
-<!--            This snippet is what is prevent a reload android:configChanges="uiMode"-->
+
+            <!-- This snippet is what is prevent a reload android:configChanges="uiMode" -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ScheduleActivity"
-            android:configChanges="uiMode"/>
-        <activity android:name=".HomeActivity"
-            android:configChanges="uiMode"/>
-        <activity android:name=".QRActivity"
-            android:configChanges="uiMode"/>
-        <activity android:name=".RegisterActivity"
-            android:configChanges="uiMode"/>
-        <activity android:name=".LoginActivity"
-            android:configChanges="uiMode"/>
-        <activity android:name=".SettingsActivity"
-            android:configChanges="uiMode"/>
-        <activity android:name=".MonthlyScheduleActivity"
-            android:configChanges="uiMode"/>
+        <activity
+            android:name=".AddNewTaskActivity"
+            android:configChanges="uiMode" />
+        <activity
+            android:name=".ScheduleActivity"
+            android:configChanges="uiMode" />
+        <activity
+            android:name=".HomeActivity"
+            android:configChanges="uiMode" />
+        <activity
+            android:name=".QRActivity"
+            android:configChanges="uiMode" />
+        <activity
+            android:name=".RegisterActivity"
+            android:configChanges="uiMode" />
+        <activity
+            android:name=".LoginActivity"
+            android:configChanges="uiMode" />
+        <activity
+            android:name=".SettingsActivity"
+            android:configChanges="uiMode" />
+        <activity
+            android:name=".MonthlyScheduleActivity"
+            android:configChanges="uiMode" />
 
         <receiver android:name=".ReminderBroadcast">
             <intent-filter>

@@ -16,5 +16,7 @@
     -->
     <string name="hello_world">Hello Square World!</string>
     <string name="title_activity_maps">AIzaSyA-voF_yzWD4p1vGcrFNjZ6aKIo-2ep8YE</string>
-    <string name="title_activity_maps2">Map</string><!--Dimension for vector icon-->
+    <string name="title_activity_maps2">Map</string>
+    <string name="title_activity_place_picker">PlacePickerActivity</string>
+    <string name="title_activity_place_selection_plugin">PlaceSelectionPluginActivity</string><!--Dimension for vector icon-->
 </resources>

@@ -72,8 +72,9 @@ public class HomeActivity extends AppCompatActivity {
 
     String currentDate = dateFormat.format(new Date());
     String currentDay = dayFormat.format(calendar.getTime());
-    private int mLastDayNightMode;
 
+    //This Snippet changes the UI when the user backbtn's
+    private int mLastDayNightMode;
     protected void onRestart(){
         super.onRestart();
         if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
@@ -215,12 +216,7 @@ public class HomeActivity extends AppCompatActivity {
         Button button = findViewById(R.id.addNewTask);
 
         button.setOnClickListener(v -> {
-            GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-            mGoogleSignInClient.signOut();
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putString("firebaseUserId",null);
-            editor.commit();
-            Intent intent = new Intent(this,LoginActivity.class);
+            Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
             startActivity(intent);
 //            Intent intent = new Intent(HomeActivity.this,ReminderBroadcast.class);
 //            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,0,intent,0);
