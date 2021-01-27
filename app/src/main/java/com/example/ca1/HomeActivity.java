@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Database;
 
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -37,6 +39,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +52,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -126,14 +132,39 @@ public class HomeActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
 
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
-     // Random rand = new Random();
-     // Alarm testAlarm = new Alarm("alarmTitle","alarmDescription",103.78462387+(rand.nextDouble()/10),1.42613738+(rand.nextDouble()/10),((System.currentTimeMillis() / 1000L)+(1*60)));
-      //Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
-     // User testUser = new User("testUsername","testPass","Email@email.com");
+
+        String alphabet = "123456789";
+
+        // create random string builder
+        StringBuilder sb = new StringBuilder();
+
+        // create an object of Random class
+        Random random = new Random();
+
+        // specify length of random string
+        int length = 21;
+
+        for(int i = 0; i < length; i++) {
+
+            // generate random index number
+            int index = random.nextInt(alphabet.length());
+
+            // get character specified by index
+            // from the string
+            char randomChar = alphabet.charAt(index);
+
+            // append the character to string builder
+            sb.append(randomChar);
+        }
+
+        String randomString = sb.toString();
+
+        Random rand = new Random();
+        //Alarm testAlarm = new Alarm("alarmTitle1","alarmDescription1",103.78462387+(rand.nextDouble()/10),1.42613738+(rand.nextDouble()/10),((System.currentTimeMillis() / 1000L)+(1*60)),randomString);
 //
-     // myDbRef.push().setValue(testAlarm);
-      //myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
-//      myDbRef.child("UserInfomation").setValue(testUser);
+        //myDbRef.child(randomString).setValue(testAlarm);
+        //Alarm testAlarm = new Alarm("alarmTitle1","alarmDescription1",103.78462387+(rand.nextDouble()/10),1.42613738+(rand.nextDouble()/10),((System.currentTimeMillis() / 1000L)+(1*60)));
+
 
         myDbRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -145,9 +176,22 @@ public class HomeActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
                     }
                 }
+
+                for(int i=0;i<ArrListAlarm.size()-1;i++){
+                    int m = i;
+                    for(int j=i+1;j<ArrListAlarm.size();j++){
+                        if(ArrListAlarm.get(m).getUnixTime() > ArrListAlarm.get(j).getUnixTime())
+                            m = j;
+                    }
+                    //swapping elements at position i and m
+                    Alarm temp = ArrListAlarm.get(i);
+                    ArrListAlarm.set(i, ArrListAlarm.get(m));
+                    ArrListAlarm.set(m, temp);
+                }
+
                 //Remove Loading Animation
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                 //Get the calendar Object today's date.
@@ -175,6 +219,23 @@ public class HomeActivity extends AppCompatActivity {
         txtDay = (TextView) findViewById(R.id.day);
         txtTaskTitle = (TextView) findViewById(R.id.taskTitle);
         txtTaskTime = (TextView) findViewById(R.id.taskTime);
+        ImageButton editTask = (ImageButton) findViewById(R.id.editTask);
+        editTask.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+//                intent.putExtra("latitude",ArrListAlarm.get(0).getLatitude());
+//                intent.putExtra("longtitude",ArrListAlarm.get(0).getLongitude());
+//                intent.putExtra("edit",true);
+//
+//                //Existing Information that was previously in the AddNewTasks Page,it is receieved so it can passed back.
+//                intent.putExtra("title",ArrListAlarm.get(0).getTitle());
+//                intent.putExtra("desc",ArrListAlarm.get(0).getDescription());
+//                intent.putExtra("unixTime",ArrListAlarm.get(0).getUnixTime());
+                intent.putExtra("uid",ArrListAlarm.get(0).getUid());
+                startActivity(intent);
+            }
+        });
 
         txtDate.setText(currentDate);
         txtDay.setText(currentDay);

@@ -18,5 +18,6 @@
     <string name="title_activity_maps">AIzaSyA-voF_yzWD4p1vGcrFNjZ6aKIo-2ep8YE</string>
     <string name="title_activity_maps2">Map</string>
     <string name="title_activity_place_picker">PlacePickerActivity</string>
-    <string name="title_activity_place_selection_plugin">PlaceSelectionPluginActivity</string><!--Dimension for vector icon-->
+    <string name="title_activity_place_selection_plugin">PlaceSelectionPluginActivity</string>
+    <string name="title_activity_task_details">TaskDetails</string><!--Dimension for vector icon-->
 </resources>

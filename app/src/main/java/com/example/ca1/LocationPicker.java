@@ -61,8 +61,7 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
         //Moving the camera to the current Location of the User
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currLocation,12));
 
-        //Prepping the geocoder to get the Location of the Pin
-        Geocoder geocoder = new Geocoder(getApplication(), Locale.getDefault());
+
         googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
 
             @Override
@@ -101,20 +100,7 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
-                try {
-                    //Finding the Closest Address
-                    Address locationAddress = geocoder.getFromLocation(selectedLatLng[0].latitude,selectedLatLng[0].longitude, 1).get(0);
-                    //If there is no good address, send null so we can process it later
-                    if(locationAddress.getAddressLine(0) == null){
-                        intent.putExtra("address",(String)null);
-                    }else{
-                        intent.putExtra("address",locationAddress.getAddressLine(0));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (IndexOutOfBoundsException e){//If there is no good address, send null so we can process it later
-                    intent.putExtra("address",(String)null);
-                }
+
                 //New Information to pass back to the AddNewTasks Page
                 intent.putExtra("latitude",selectedLatLng[0].latitude);
                 intent.putExtra("longtitude",selectedLatLng[0].longitude);
@@ -123,6 +109,9 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
                 intent.putExtra("title",getIntent().getStringExtra("title"));
                 intent.putExtra("desc",getIntent().getStringExtra("desc"));
                 intent.putExtra("unixTime",getIntent().getLongExtra("unixTime",-1));
+                intent.putExtra("edit",getIntent().getBooleanExtra("edit",false));
+                intent.putExtra("uid",getIntent().getStringExtra("uid"));
+                intent.putExtra("usedLocationPicker",true);
                 startActivity(intent);
             }
         });

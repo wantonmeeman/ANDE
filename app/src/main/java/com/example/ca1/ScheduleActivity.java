@@ -110,7 +110,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
                         if(alarm.getUnixTime() * 1000L < System.currentTimeMillis()){
                             count++;
                         }
@@ -126,6 +126,17 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 todayProgressBar.setProgress(completedTaskPercentage);
                 completionStatus.setText("You have completed "+count+"/"+ArrListAlarm.size()+" tasks Today!");
 
+                for(int i=0;i<ArrListAlarm.size()-1;i++){
+                    int m = i;
+                    for(int j=i+1;j<ArrListAlarm.size();j++){
+                        if(ArrListAlarm.get(m).getUnixTime() > ArrListAlarm.get(j).getUnixTime())
+                            m = j;
+                    }
+                    //swapping elements at position i and m
+                    Alarm temp = ArrListAlarm.get(i);
+                    ArrListAlarm.set(i, ArrListAlarm.get(m));
+                    ArrListAlarm.set(m, temp);
+                }
 
                 RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
 

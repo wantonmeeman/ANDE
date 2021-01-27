@@ -157,7 +157,19 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                     //This snippet handles before the user clicks a date.
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
+                    }
+
+                    for(int i=0;i<ArrListAlarm.size()-1;i++){
+                        int m = i;
+                        for(int j=i+1;j<ArrListAlarm.size();j++){
+                            if(ArrListAlarm.get(m).getUnixTime() > ArrListAlarm.get(j).getUnixTime())
+                                m = j;
+                        }
+                        //swapping elements at position i and m
+                        Alarm temp = ArrListAlarm.get(i);
+                        ArrListAlarm.set(i, ArrListAlarm.get(m));
+                        ArrListAlarm.set(m, temp);
                     }
 
                     //This snippet goes through every date and assigns them into the calendarView.
@@ -204,7 +216,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 if(prevDataDate != null) {
                     calendarView.unMarkDate(prevDataDate);
                 }
-                //THERE IS 100% AN EASIER WAY TO DO THIS BUT IM TOO TIRED PLACEHOLDER FOR NOW.
+
                 for(int i = 0;calendarView.getMarkedDates().getAll().size() > i;i++) {
                     if(date.equals(calendarView.getMarkedDates().getAll().get(i))) {
                         calendarView.unMarkDate(date);
@@ -252,8 +264,20 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Alarm alarm = snapshot.getValue(Alarm.class);
                             if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                                ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
+                                ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
                             }
+                        }
+
+                        for(int i=0;i<ArrListAlarm.size()-1;i++){
+                            int m = i;
+                            for(int j=i+1;j<ArrListAlarm.size();j++){
+                                if(ArrListAlarm.get(m).getUnixTime() > ArrListAlarm.get(j).getUnixTime())
+                                    m = j;
+                            }
+                            //swapping elements at position i and m
+                            Alarm temp = ArrListAlarm.get(i);
+                            ArrListAlarm.set(i, ArrListAlarm.get(m));
+                            ArrListAlarm.set(m, temp);
                         }
 
                         //Get the calendar Object today's date.

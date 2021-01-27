@@ -7,8 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
@@ -24,10 +27,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 
 
 public class AddNewTaskActivity extends AppCompatActivity {
@@ -58,7 +69,39 @@ public class AddNewTaskActivity extends AppCompatActivity {
         Double selectedLatitude = getIntent().getDoubleExtra("latitude",-1);
         Double selectedLongtitude = getIntent().getDoubleExtra("longtitude",-1);
         Long selectedDate = getIntent().getLongExtra("unixTime",-1);
-        String address = getIntent().getStringExtra("address");
+        String Uid = getIntent().getStringExtra("uid");
+
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+
+        final String userid;
+        GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
+        if(gAcc != null){
+            userid = gAcc.getId();
+        }else{
+            userid = pref.getString("firebaseUserId","1");
+        }
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
+
+        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
+
+        //Prepping the geocoder to get the Location of the Pin
+        Geocoder geocoder = new Geocoder(getApplication(), Locale.getDefault());
+        try {
+            Address locationAddress = geocoder.getFromLocation(selectedLatitude,selectedLongtitude, 1).get(0);
+            if(selectedLatitude == -1 || selectedLongtitude == -1 ){
+                locTxt.setText(" ");
+            }else if(locationAddress == null){
+                locTxt.setText("Street Name Unknown");
+            }else{
+                locTxt.setText(locationAddress.getAddressLine(0));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IndexOutOfBoundsException e){
+            locTxt.setText(" ");
+            e.printStackTrace();
+        }
 
         //Values that are not passed in are null, these snippets handle the setting of the EditText's
         if(getIntent().getStringExtra("title") != null){
@@ -68,13 +111,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
            descriptionTxt.setText(getIntent().getStringExtra("desc"));
         }
 
-        if(selectedLatitude == -1 || selectedLongtitude == -1 ){
-            locTxt.setText(" ");
-        }else if(address == null){
-            locTxt.setText("Street Name Unknown");
-        }else{
-            locTxt.setText(address);
-        }
+
 
         Calendar cal = Calendar.getInstance();
 
@@ -85,11 +122,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
         timeTxt.setText(timeFormat.format(cal.getTime()));
         dateTxt.setText(dateFormat.format(cal.getTime()));
 
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
-
-        DatabaseReference myDbRef = database.getReference("usersInformation");
         //This prevents Focusing
         timeTxt.setInputType(InputType.TYPE_NULL);
         dateTxt.setInputType(InputType.TYPE_NULL);
@@ -107,6 +140,8 @@ public class AddNewTaskActivity extends AppCompatActivity {
                 intent.putExtra("title",titleTxt.getText().toString());
                 intent.putExtra("desc",descriptionTxt.getText().toString());
                 intent.putExtra("unixTime",cal.getTimeInMillis());
+                intent.putExtra("edit",getIntent().getBooleanExtra("edit",false));
+                intent.putExtra("uid",getIntent().getStringExtra("uid"));
                 startActivity(intent);
             }
         });
@@ -153,21 +188,70 @@ public class AddNewTaskActivity extends AppCompatActivity {
         });
 
         submitBtn.setOnClickListener(v -> {
+
             //Here we pass in the Calendar object which we modified in the Dialogs.
-            Alarm newAlarm = new Alarm(titleTxt.getText().toString(),descriptionTxt.getText().toString(),selectedLongtitude,selectedLatitude,cal.getTimeInMillis()/1000L);
+            if(userid != "1" && !(getIntent().getBooleanExtra("edit",true))) {
 
-            String userid = pref.getString("firebaseUserId","UNKNOWNString");
-            GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
-            if(gAcc != null){
-                userid = gAcc.getId();
-            }else{
-                userid = pref.getString("firebaseUserId","1");
-            }
+                String alphabet = "123456789";
 
-            if(userid != "1") {
-                myDbRef.child(userid).child("UserAlarms").push().setValue(newAlarm);
+                // create random string builder
+                StringBuilder sb = new StringBuilder();
+
+                // create an object of Random class
+                Random random = new Random();
+
+                // specify length of random string
+                int length = 21;
+
+                for(int i = 0; i < length; i++) {
+
+                    // generate random index number
+                    int index = random.nextInt(alphabet.length());
+
+                    // get character specified by index
+                    // from the string
+                    char randomChar = alphabet.charAt(index);
+
+                    // append the character to string builder
+                    sb.append(randomChar);
+                }
+
+                String randomString = sb.toString();
+
+                Alarm newAlarm = new Alarm(titleTxt.getText().toString(),descriptionTxt.getText().toString(),selectedLongtitude,selectedLatitude,cal.getTimeInMillis()/1000L,randomString);
+                myDbRef.child(randomString).setValue(newAlarm);
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
+
+            }else if(getIntent().getBooleanExtra("edit",false)){
+                Map<String, Object> postValues = new HashMap<String,Object>();
+                myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                             Alarm alarm = snapshot.getValue(Alarm.class);
+                             if((Uid).equals(alarm.getUid())){
+
+                              postValues.put("title",titleTxt.getText().toString());
+                              postValues.put("description",descriptionTxt.getText().toString());
+                              postValues.put("longitude",selectedLongtitude);
+                              postValues.put("latitude",selectedLatitude);
+                              postValues.put("unixTime",cal.getTimeInMillis()/1000L);
+                              myDbRef.child(Uid).updateChildren(postValues);
+                             } } }
+                             @Override
+                             public void onCancelled(DatabaseError databaseError) {
+
+                             }});
+
+                if(getIntent().getBooleanExtra("usedLocationPicker",false)){
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    startActivity(intent);
+                }else{
+                    finish();
+                }
+
             }else{
                 Toast.makeText(getApplication(),"You are not Logged in",Toast.LENGTH_LONG).show();
             }

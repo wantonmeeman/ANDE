@@ -208,7 +208,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }else{
                         selectedDrawable = R.drawable.location_pin_inactive;
                     }
-                    ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLongitude(), alarm.getUnixTime() * 1000L));
+                    ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLongitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
                     mMap.addMarker(new MarkerOptions().position(
                             new LatLng(alarm.getLatitude(),alarm.getLongitude())
                     ).title(
