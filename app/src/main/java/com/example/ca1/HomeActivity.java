@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Database;
 
 import android.content.SharedPreferences;
 import android.media.Image;
@@ -37,6 +36,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -197,6 +197,26 @@ public class HomeActivity extends AppCompatActivity {
                 //Get the calendar Object today's date.
                 RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
 
+                myrv.addOnItemTouchListener(
+                        new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
+                            @Override public void onItemClick(View view, int position) {
+                                Log.i("Short press",Integer.toString(position));
+                                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                Log.i("nword",ArrListAlarm.get(position).getUid());
+                                intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                startActivity(intent);
+                            }
+
+                            @Override public void onLongItemClick(View view, int position) {
+                                Log.i("Long Press",Integer.toString(position));
+                                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                startActivity(intent);
+                            }
+                        })
+                );
+
+
                 //Gets the Adapter from the JAVA file
                 RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(HomeActivity.this,ArrListAlarm);
 
@@ -220,22 +240,14 @@ public class HomeActivity extends AppCompatActivity {
         txtTaskTitle = (TextView) findViewById(R.id.taskTitle);
         txtTaskTime = (TextView) findViewById(R.id.taskTime);
         ImageButton editTask = (ImageButton) findViewById(R.id.editTask);
-        editTask.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
-//                intent.putExtra("latitude",ArrListAlarm.get(0).getLatitude());
-//                intent.putExtra("longtitude",ArrListAlarm.get(0).getLongitude());
-//                intent.putExtra("edit",true);
-//
-//                //Existing Information that was previously in the AddNewTasks Page,it is receieved so it can passed back.
-//                intent.putExtra("title",ArrListAlarm.get(0).getTitle());
-//                intent.putExtra("desc",ArrListAlarm.get(0).getDescription());
-//                intent.putExtra("unixTime",ArrListAlarm.get(0).getUnixTime());
-                intent.putExtra("uid",ArrListAlarm.get(0).getUid());
-                startActivity(intent);
-            }
-        });
+//        editTask.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+//                intent.putExtra("uid",ArrListAlarm.get(0).getUid());
+//                startActivity(intent);
+//            }
+//        });
 
         txtDate.setText(currentDate);
         txtDay.setText(currentDay);

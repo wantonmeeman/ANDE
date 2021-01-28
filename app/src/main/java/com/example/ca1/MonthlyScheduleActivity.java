@@ -283,6 +283,25 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                         //Get the calendar Object today's date.
                         RecyclerView myrv = findViewById(R.id.recyclerViewTask);
 
+                        myrv.addOnItemTouchListener(
+                                new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
+                                    @Override public void onItemClick(View view, int position) {
+                                        Log.i("Short press",Integer.toString(position));
+                                        Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                        Log.i("nword",ArrListAlarm.get(position).getUid());
+                                        intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                        startActivity(intent);
+                                    }
+
+                                    @Override public void onLongItemClick(View view, int position) {
+                                        Log.i("Long Press",Integer.toString(position));
+                                        Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                        intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                        startActivity(intent);
+                                    }
+                                })
+                        );
+
                         //Set Layout, here we set LinearLayout
                         myrv.setLayoutManager(new LinearLayoutManager(getApplication()));
 

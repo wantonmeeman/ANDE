@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Database;
 
 import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
@@ -128,10 +127,6 @@ public class TaskDetails extends AppCompatActivity {
             ;
         });
 
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(this);
-
         String userid = "";
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
@@ -150,10 +145,19 @@ public class TaskDetails extends AppCompatActivity {
         TextView dateTxt = findViewById(R.id.date);
         TextView locationTxt = findViewById(R.id.location);
 
-
-
-
         String Uid = getIntent().getStringExtra("uid");
+
+        ImageButton editBtn = findViewById(R.id.editBtn);
+        editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("WHY NO WORK XDXXDXDXDXD","XDXDXDXDXX");
+                Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
+                intent.putExtra("edit",(Boolean)true);
+                intent.putExtra("uid",Uid);
+                startActivity(intent);
+            }
+        });
         myDbRef.child(Uid).addValueEventListener(new ValueEventListener() {
 
             @Override
@@ -171,7 +175,7 @@ public class TaskDetails extends AppCompatActivity {
                     locationTxt.setText(locationAddress.getAddressLine(0));
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (IndexOutOfBoundsException e){
+                } catch (IndexOutOfBoundsException e){//If a location cannot be found.
                     locationTxt.setText(" ");
                     e.printStackTrace();
                 }
@@ -185,7 +189,6 @@ public class TaskDetails extends AppCompatActivity {
         });
 
     }
-        //createNotificationChannel();
 }
 
 //    public void onMapReady(GoogleMap googleMap) {
