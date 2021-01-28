@@ -65,7 +65,11 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
     protected void onRestart(){
         super.onRestart();
         if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
-            recreate();
+            //This is an older method that works with the 3rd party library
+            //recreate() would crash.
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
         }
     }
     @Override
@@ -186,6 +190,24 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
                 RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
 
+                myrv.addOnItemTouchListener(
+                        new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
+                            @Override public void onItemClick(View view, int position) {
+                                Log.i("Short press",Integer.toString(position));
+                                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                startActivity(intent);
+                            }
+
+                            @Override public void onLongItemClick(View view, int position) {
+                                Log.i("Long Press",Integer.toString(position));
+                                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                startActivity(intent);
+                            }
+                        })
+                );
+
                 //Gets the Adapter from the JAVA file
                 RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
 
@@ -207,12 +229,11 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
         });
         calendarView.hasTitle(false);
-
         calendarView.setOnDateClickListener(new OnDateClickListener() {
             DateData prevDataDate;
-
             @Override
             public void onDateClick(View view, DateData date) {
+                Log.i("Debug","DateClickListener");
                 if(prevDataDate != null) {
                     calendarView.unMarkDate(prevDataDate);
                 }
@@ -227,8 +248,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                                 )
                         );//When an Event is already in the date selected.
                     }
-                    if(prevDataDate != null
-                            && !(prevDataDate.equals(date))) {//The second condition resolves if a marked date is clicked twice.
+                    if(prevDataDate != null && !(prevDataDate.equals(date))) {//The second condition resolves if a marked date is clicked twice.
                         if (prevDataDate.equals(calendarView.getMarkedDates().getAll().get(i))) {
                             calendarView.unMarkDate(prevDataDate);
                             calendarView.markDate(
@@ -283,25 +303,6 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                         //Get the calendar Object today's date.
                         RecyclerView myrv = findViewById(R.id.recyclerViewTask);
 
-                        myrv.addOnItemTouchListener(
-                                new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
-                                    @Override public void onItemClick(View view, int position) {
-                                        Log.i("Short press",Integer.toString(position));
-                                        Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
-                                        Log.i("nword",ArrListAlarm.get(position).getUid());
-                                        intent.putExtra("uid",ArrListAlarm.get(position).getUid());
-                                        startActivity(intent);
-                                    }
-
-                                    @Override public void onLongItemClick(View view, int position) {
-                                        Log.i("Long Press",Integer.toString(position));
-                                        Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
-                                        intent.putExtra("uid",ArrListAlarm.get(position).getUid());
-                                        startActivity(intent);
-                                    }
-                                })
-                        );
-
                         //Set Layout, here we set LinearLayout
                         myrv.setLayoutManager(new LinearLayoutManager(getApplication()));
 
@@ -323,6 +324,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         calendarView.setOnMonthChangeListener(new OnMonthChangeListener() {
             @Override
             public void onMonthChange(int year, int month) {
+                Log.i("Debug","MnthChangeListener");
                 calendarView.hasTitle(false);
                 int YearB = cal.get(Calendar.YEAR);
                 int MonthB = cal.get(Calendar.MONTH);
@@ -357,9 +359,10 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         ImageButton nextMnth = (ImageButton)findViewById(R.id.nextMonth);
 
         nextMnth.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                Log.i("NextOnClick","true");
+                Log.i("Debug","nextMonth");
                 if(cal.get(Calendar.MONTH) == 11) {
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR)+1, 1, 1));
                 }else{
@@ -372,6 +375,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         prevMnth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i("Debug","prevMonth");
                 if(cal.get(Calendar.MONTH) == 0) {
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR)-1, 12, 1));
                 }else{
