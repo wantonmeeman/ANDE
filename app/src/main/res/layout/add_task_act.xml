@@ -33,12 +33,13 @@
                 android:tint="@color/white" />
 
             <TextView
+                android:id="@+id/textHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="60dp"
                 android:layout_weight="2"
                 android:fontFamily="@font/giib"
-                android:text="Add Task"
+                android:text="Edit Task"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="30dp" />

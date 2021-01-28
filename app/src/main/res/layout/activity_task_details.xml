@@ -44,7 +44,7 @@
 
                 android:layout_weight="2"
                 android:fontFamily="@font/giib"
-                android:text="Task"
+                android:text="Task Details"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="30dp" />
@@ -188,9 +188,30 @@
             android:fontFamily="@font/giib"
             android:textColor="@color/black"
             android:textSize="22.5dp"
+            android:layout_marginBottom="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+        <LinearLayout
+            android:id="@+id/submitBtnWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/delBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:layout_marginLeft="95dp"
+                android:layout_marginRight="95dp"
+                android:layout_weight="2"
+                android:backgroundTint="#F32013"
+                android:fontFamily="@font/giib"
+                android:text="Delete Task"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="17.5dp"
+                app:cornerRadius="200dp" />
+        </LinearLayout>
 <!--        <fragment-->
 <!--            android:id="@+id/map"-->
 <!--            android:name="com.google.android.gms.maps.SupportMapFragment"-->

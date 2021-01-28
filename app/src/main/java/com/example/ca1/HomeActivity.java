@@ -202,7 +202,6 @@ public class HomeActivity extends AppCompatActivity {
                             @Override public void onItemClick(View view, int position) {
                                 Log.i("Short press",Integer.toString(position));
                                 Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
-                                Log.i("nword",ArrListAlarm.get(position).getUid());
                                 intent.putExtra("uid",ArrListAlarm.get(position).getUid());
                                 startActivity(intent);
                             }
@@ -239,15 +238,6 @@ public class HomeActivity extends AppCompatActivity {
         txtDay = (TextView) findViewById(R.id.day);
         txtTaskTitle = (TextView) findViewById(R.id.taskTitle);
         txtTaskTime = (TextView) findViewById(R.id.taskTime);
-        ImageButton editTask = (ImageButton) findViewById(R.id.editTask);
-//        editTask.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
-//                intent.putExtra("uid",ArrListAlarm.get(0).getUid());
-//                startActivity(intent);
-//            }
-//        });
 
         txtDate.setText(currentDate);
         txtDay.setText(currentDay);

@@ -6,12 +6,15 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.location.Address;
 import android.location.Geocoder;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -28,6 +31,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -95,6 +99,120 @@ public class TaskDetails extends AppCompatActivity {
 
         setContentView(R.layout.activity_task_details);
 
+        String userid = "";
+        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
+
+        if(gAcc != null){
+            userid = gAcc.getId();
+        }else{
+            userid = pref.getString("firebaseUserId","1");
+        }
+
+        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
+        TextView titleTxt = findViewById(R.id.titleTxt);
+        TextView descriptionTxt =findViewById(R.id.descriptionTxt);
+        TextView timeTxt = findViewById(R.id.time);
+        TextView dateTxt = findViewById(R.id.date);
+        TextView locationTxt = findViewById(R.id.location);
+        final double[] selectedLatitude = {0};
+        final double[] selectedLongitude = {0};
+
+        String Uid = getIntent().getStringExtra("uid");
+        Calendar cal = Calendar.getInstance();
+
+        MaterialButton delBtn = findViewById(R.id.delBtn);
+
+        delBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Handler().postDelayed(new Runnable() {//Using a handler works, for some reason.....
+                    @Override
+                    public void run() {
+                        AlertDialog.Builder builder1 = new AlertDialog.Builder(TaskDetails.this);
+                        builder1.setMessage("Are you sure you want to delete this?");
+                        builder1.setCancelable(true);
+
+                        builder1.setPositiveButton(
+                                "Yes",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                        startActivity(intent);
+                                        myDbRef.child(Uid).removeValue();
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        builder1.setNegativeButton(
+                                "No",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        AlertDialog alert11 = builder1.create();
+                        alert11.show();
+                    }
+                },100);
+
+            }
+        });
+
+        ImageButton editBtn = findViewById(R.id.editBtn);
+        editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
+                intent.putExtra("edit",(Boolean)true);
+                intent.putExtra("uid",Uid);
+                intent.putExtra("title",titleTxt.getText());
+                intent.putExtra("desc",descriptionTxt.getText());
+                intent.putExtra("unixTime",cal.getTimeInMillis());
+                intent.putExtra("latitude", selectedLatitude[0]);
+                intent.putExtra("longitude", selectedLongitude[0]);
+                startActivity(intent);
+            }
+        });
+
+        myDbRef.child(Uid).addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Alarm alarm = dataSnapshot.getValue(Alarm.class);
+                if(alarm != null) {//This handles when the user deletes the object
+                    titleTxt.setText(alarm.getTitle());
+                    descriptionTxt.setText(alarm.getDescription());
+                    cal.setTimeInMillis(alarm.getUnixTime() * 1000L);
+                    timeTxt.setText(timeFormat.format(cal.getTime()));
+                    dateTxt.setText(dateFormat.format(cal.getTime()));
+                    Geocoder geocoder = new Geocoder(getApplication(), Locale.getDefault());
+                    try {
+                        selectedLatitude[0] = alarm.getLatitude();
+                        selectedLongitude[0] = alarm.getLongitude();
+                        Address locationAddress = geocoder.getFromLocation(alarm.getLatitude(), alarm.getLongitude(), 1).get(0);
+                        locationTxt.setText(locationAddress.getAddressLine(0));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (IndexOutOfBoundsException e) {//If a location cannot be found.
+                        locationTxt.setText(" ");
+                        e.printStackTrace();
+                    }
+                    if (alarm.getUnixTime() * 1000L < System.currentTimeMillis()) {
+                        editBtn.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.i("Error",error.toString());
+                // Failed to read value
+            }
+        });
+
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
         botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -125,67 +243,6 @@ public class TaskDetails extends AppCompatActivity {
             }
 
             ;
-        });
-
-        String userid = "";
-        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-        GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
-        FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
-
-        if(gAcc != null){
-            userid = gAcc.getId();
-        }else{
-            userid = pref.getString("firebaseUserId","1");
-        }
-
-        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
-        TextView titleTxt = findViewById(R.id.titleTxt);
-        TextView descriptionTxt =findViewById(R.id.descriptionTxt);
-        TextView timeTxt = findViewById(R.id.time);
-        TextView dateTxt = findViewById(R.id.date);
-        TextView locationTxt = findViewById(R.id.location);
-
-        String Uid = getIntent().getStringExtra("uid");
-
-        ImageButton editBtn = findViewById(R.id.editBtn);
-        editBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("WHY NO WORK XDXXDXDXDXD","XDXDXDXDXX");
-                Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
-                intent.putExtra("edit",(Boolean)true);
-                intent.putExtra("uid",Uid);
-                startActivity(intent);
-            }
-        });
-        myDbRef.child(Uid).addValueEventListener(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Alarm alarm = dataSnapshot.getValue(Alarm.class);
-                titleTxt.setText(alarm.getTitle());
-                descriptionTxt.setText(alarm.getDescription());
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(alarm.getUnixTime()*1000L);
-                timeTxt.setText(timeFormat.format(cal.getTime()));
-                dateTxt.setText(dateFormat.format(cal.getTime()));
-                Geocoder geocoder = new Geocoder(getApplication(), Locale.getDefault());
-                try {
-                    Address locationAddress = geocoder.getFromLocation(alarm.getLatitude(),alarm.getLongitude(), 1).get(0);
-                    locationTxt.setText(locationAddress.getAddressLine(0));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (IndexOutOfBoundsException e){//If a location cannot be found.
-                    locationTxt.setText(" ");
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Log.i("Error",error.toString());
-                // Failed to read value
-            }
         });
 
     }

@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -64,11 +65,12 @@ public class AddNewTaskActivity extends AppCompatActivity {
         EditText timeTxt = findViewById(R.id.Time);
         EditText dateTxt = findViewById(R.id.Date);
         EditText locTxt = findViewById(R.id.Location);
+        TextView txtHeader = findViewById(R.id.textHeader);
         MaterialButton submitBtn = findViewById(R.id.submitBtn);
 
         //Values that were passed in thru the previous activity
         Double selectedLatitude = getIntent().getDoubleExtra("latitude",-1);
-        Double selectedLongtitude = getIntent().getDoubleExtra("longtitude",-1);
+        Double selectedLongitude = getIntent().getDoubleExtra("longitude",-1);
         Long selectedDate = getIntent().getLongExtra("unixTime",-1);
         String Uid = getIntent().getStringExtra("uid");
 
@@ -86,35 +88,25 @@ public class AddNewTaskActivity extends AppCompatActivity {
 
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
 
+        Calendar cal = Calendar.getInstance();
         //Prepping the geocoder to get the Location of the Pin
         Geocoder geocoder = new Geocoder(getApplication(), Locale.getDefault());
         try {
-            Address locationAddress = geocoder.getFromLocation(selectedLatitude,selectedLongtitude, 1).get(0);
-            if(selectedLatitude == -1 || selectedLongtitude == -1 ){
-                locTxt.setText(" ");
-            }else if(locationAddress == null){
-                locTxt.setText("Street Name Unknown");
-            }else{
-                locTxt.setText(locationAddress.getAddressLine(0));
-            }
+            locTxt.setText( geocoder.getFromLocation(selectedLatitude,selectedLongitude, 1).get(0).getAddressLine(0));
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException e){//If a location cannot be found.
             locTxt.setText(" ");
             e.printStackTrace();
         }
 
         //Values that are not passed in are null, these snippets handle the setting of the EditText's
-        if(getIntent().getStringExtra("title") != null){
+        if(getIntent().getStringExtra("title") != null) {
             titleTxt.setText(getIntent().getStringExtra("title"));
         }
-        if(getIntent().getStringExtra("desc") != null){
-           descriptionTxt.setText(getIntent().getStringExtra("desc"));
+        if(getIntent().getStringExtra("desc") != null) {
+            descriptionTxt.setText(getIntent().getStringExtra("desc"));
         }
-
-
-
-        Calendar cal = Calendar.getInstance();
 
         if(selectedDate != -1) {
             cal.setTimeInMillis(selectedDate);
@@ -127,6 +119,15 @@ public class AddNewTaskActivity extends AppCompatActivity {
         //This prevents Focusing
         timeTxt.setInputType(InputType.TYPE_NULL);
         dateTxt.setInputType(InputType.TYPE_NULL);
+
+        if(getIntent().getBooleanExtra("edit",false)){
+            txtHeader.setText("Edit Task");
+            submitBtn.setText("Edit Task");
+        }else{
+
+            txtHeader.setText("Add Task");
+            submitBtn.setText("Add Task");
+        }
 
 
         locTxt.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +144,11 @@ public class AddNewTaskActivity extends AppCompatActivity {
                 intent.putExtra("unixTime",cal.getTimeInMillis());
                 intent.putExtra("edit",getIntent().getBooleanExtra("edit",false));
                 intent.putExtra("uid",getIntent().getStringExtra("uid"));
+
+                if(!locTxt.getText().equals("")) {//If no location found,aka creating a new task.
+                    intent.putExtra("latitude", selectedLatitude);
+                    intent.putExtra("longitude", selectedLongitude);
+                }
                 startActivity(intent);
             }
         });
@@ -219,7 +225,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
 
                 String randomString = sb.toString();
 
-                Alarm newAlarm = new Alarm(titleTxt.getText().toString(),descriptionTxt.getText().toString(),selectedLongtitude,selectedLatitude,cal.getTimeInMillis()/1000L,randomString);
+                Alarm newAlarm = new Alarm(titleTxt.getText().toString(),descriptionTxt.getText().toString(),selectedLongitude,selectedLatitude,cal.getTimeInMillis()/1000L,randomString);
                 myDbRef.child(randomString).setValue(newAlarm);
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
@@ -236,7 +242,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
 
                               postValues.put("title",titleTxt.getText().toString());
                               postValues.put("description",descriptionTxt.getText().toString());
-                              postValues.put("longitude",selectedLongtitude);
+                              postValues.put("longitude",selectedLongitude);
                               postValues.put("latitude",selectedLatitude);
                               postValues.put("unixTime",cal.getTimeInMillis()/1000L);
                               myDbRef.child(Uid).updateChildren(postValues);
@@ -252,7 +258,6 @@ public class AddNewTaskActivity extends AppCompatActivity {
                 }else{
                     finish();
                 }
-
             }else{
                 Toast.makeText(getApplication(),"You are not Logged in",Toast.LENGTH_LONG).show();
             }
