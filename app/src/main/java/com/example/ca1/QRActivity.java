@@ -130,9 +130,6 @@ public class QRActivity extends AppCompatActivity {
                     for (int i = 0; i < qrCodes.size(); ++i) {
                         int id = qrCodes.keyAt(i);
                         Barcode qrCode = qrCodes.get(id);
-                        Log.e("Bounding Box", qrCode.getBoundingBox().toString());
-                        Log.e("Center Y", String.valueOf(qrCode.getBoundingBox().centerY()));
-                        Log.e("Center X", String.valueOf(qrCode.getBoundingBox().centerX()));
 
                         if (qrCode.getBoundingBox().centerY() > 325 && qrCode.getBoundingBox().centerY() < 575) {
                             textView.post(new Runnable() {
@@ -155,7 +152,7 @@ public class QRActivity extends AppCompatActivity {
                                         alarm.setLongitude(jObject.getDouble("longitude"));
                                         alarm.setLatitude(jObject.getDouble("latitude"));
                                         alarm.setUnixTime(jObject.getLong("unixTime"));
-                                        cal.setTimeInMillis(alarm.getUnixTime());
+                                        cal.setTimeInMillis(alarm.getUnixTime()*1000L);
 
                                         String alphabet = "123456789";
                                         StringBuilder sb = new StringBuilder();
@@ -184,6 +181,17 @@ public class QRActivity extends AppCompatActivity {
                                                         "\nDate and Time: "+dateFormat.format(cal)+
                                                         "\nLocation: "+locationName);
                                                 builder.setCancelable(true);
+
+                                                builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                                    @Override
+                                                    public void onCancel(DialogInterface dialog) {
+                                                        try{
+                                                            cameraSource.start(surfaceView.getHolder());//This isnt really an error, its a warning, we know what we are doing
+                                                        } catch (IOException e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                });
 
                                                 builder.setPositiveButton(
                                                         "Yes",
