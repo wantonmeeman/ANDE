@@ -8,12 +8,14 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 
-public class ReminderBroadcast extends BroadcastReceiver{
+public class ReminderBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent){
 
@@ -24,28 +26,22 @@ public class ReminderBroadcast extends BroadcastReceiver{
 
         //Intent to Dismiss notification
         Intent dismissIntent = new Intent(context, DismissActivity.class);
-
-        //Idk wtf this set flags thing does but put it here
         dismissIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         dismissIntent.putExtra("notifID", 1);
         PendingIntent dismissPendingIntent = PendingIntent.getActivity(context, 0, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
+        Log.i("title",intent.getExtras().getString("alarmTitle"));
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"Alarm")
                 .setSmallIcon(R.drawable.calendar_icon)
-                .setContentTitle("Alarm")
-                .setContentText("Alarm Triggered")
-                .setSubText("Alarm X Triggered")
+                .setContentTitle(intent.getExtras().getString("alarmTitle"))
+                .setContentText(intent.getExtras().getString("alarmDescription"))
+                .setSubText("Alarm Triggered")
                 .setSound(Settings.System.DEFAULT_RINGTONE_URI)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(Notification.CATEGORY_ALARM)
-                .setColor(Color.BLUE)
-                .setVibrate(new long[] {0, 500, 1000})
+                .setColor(Color.parseColor("#625BC2"))
                 .addAction(R.mipmap.ic_launcher,"Dismiss",dismissPendingIntent)
                 .addAction(R.mipmap.ic_launcher,"Get Info",redirectIntent);
-
-        //Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        //vibrator.vibrate(2000);
 
         Notification mNotification = builder.build();
         mNotification.flags |= Notification.FLAG_INSISTENT;
@@ -56,6 +52,7 @@ public class ReminderBroadcast extends BroadcastReceiver{
         notificationManager.notify(1,mNotification);
         turnScreenOn(0,context);
     }
+
     public static void turnScreenOn(int sec, final Context context)
     {
         final int seconds = sec;

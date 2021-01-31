@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.SharedPreferences;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -133,38 +134,9 @@ public class HomeActivity extends AppCompatActivity {
 
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
 
-        String alphabet = "123456789";
-
-        // create random string builder
-        StringBuilder sb = new StringBuilder();
-
-        // create an object of Random class
-        Random random = new Random();
-
-        // specify length of random string
-        int length = 21;
-
-        for(int i = 0; i < length; i++) {
-
-            // generate random index number
-            int index = random.nextInt(alphabet.length());
-
-            // get character specified by index
-            // from the string
-            char randomChar = alphabet.charAt(index);
-
-            // append the character to string builder
-            sb.append(randomChar);
-        }
-
-        String randomString = sb.toString();
-
         Random rand = new Random();
-        //Alarm testAlarm = new Alarm("alarmTitle1","alarmDescription1",103.78462387+(rand.nextDouble()/10),1.42613738+(rand.nextDouble()/10),((System.currentTimeMillis() / 1000L)+(1*60)),randomString);
-//
-        //myDbRef.child(randomString).setValue(testAlarm);
-        //Alarm testAlarm = new Alarm("alarmTitle1","alarmDescription1",103.78462387+(rand.nextDouble()/10),1.42613738+(rand.nextDouble()/10),((System.currentTimeMillis() / 1000L)+(1*60)));
 
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         myDbRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -173,10 +145,24 @@ public class HomeActivity extends AppCompatActivity {
                 // whenever data at this location is updated.
                 ArrListAlarm.clear();
                 findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
                         ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
+                        if(alarm.getUnixTime()*1000L > System.currentTimeMillis()){
+
+                            Intent intent1 = new Intent(HomeActivity.this,ReminderBroadcast.class);
+                            intent1.putExtra("alarmTitle",alarm.getTitle());
+                            intent1.putExtra("alarmLat",alarm.getLatitude());
+                            intent1.putExtra("alarmLong",alarm.getLongitude());
+                            intent1.putExtra("alarmDescription",alarm.getDescription());
+                            //Need a different integer to tell the alarms apart, so i use a random integer
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,rand.nextInt(),intent1,0);
+                            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,alarm.getUnixTime()*1000L,pendingIntent);
+                            createNotificationChannel();
+
+                        }
                     }
                 }
 
@@ -190,6 +176,7 @@ public class HomeActivity extends AppCompatActivity {
                     Alarm temp = ArrListAlarm.get(i);
                     ArrListAlarm.set(i, ArrListAlarm.get(m));
                     ArrListAlarm.set(m, temp);
+
                 }
 
                 //Remove Loading Animation
@@ -213,7 +200,10 @@ public class HomeActivity extends AppCompatActivity {
                                 startActivity(intent);
                             }
                         })
+
                 );
+
+
 
 
                 //Gets the Adapter from the JAVA file
@@ -272,26 +262,11 @@ public class HomeActivity extends AppCompatActivity {
             };
         });
 
-
-
-        //createNotificationChannel();
-
         Button button = findViewById(R.id.addNewTask);
 
         button.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
             startActivity(intent);
-//            Intent intent = new Intent(HomeActivity.this,ReminderBroadcast.class);
-//            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,0,intent,0);
-//
-//            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-//
-//            long timeAtButtonClick = System.currentTimeMillis();
-//
-//            long tenSecondsInMillis = 5000 ;
-//
-//            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,timeAtButtonClick + tenSecondsInMillis,pendingIntent);
-//            Toast.makeText(this,"Reminder!",Toast.LENGTH_LONG).show();
         });
 
         Button qrButton = findViewById(R.id.qrScanner);
@@ -300,6 +275,7 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
+
     public void onBackPressed() {
         //If the user is logged in, he should not be able to relogin by pressing back btn
         //He should logout, then login
@@ -310,21 +286,21 @@ public class HomeActivity extends AppCompatActivity {
 
         }
     }
-//    public void createNotificationChannel(){
-//
-//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            CharSequence name = "LemubitReminderChannel";
-//            String description = "Channel for Lemubit Reminder";
-//            int importance = NotificationManager.IMPORTANCE_HIGH;
-//            NotificationChannel channel = new NotificationChannel("Alarm",name,importance);
-//            channel.setDescription(description);
-//            channel.setImportance(importance);
-//            channel.enableVibration(true);
-//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-//            notificationManager.createNotificationChannel(channel);
-//        }
-//
-//    }
+
+    public void createNotificationChannel(){
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "SchedularAlarmChannel";
+            String description = "Channel for SchedularAlarm";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("Alarm",name,importance);
+            channel.setDescription(description);
+            channel.setImportance(importance);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+    }
     //@Override
 
 

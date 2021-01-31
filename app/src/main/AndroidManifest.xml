@@ -113,6 +113,7 @@
             android:name=".DismissActivity"
             android:excludeFromRecents="true"
             android:taskAffinity="" />
+        <activity android:name=".ReminderBroadcast" />
     </application>
 
 </manifest>
