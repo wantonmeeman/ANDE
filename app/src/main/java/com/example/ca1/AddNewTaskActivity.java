@@ -188,6 +188,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
                                 timeTxt.setText(hourOfDay + ":" + minute);
                                 cal.set(Calendar.HOUR_OF_DAY,hourOfDay);
                                 cal.set(Calendar.MINUTE,minute);
+                                cal.set(Calendar.SECOND,0);
                             }
                         },hour,minutes,true);
                 picker.show();

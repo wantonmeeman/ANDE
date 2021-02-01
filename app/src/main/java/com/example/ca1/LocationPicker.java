@@ -9,7 +9,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -98,7 +101,7 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
 
         final LatLng[] selectedLatLng = {currLocation};//This stores the selected Location of the marker
 
-        //This handles the first marker, before the user touches the map
+        //This handles the first marker, before the user touches the map\
 
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PackageManager.PERMISSION_GRANTED);

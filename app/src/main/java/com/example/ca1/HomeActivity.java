@@ -160,6 +160,7 @@ public class HomeActivity extends AppCompatActivity {
                             //Need a different integer to tell the alarms apart, so i use a random integer
                             PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,rand.nextInt(),intent1,0);
                             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,alarm.getUnixTime()*1000L,pendingIntent);
+                            Log.i("currentSystemTime",Long.toString(System.currentTimeMillis()));
                             createNotificationChannel();
 
                         }
