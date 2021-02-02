@@ -65,7 +65,11 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
     protected void onRestart(){
         super.onRestart();
         if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
-            recreate();
+            //This is an older method that works with the 3rd party library
+            //recreate() would crash.
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
         }
     }
     @Override
@@ -157,7 +161,19 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                     //This snippet handles before the user clicks a date.
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
+                    }
+
+                    for(int i=0;i<ArrListAlarm.size()-1;i++){
+                        int m = i;
+                        for(int j=i+1;j<ArrListAlarm.size();j++){
+                            if(ArrListAlarm.get(m).getUnixTime() > ArrListAlarm.get(j).getUnixTime())
+                                m = j;
+                        }
+                        //swapping elements at position i and m
+                        Alarm temp = ArrListAlarm.get(i);
+                        ArrListAlarm.set(i, ArrListAlarm.get(m));
+                        ArrListAlarm.set(m, temp);
                     }
 
                     //This snippet goes through every date and assigns them into the calendarView.
@@ -173,6 +189,24 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 }
 
                 RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
+
+                myrv.addOnItemTouchListener(
+                        new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
+                            @Override public void onItemClick(View view, int position) {
+                                Log.i("Short press",Integer.toString(position));
+                                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                startActivity(intent);
+                            }
+
+                            @Override public void onLongItemClick(View view, int position) {
+                                Log.i("Long Press",Integer.toString(position));
+                                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                startActivity(intent);
+                            }
+                        })
+                );
 
                 //Gets the Adapter from the JAVA file
                 RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
@@ -195,16 +229,15 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
         });
         calendarView.hasTitle(false);
-
         calendarView.setOnDateClickListener(new OnDateClickListener() {
             DateData prevDataDate;
-
             @Override
             public void onDateClick(View view, DateData date) {
+                Log.i("Debug","DateClickListener");
                 if(prevDataDate != null) {
                     calendarView.unMarkDate(prevDataDate);
                 }
-                //THERE IS 100% AN EASIER WAY TO DO THIS BUT IM TOO TIRED PLACEHOLDER FOR NOW.
+
                 for(int i = 0;calendarView.getMarkedDates().getAll().size() > i;i++) {
                     if(date.equals(calendarView.getMarkedDates().getAll().get(i))) {
                         calendarView.unMarkDate(date);
@@ -215,8 +248,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                                 )
                         );//When an Event is already in the date selected.
                     }
-                    if(prevDataDate != null
-                            && !(prevDataDate.equals(date))) {//The second condition resolves if a marked date is clicked twice.
+                    if(prevDataDate != null && !(prevDataDate.equals(date))) {//The second condition resolves if a marked date is clicked twice.
                         if (prevDataDate.equals(calendarView.getMarkedDates().getAll().get(i))) {
                             calendarView.unMarkDate(prevDataDate);
                             calendarView.markDate(
@@ -252,8 +284,20 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Alarm alarm = snapshot.getValue(Alarm.class);
                             if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                                ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
+                                ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
                             }
+                        }
+
+                        for(int i=0;i<ArrListAlarm.size()-1;i++){
+                            int m = i;
+                            for(int j=i+1;j<ArrListAlarm.size();j++){
+                                if(ArrListAlarm.get(m).getUnixTime() > ArrListAlarm.get(j).getUnixTime())
+                                    m = j;
+                            }
+                            //swapping elements at position i and m
+                            Alarm temp = ArrListAlarm.get(i);
+                            ArrListAlarm.set(i, ArrListAlarm.get(m));
+                            ArrListAlarm.set(m, temp);
                         }
 
                         //Get the calendar Object today's date.
@@ -280,6 +324,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         calendarView.setOnMonthChangeListener(new OnMonthChangeListener() {
             @Override
             public void onMonthChange(int year, int month) {
+                Log.i("Debug","MnthChangeListener");
                 calendarView.hasTitle(false);
                 int YearB = cal.get(Calendar.YEAR);
                 int MonthB = cal.get(Calendar.MONTH);
@@ -314,9 +359,10 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         ImageButton nextMnth = (ImageButton)findViewById(R.id.nextMonth);
 
         nextMnth.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                Log.i("NextOnClick","true");
+                Log.i("Debug","nextMonth");
                 if(cal.get(Calendar.MONTH) == 11) {
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR)+1, 1, 1));
                 }else{
@@ -329,6 +375,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         prevMnth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i("Debug","prevMonth");
                 if(cal.get(Calendar.MONTH) == 0) {
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR)-1, 12, 1));
                 }else{

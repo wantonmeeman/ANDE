@@ -10,9 +10,11 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -29,6 +31,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -61,6 +64,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleMap mMap;
     private int mLastDayNightMode;
+    Marker CurrentMarker;
     protected void onRestart(){
         super.onRestart();
         if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
@@ -107,6 +111,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
+        BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
+        botNavView.getMenu().getItem(0).setChecked(true);//Set Middle(Home) to checked
+        botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
+            public boolean onNavigationItemSelected(@NonNull MenuItem item){
+                switch(item.getItemId()){
+                    case R.id.location:
+                        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.calendar:
+                        intent = new Intent(getApplicationContext(), ScheduleActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.home:
+                        intent = new Intent(getApplicationContext(),HomeActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.qr:
+                        intent = new Intent(getApplicationContext(), QRActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.settings:
+                        intent = new Intent(getApplicationContext(),SettingsActivity.class);
+                        startActivity(intent);
+                        return true;
+                }
+                return false;
+            };
+        });
         mapFragment.getMapAsync(this);
     }
 
@@ -145,41 +178,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         txtTimeDate.setVisibility(View.INVISIBLE);
 
         loc = new LocationTracker(MapsActivity.this);
-
-        Log.i("CheckingLocation", String.valueOf(loc.canGetLocation()));
-        Log.i("Latitude",Double.toString(loc.getLatitude()));
-        Log.i("Longitude",Double.toString(loc.getLongitude()));
-
-        BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
-        botNavView.getMenu().getItem(0).setChecked(true);//Set Middle(Home) to checked
-        botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
-            public boolean onNavigationItemSelected(@NonNull MenuItem item){
-                switch(item.getItemId()){
-                    case R.id.location:
-                        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.calendar:
-                        intent = new Intent(getApplicationContext(), ScheduleActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.home:
-                        intent = new Intent(getApplicationContext(),HomeActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.qr:
-                        intent = new Intent(getApplicationContext(), QRActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.settings:
-                        intent = new Intent(getApplicationContext(),SettingsActivity.class);
-                        startActivity(intent);
-                        return true;
-                }
-                return false;
-            };
-        });
-
+        LatLng currentLoc = new LatLng(loc.getLatitude(),loc.getLongitude());
         myDbRef.addValueEventListener(new ValueEventListener() {
 
             @Override
@@ -190,14 +189,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // whenever data at this location is updated.
                 mMap.clear();
                 ArrListAlarm.clear();
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PackageManager.PERMISSION_GRANTED);
+                }else {
+                    CurrentMarker = mMap.addMarker(new MarkerOptions().position(
+                           currentLoc
+                            ).title(
+                            "currentLocation"
+                            ).icon(
+                            bitmapDescriptorFromVector(getApplicationContext(),R.drawable.current_user_icon))
+                    );
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc,12));
+                }
 
-                mMap.addMarker(new MarkerOptions().position(
-                        new LatLng(loc.getLatitude(),loc.getLongitude())
-                        ).title(
-                        "currentLocation"
-                        ).icon(
-                        bitmapDescriptorFromVector(getApplicationContext(),R.drawable.current_user_icon))
-                ).setTag(0);
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     x++;
@@ -207,7 +211,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }else{
                         selectedDrawable = R.drawable.location_pin_inactive;
                     }
-                    ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLongitude(), alarm.getUnixTime() * 1000L));
+                    ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLongitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
                     mMap.addMarker(new MarkerOptions().position(
                             new LatLng(alarm.getLatitude(),alarm.getLongitude())
                     ).title(
@@ -224,19 +228,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // Failed to read value
             }
         });
-        LatLng currentLoc = new LatLng(loc.getLatitude(),loc.getLongitude());
-        //mMap.moveCamera();
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc,12));
-        Log.i("curLoc",Double.toString(loc.getLatitude()));
-        Log.i("curLoc",Double.toString(loc.getLongitude()));
-        //current Location Marker
-        mMap.addMarker(new MarkerOptions().position(
-                new LatLng(loc.getLatitude(),loc.getLongitude())
-        ).title(
-                "currentLocation"
-        ).icon(
-                bitmapDescriptorFromVector(getApplicationContext(),R.drawable.msg_icon))
-        ).setTag(0);
+
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
@@ -246,8 +238,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     txtTimeDate.setVisibility(View.VISIBLE);
                     String string = "";
                     Alarm alarmObj = ArrListAlarm.get((int)(marker.getTag())-1);
-                    Log.i("markerTag",marker.getTag().toString());
-                    Log.i("markerTag",Long.toString(alarmObj.getUnixTime()));
 
                     txtTimeDate.setText(dateTimeFormat.format(new Date((long)alarmObj.getUnixTime())));
                     txtTitle.setText(marker.getTitle());
@@ -286,5 +276,32 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,int[] grantResults) {//Handles the permission response from user
 
+
+        if (requestCode == PackageManager.PERMISSION_GRANTED) {
+            // If request is cancelled, the result arrays are empty.
+            LocationTracker loc = new LocationTracker(MapsActivity.this);
+            LatLng currentLoc = new LatLng(loc.getLatitude(),loc.getLongitude());
+            if(CurrentMarker != null) {
+                CurrentMarker.setPosition(currentLoc);
+            }else {
+                CurrentMarker = mMap.addMarker(new MarkerOptions().position(currentLoc).draggable(true).title("Location"));
+            }
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 12));
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i("Accepted", "Accepted");
+            } else {
+                Log.i("Denied", "Denied");
+            }
+
+            return;
+        }else{
+            Toast.makeText(getApplication(),"Permission was not given",Toast.LENGTH_LONG).show();
+        }
+
+
+        // Other 'case' lines to check for other
+        // permissions this app might request.
+    }
 }

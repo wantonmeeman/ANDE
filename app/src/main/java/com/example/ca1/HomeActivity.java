@@ -7,7 +7,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -35,8 +37,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +53,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -72,8 +79,9 @@ public class HomeActivity extends AppCompatActivity {
 
     String currentDate = dateFormat.format(new Date());
     String currentDay = dayFormat.format(calendar.getTime());
-    private int mLastDayNightMode;
 
+    //This Snippet changes the UI when the user backbtn's
+    private int mLastDayNightMode;
     protected void onRestart(){
         super.onRestart();
         if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
@@ -125,14 +133,10 @@ public class HomeActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
 
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
-     // Random rand = new Random();
-     // Alarm testAlarm = new Alarm("alarmTitle","alarmDescription",103.78462387+(rand.nextDouble()/10),1.42613738+(rand.nextDouble()/10),((System.currentTimeMillis() / 1000L)+(1*60)));
-      //Alarm testAlarm1 = new Alarm("testTitle1","testDescription1","","",((System.currentTimeMillis() / 1000L)+ 15 * 60));
-     // User testUser = new User("testUsername","testPass","Email@email.com");
-//
-     // myDbRef.push().setValue(testAlarm);
-      //myDbRef.child("UserAlarms").push()/*push sets the key to be a random Value, allowing us to put multiple into 1 child*/.setValue(testAlarm1);
-//      myDbRef.child("UserInfomation").setValue(testUser);
+
+        Random rand = new Random();
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         myDbRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -141,16 +145,67 @@ public class HomeActivity extends AppCompatActivity {
                 // whenever data at this location is updated.
                 ArrListAlarm.clear();
                 findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
+                        if(alarm.getUnixTime()*1000L > System.currentTimeMillis()){
+
+                            Intent intent1 = new Intent(HomeActivity.this,ReminderBroadcast.class);
+                            intent1.putExtra("alarmTitle",alarm.getTitle());
+                            intent1.putExtra("alarmLat",alarm.getLatitude());
+                            intent1.putExtra("alarmLong",alarm.getLongitude());
+                            intent1.putExtra("alarmDescription",alarm.getDescription());
+                            //Need a different integer to tell the alarms apart, so i use a random integer
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,rand.nextInt(),intent1,0);
+                            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,alarm.getUnixTime()*1000L,pendingIntent);
+                            Log.i("currentSystemTime",Long.toString(System.currentTimeMillis()));
+                            createNotificationChannel();
+
+                        }
                     }
                 }
+
+                for(int i=0;i<ArrListAlarm.size()-1;i++){
+                    int m = i;
+                    for(int j=i+1;j<ArrListAlarm.size();j++){
+                        if(ArrListAlarm.get(m).getUnixTime() > ArrListAlarm.get(j).getUnixTime())
+                            m = j;
+                    }
+                    //swapping elements at position i and m
+                    Alarm temp = ArrListAlarm.get(i);
+                    ArrListAlarm.set(i, ArrListAlarm.get(m));
+                    ArrListAlarm.set(m, temp);
+
+                }
+
                 //Remove Loading Animation
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                 //Get the calendar Object today's date.
                 RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
+
+                myrv.addOnItemTouchListener(
+                        new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
+                            @Override public void onItemClick(View view, int position) {
+                                Log.i("Short press",Integer.toString(position));
+                                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                startActivity(intent);
+                            }
+
+                            @Override public void onLongItemClick(View view, int position) {
+                                Log.i("Long Press",Integer.toString(position));
+                                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                startActivity(intent);
+                            }
+                        })
+
+                );
+
+
+
 
                 //Gets the Adapter from the JAVA file
                 RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(HomeActivity.this,ArrListAlarm);
@@ -208,31 +263,11 @@ public class HomeActivity extends AppCompatActivity {
             };
         });
 
-
-
-        //createNotificationChannel();
-
         Button button = findViewById(R.id.addNewTask);
 
         button.setOnClickListener(v -> {
-            GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-            mGoogleSignInClient.signOut();
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putString("firebaseUserId",null);
-            editor.commit();
-            Intent intent = new Intent(this,LoginActivity.class);
+            Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
             startActivity(intent);
-//            Intent intent = new Intent(HomeActivity.this,ReminderBroadcast.class);
-//            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,0,intent,0);
-//
-//            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-//
-//            long timeAtButtonClick = System.currentTimeMillis();
-//
-//            long tenSecondsInMillis = 5000 ;
-//
-//            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,timeAtButtonClick + tenSecondsInMillis,pendingIntent);
-//            Toast.makeText(this,"Reminder!",Toast.LENGTH_LONG).show();
         });
 
         Button qrButton = findViewById(R.id.qrScanner);
@@ -241,6 +276,7 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
+
     public void onBackPressed() {
         //If the user is logged in, he should not be able to relogin by pressing back btn
         //He should logout, then login
@@ -251,21 +287,21 @@ public class HomeActivity extends AppCompatActivity {
 
         }
     }
-//    public void createNotificationChannel(){
-//
-//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            CharSequence name = "LemubitReminderChannel";
-//            String description = "Channel for Lemubit Reminder";
-//            int importance = NotificationManager.IMPORTANCE_HIGH;
-//            NotificationChannel channel = new NotificationChannel("Alarm",name,importance);
-//            channel.setDescription(description);
-//            channel.setImportance(importance);
-//            channel.enableVibration(true);
-//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-//            notificationManager.createNotificationChannel(channel);
-//        }
-//
-//    }
+
+    public void createNotificationChannel(){
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "SchedularAlarmChannel";
+            String description = "Channel for SchedularAlarm";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("Alarm",name,importance);
+            channel.setDescription(description);
+            channel.setImportance(importance);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+    }
     //@Override
 
 

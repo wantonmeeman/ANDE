@@ -62,36 +62,20 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd/MM");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.todays_tasks_act);
-        this.getSupportActionBar().hide();
-
-        Button Monthly = (Button) findViewById(R.id.Monthly);
-        Monthly.setOnClickListener(this);
 
         ArrayList<Alarm> ArrListAlarm = new ArrayList<Alarm>();
-        ProgressBar todayProgressBar = (ProgressBar)findViewById(R.id.progressBar);
-        TextView percentageCompletion = (TextView)findViewById(R.id.todayProgress);
-        TextView completionStatus = (TextView)findViewById(R.id.CompletionStatus);
-        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-        //Code for Night mode
-        Log.i("Mode",Boolean.toString(pref.getBoolean("UIMode",false)));
-        if(pref.getBoolean("UIMode",false)){
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            getDelegate().applyDayNight();
-        }else{
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            getDelegate().applyDayNight();
-        }
-            //Get the calendar Object today's date.
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
 
-            //Get Start and end of date.
-            long startOfDay = cal.getTimeInMillis() / 1000;
-            long endOfDay = startOfDay + 86400;
+        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        //Get the calendar Object today's date.
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        //Get Start and end of date.
+        long startOfDay = cal.getTimeInMillis() / 1000;
+        long endOfDay = startOfDay + 86400;
 
         String userid = "";
         GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
@@ -99,12 +83,16 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             userid = gAcc.getId();
         }else{
             userid = pref.getString("firebaseUserId","123123");
-            Log.i("Message","Cant access google account");
         }
+
+        setContentView(R.layout.todays_tasks_act);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid);
-        Log.i("ONE123",Integer.toString(AppCompatDelegate.getDefaultNightMode()));
+
+        ProgressBar todayProgressBar = (ProgressBar)findViewById(R.id.progressBar);
+        TextView percentageCompletion = (TextView)findViewById(R.id.todayProgress);
+        TextView completionStatus = (TextView)findViewById(R.id.CompletionStatus);
 
         myDbRef.child("UserAlarms").addValueEventListener(new ValueEventListener() {
             @Override
@@ -122,7 +110,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
-                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L));
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
                         if(alarm.getUnixTime() * 1000L < System.currentTimeMillis()){
                             count++;
                         }
@@ -136,16 +124,40 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 }
                 percentageCompletion.setText(Integer.toString(completedTaskPercentage)+"%");
                 todayProgressBar.setProgress(completedTaskPercentage);
-                completionStatus.setText("You have completed "+count+"/"+ArrListAlarm.size()+" tasks Today");
+                completionStatus.setText("You have completed "+count+"/"+ArrListAlarm.size()+" tasks Today!");
 
+                for(int i=0;i<ArrListAlarm.size()-1;i++){
+                    int m = i;
+                    for(int j=i+1;j<ArrListAlarm.size();j++){
+                        if(ArrListAlarm.get(m).getUnixTime() > ArrListAlarm.get(j).getUnixTime())
+                            m = j;
+                    }
+                    //swapping elements at position i and m
+                    Alarm temp = ArrListAlarm.get(i);
+                    ArrListAlarm.set(i, ArrListAlarm.get(m));
+                    ArrListAlarm.set(m, temp);
+                }
 
-
-                //Get the calendar Object today's date.
-                //Put a loading animation here
-                //
-                //
-                //
                 RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
+
+                myrv.addOnItemTouchListener(
+                        new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
+                            @Override public void onItemClick(View view, int position) {
+                                Log.i("Short press",Integer.toString(position));
+                                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                Log.i("nword",ArrListAlarm.get(position).getUid());
+                                intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                startActivity(intent);
+                            }
+
+                            @Override public void onLongItemClick(View view, int position) {
+                                Log.i("Long Press",Integer.toString(position));
+                                Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
+                                intent.putExtra("uid",ArrListAlarm.get(position).getUid());
+                                startActivity(intent);
+                            }
+                        })
+                );
 
                 //Gets the Adapter from the JAVA file
                 RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
@@ -167,11 +179,18 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
-            TextView todayDate = (TextView)findViewById(R.id.todayDate);
-            
-            todayDate.setText(dateFormat.format(cal));
+        this.getSupportActionBar().hide();
 
 
+        Button Monthly = (Button) findViewById(R.id.Monthly);
+        Monthly.setOnClickListener(this);
+
+
+
+
+
+        TextView todayDate = (TextView)findViewById(R.id.todayDate);
+        todayDate.setText(dateFormat.format(cal));
 
         ImageButton imgButton = findViewById(R.id.backButton);
         imgButton.setOnClickListener(v -> {

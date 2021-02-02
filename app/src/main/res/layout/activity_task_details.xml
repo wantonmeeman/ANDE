@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightpurple">
-
+    android:padding="@dimen/box_inset_layout_padding"
+    tools:context=".TaskDetails"
+    tools:deviceIds="wear">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/txtFields"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/black"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
-            >
+            android:layout_marginBottom="10dp">
 
             <ImageButton
                 android:id="@+id/backButton"
@@ -33,16 +39,24 @@
                 android:tint="@color/white" />
 
             <TextView
-                android:id="@+id/textHeader"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="60dp"
+                android:layout_height="match_parent"
+
                 android:layout_weight="2"
                 android:fontFamily="@font/giib"
-                android:text="Edit Task"
+                android:text="Task Details"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="30dp" />
+
+            <ImageButton
+                android:id="@+id/editBtn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="20dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/edit_icon"
+                android:tint="@color/white" />
 
         </LinearLayout>
 
@@ -55,19 +69,18 @@
             android:fontFamily="@font/giib"
             android:text="Title"
             android:textColor="@color/white"
-            android:textSize="22.5dp"
-            />
+            android:textSize="22.5dp" />
 
-        <EditText
-            android:id="@+id/title"
+        <TextView
+            android:id="@+id/titleTxt"
             android:layout_width="350dp"
             android:layout_height="50dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/rounded_edit_text"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            android:textColor="@color/black"
-            />
+            android:textColor="@color/black" />
+
 
         <TextView
             android:layout_width="wrap_content"
@@ -76,32 +89,26 @@
             android:layout_marginLeft="30dp"
             android:layout_marginBottom="10dp"
             android:fontFamily="@font/giib"
-            android:text="Description (Optional)"
+            android:text="Description"
             android:textColor="@color/white"
-            android:textSize="22.5dp"
-            />
+            android:textSize="22.5dp" />
 
-        <EditText
-            android:id="@+id/description"
+        <TextView
+            android:id="@+id/descriptionTxt"
             android:layout_width="350dp"
             android:layout_height="100dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/rounded_edit_text"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            android:maxLines="10"
-            android:minLines="1"
-            android:scrollbars="vertical"
-            android:inputType="textMultiLine"
-            android:textColor="@color/black"
-            />
+            android:textColor="@color/black" />
+
 
         <LinearLayout
             android:id="@+id/timeDateTextWrapper"
             android:layout_width="350dp"
             android:layout_height="25dp"
-            android:layout_marginBottom="10dp"
-            >
+            android:layout_marginBottom="10dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -125,41 +132,42 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/timeDateWrapper"
+            android:id="@+id/timeDateTextInfoWrapper"
             android:layout_width="350dp"
             android:layout_height="50dp"
-            android:layout_marginBottom="10dp"
-            >
+            android:layout_marginBottom="10dp">
 
-            <EditText
-                android:id="@+id/Date"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="350dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="30dp"
+                android:layout_gravity="left"
                 android:layout_weight="1"
-                android:inputType="none"
-                android:focusable="false"
                 android:background="@drawable/rounded_edit_text"
-                android:textColor="@color/black" />
+                android:fontFamily="@font/giib"
+                android:text="Date"
+                android:textColor="@color/black"
+                android:textSize="22.5dp" />
 
-            <EditText
-                android:id="@+id/Time"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@id/time"
+                android:layout_width="350dp"
                 android:layout_height="50dp"
-                android:inputType="none"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="50dp"
                 android:layout_weight="1"
-                android:focusable="false"
                 android:background="@drawable/rounded_edit_text"
-                android:textColor="@color/black" />
+                android:fontFamily="@font/giib"
+                android:text="Time"
+                android:textColor="@color/black"
+                android:textSize="22.5dp" />
         </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/locNotifTextWrapper"
             android:layout_width="350dp"
             android:layout_height="25dp"
-            android:layout_marginBottom="10dp"
-            >
+            android:layout_marginBottom="10dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -169,19 +177,20 @@
                 android:text="Location"
                 android:textColor="@color/white"
                 android:textSize="22.5dp" />
+
         </LinearLayout>
 
-
-
-            <EditText
-                android:id="@+id/Location"
-                android:layout_width="350dp"
-                android:layout_height="50dp"
-                android:focusable="false"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/rounded_edit_text"
-                android:textColor="@color/black" />
-
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="350dp"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_edit_text"
+            android:fontFamily="@font/giib"
+            android:textColor="@color/black"
+            android:textSize="22.5dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
         <LinearLayout
             android:id="@+id/submitBtnWrapper"
             android:layout_width="match_parent"
@@ -189,31 +198,46 @@
             >
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/submitBtn"
+                android:id="@+id/delBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_marginLeft="95dp"
                 android:layout_marginRight="95dp"
                 android:layout_weight="2"
-                android:backgroundTint="@color/blue"
+                android:backgroundTint="#F32013"
                 android:fontFamily="@font/giib"
-                android:text="Add Task"
+                android:text="Delete Task"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="17.5dp"
                 app:cornerRadius="200dp" />
         </LinearLayout>
+<!--        <fragment-->
+<!--            android:id="@+id/map"-->
+<!--            android:name="com.google.android.gms.maps.SupportMapFragment"-->
+<!--            android:layout_width="350dp"-->
+<!--            android:layout_height="150dp"-->
+<!--            android:layout_marginTop="15dp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            tools:context=".MapsActivity" />-->
+
     </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="65dp"
+        android:layout_gravity="bottom"
         app:backgroundTint="@color/colorBotNavBar"
-        app:menu="@menu/menu"
         app:itemIconSize="32dp"
         app:itemIconTint="@drawable/bottom_navigation_selector"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:itemRippleColor="@color/blue"
         app:labelVisibilityMode="unlabeled"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/menu" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
