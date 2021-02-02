@@ -15,7 +15,7 @@
         <!-- Customize your theme here. -->
     </style>
     <color name="colorBotNavBar">#FFFFFF</color>
-    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorBackground">#f5f7fa</color>
     <color name="colorDarkGrey">#FFFFFF</color>
     <color name="colorDateTime">#aaaaaa</color>
     <color name="colorText">#47525E</color>
