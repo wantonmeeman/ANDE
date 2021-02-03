@@ -132,7 +132,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         TextView currentDayMonth = (TextView)findViewById(R.id.currentDayMonth);
 
         currentMonthYear.setText(monthYearFormat.format(cal));
-        currentDayMonth.setText(dayMonthFormat.format(cal));
+        currentDayMonth.setText("Tasks (" + dayMonthFormat.format(cal) + ")");
 
         Button Today = (Button) findViewById(R.id.Today);
         Today.setOnClickListener(this);
@@ -269,7 +269,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 long startOfDay = cal.getTimeInMillis() / 1000;
                 long endOfDay = startOfDay + 86400;
 
-                currentDayMonth.setText(dayMonthFormat.format(cal));
+                currentDayMonth.setText("Tasks (" + dayMonthFormat.format(cal) + ")");
                 findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
 
                 //maybe make this a function

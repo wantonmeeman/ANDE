@@ -41,10 +41,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-
                 android:layout_weight="2"
-                android:fontFamily="@font/giib"
+                android:fontFamily="@font/glacial_indifference_bold"
                 android:text="Task Details"
+                android:textAllCaps="true"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="30dp" />
@@ -66,7 +66,7 @@
             android:layout_gravity="left"
             android:layout_marginLeft="30dp"
             android:layout_marginBottom="10dp"
-            android:fontFamily="@font/giib"
+            android:fontFamily="@font/glacial_indifference_regular"
             android:text="Title"
             android:textColor="@color/white"
             android:textSize="22.5dp" />
@@ -76,6 +76,7 @@
             android:layout_width="350dp"
             android:layout_height="50dp"
             android:layout_marginBottom="10dp"
+            android:fontFamily="@font/glacial_indifference_regular"
             android:background="@drawable/rounded_edit_text"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
@@ -88,7 +89,7 @@
             android:layout_gravity="left"
             android:layout_marginLeft="30dp"
             android:layout_marginBottom="10dp"
-            android:fontFamily="@font/giib"
+            android:fontFamily="@font/glacial_indifference_regular"
             android:text="Description"
             android:textColor="@color/white"
             android:textSize="22.5dp" />
@@ -98,6 +99,7 @@
             android:layout_width="350dp"
             android:layout_height="100dp"
             android:layout_marginBottom="10dp"
+            android:fontFamily="@font/glacial_indifference_regular"
             android:background="@drawable/rounded_edit_text"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
@@ -115,7 +117,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
                 android:layout_weight="1"
-                android:fontFamily="@font/giib"
+                android:fontFamily="@font/glacial_indifference_regular"
                 android:text="Date"
                 android:textColor="@color/white"
                 android:textSize="22.5dp" />
@@ -125,7 +127,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="50dp"
                 android:layout_weight="1"
-                android:fontFamily="@font/giib"
+                android:fontFamily="@font/glacial_indifference_regular"
                 android:text="Time"
                 android:textColor="@color/white"
                 android:textSize="22.5dp" />
@@ -144,8 +146,9 @@
                 android:layout_gravity="left"
                 android:layout_weight="1"
                 android:background="@drawable/rounded_edit_text"
-                android:fontFamily="@font/giib"
+                android:fontFamily="@font/glacial_indifference_regular"
                 android:text="Date"
+                android:gravity="center"
                 android:textColor="@color/black"
                 android:textSize="22.5dp" />
 
@@ -156,8 +159,9 @@
                 android:layout_marginLeft="50dp"
                 android:layout_weight="1"
                 android:background="@drawable/rounded_edit_text"
-                android:fontFamily="@font/giib"
+                android:fontFamily="@font/glacial_indifference_regular"
                 android:text="Time"
+                android:gravity="center"
                 android:textColor="@color/black"
                 android:textSize="22.5dp" />
         </LinearLayout>
@@ -173,7 +177,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:fontFamily="@font/giib"
+                android:fontFamily="@font/glacial_indifference_regular"
                 android:text="Location"
                 android:textColor="@color/white"
                 android:textSize="22.5dp" />
@@ -185,7 +189,7 @@
             android:layout_width="350dp"
             android:layout_height="50dp"
             android:background="@drawable/rounded_edit_text"
-            android:fontFamily="@font/giib"
+            android:fontFamily="@font/glacial_indifference_regular"
             android:textColor="@color/black"
             android:textSize="22.5dp"
             android:layout_marginBottom="20dp"
@@ -205,7 +209,7 @@
                 android:layout_marginRight="95dp"
                 android:layout_weight="2"
                 android:backgroundTint="#F32013"
-                android:fontFamily="@font/giib"
+                android:fontFamily="@font/kanit_regular"
                 android:text="Delete Task"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
