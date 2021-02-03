@@ -211,14 +211,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }else{
                         selectedDrawable = R.drawable.location_pin_inactive;
                     }
-                    ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLongitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
-                    mMap.addMarker(new MarkerOptions().position(
-                            new LatLng(alarm.getLatitude(),alarm.getLongitude())
-                    ).title(
-                            alarm.getTitle()
-                    ).icon(
-                            bitmapDescriptorFromVector(getApplicationContext(),selectedDrawable))
-                    ).setTag(x);
+
+                        ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(), alarm.getLatitude(), alarm.getUnixTime() * 1000L, alarm.getUid()));
+                    if(alarm.getLatitude() != -1 && alarm.getLongitude() != -1) {
+                        mMap.addMarker(new MarkerOptions().position(
+                                new LatLng(alarm.getLatitude(), alarm.getLongitude())
+                                ).title(
+                                alarm.getTitle()
+                                ).icon(
+                                bitmapDescriptorFromVector(getApplicationContext(), selectedDrawable))
+                        ).setTag(x);
+                    }
                 }
             }
 
@@ -244,10 +247,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     if(System.currentTimeMillis() < alarmObj.getUnixTime()) {
                         editTaskBtn.setVisibility(View.VISIBLE);
-                        string = "Event is Active";
+                        editTaskBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
+                                intent.putExtra("edit",(Boolean)true);
+                                intent.putExtra("uid",alarmObj.getUid());
+                                intent.putExtra("title",alarmObj.getTitle());
+                                intent.putExtra("desc",alarmObj.getDescription());
+                                intent.putExtra("unixTime",alarmObj.getUnixTime());
+                                intent.putExtra("latitude", alarmObj.getLatitude());
+                                intent.putExtra("longitude", alarmObj.getLongitude());
+                                startActivity(intent);
+                            }
+                        });
+                        //string = "Event is Active";
                     }else {
                         editTaskBtn.setVisibility(View.INVISIBLE);
-                        string = "Event is not Active";
+                        //string = "Event is not Active";
                     }
                     if(alarmObj.getDescription().length() > 150){
                         txtDesc.setText(alarmObj.getDescription().substring(0,105)+"...");
@@ -256,6 +273,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
 //                    txtDesc.setText(alarmObj.getDescription()+string);
                 }else{
+
                     editTaskBtn.setVisibility(View.INVISIBLE);
                     txtTimeDate.setVisibility(View.INVISIBLE);
                     txtTitle.setText("Your Current Location");

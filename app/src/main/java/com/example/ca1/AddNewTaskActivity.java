@@ -1,9 +1,11 @@
 package com.example.ca1;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
@@ -122,14 +124,26 @@ public class AddNewTaskActivity extends AppCompatActivity {
 
         if(getIntent().getBooleanExtra("edit",false)){
             txtHeader.setText("Edit Task");
-            submitBtn.setText("Edit Task");
+            submitBtn.setText("Save");
         }else{
-
             txtHeader.setText("Add Task");
-            submitBtn.setText("Add Task");
+            submitBtn.setText("Add");
         }
 
-
+        ImageButton backBtn = findViewById(R.id.backButton);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        MaterialButton cancelBtn = findViewById(R.id.cancelBtn);
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         locTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -196,73 +210,90 @@ public class AddNewTaskActivity extends AppCompatActivity {
         });
 
         submitBtn.setOnClickListener(v -> {
-
             //Here we pass in the Calendar object which we modified in the Dialogs.
-            if(userid != "1" && !(getIntent().getBooleanExtra("edit",true))) {
+            if(titleTxt.getText().toString() == null || titleTxt.getText().toString().equals("")){
+                AlertDialog.Builder nullDialog = new AlertDialog.Builder(AddNewTaskActivity.this);
+                nullDialog.setMessage("Title cannot be empty!");
+                nullDialog.setCancelable(true);
 
-                String alphabet = "123456789";
+                nullDialog.setPositiveButton(
+                        "Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
 
-                // create random string builder
-                StringBuilder sb = new StringBuilder();
+                AlertDialog nullDialog1 = nullDialog.create();
+                nullDialog1.show();
+            }else {
+                if (userid != "1" && !getIntent().getBooleanExtra("edit", false)) {
 
-                // create an object of Random class
-                Random random = new Random();
+                    String alphabet = "123456789";
 
-                // specify length of random string
-                int length = 21;
+                    // create random string builder
+                    StringBuilder sb = new StringBuilder();
 
-                for(int i = 0; i < length; i++) {
+                    // create an object of Random class
+                    Random random = new Random();
 
-                    // generate random index number
-                    int index = random.nextInt(alphabet.length());
+                    // specify length of random string
+                    int length = 21;
 
-                    // get character specified by index
-                    // from the string
-                    char randomChar = alphabet.charAt(index);
+                    for (int i = 0; i < length; i++) {
 
-                    // append the character to string builder
-                    sb.append(randomChar);
-                }
+                        // generate random index number
+                        int index = random.nextInt(alphabet.length());
 
-                String randomString = sb.toString();
+                        // get character specified by index
+                        // from the string
+                        char randomChar = alphabet.charAt(index);
 
-                Alarm newAlarm = new Alarm(titleTxt.getText().toString(),descriptionTxt.getText().toString(),selectedLongitude,selectedLatitude,cal.getTimeInMillis()/1000L,randomString);
-                myDbRef.child(randomString).setValue(newAlarm);
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(intent);
+                        // append the character to string builder
+                        sb.append(randomChar);
+                    }
 
-            }else if(getIntent().getBooleanExtra("edit",false)){
-                Map<String, Object> postValues = new HashMap<String,Object>();
-                myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    String randomString = sb.toString();
 
-                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                             Alarm alarm = snapshot.getValue(Alarm.class);
-                             if((Uid).equals(alarm.getUid())){
-
-                              postValues.put("title",titleTxt.getText().toString());
-                              postValues.put("description",descriptionTxt.getText().toString());
-                              postValues.put("longitude",selectedLongitude);
-                              postValues.put("latitude",selectedLatitude);
-                              postValues.put("unixTime",cal.getTimeInMillis()/1000L);
-                              myDbRef.child(Uid).updateChildren(postValues);
-                             } } }
-                             @Override
-                             public void onCancelled(DatabaseError databaseError) {
-
-                             }});
-
-                if(getIntent().getBooleanExtra("usedLocationPicker",false)){
+                    Alarm newAlarm = new Alarm(titleTxt.getText().toString(), descriptionTxt.getText().toString(), selectedLongitude, selectedLatitude, cal.getTimeInMillis() / 1000L, randomString);
+                    myDbRef.child(randomString).setValue(newAlarm);
                     Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                     startActivity(intent);
-                }else{
-                    finish();
-                }
-            }else{
-                Toast.makeText(getApplication(),"You are not Logged in",Toast.LENGTH_LONG).show();
-            }
 
+                } else if (getIntent().getBooleanExtra("edit", false)) {
+                    Map<String, Object> postValues = new HashMap<String, Object>();
+                    myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                Alarm alarm = snapshot.getValue(Alarm.class);
+                                if ((Uid).equals(alarm.getUid())) {
+
+                                    postValues.put("title", titleTxt.getText().toString());
+                                    postValues.put("description", descriptionTxt.getText().toString());
+                                    postValues.put("longitude", selectedLongitude);
+                                    postValues.put("latitude", selectedLatitude);
+                                    postValues.put("unixTime", cal.getTimeInMillis() / 1000L);
+                                    myDbRef.child(Uid).updateChildren(postValues);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    if (getIntent().getBooleanExtra("usedLocationPicker", false)) {
+                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        startActivity(intent);
+                    } else {
+                        finish();
+                    }
+                }
+            }
         });
 
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);

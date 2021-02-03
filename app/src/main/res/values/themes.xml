@@ -25,6 +25,7 @@
     <color name="colorBorder">#bbbbbb</color>
     <color name="colorHeaderDate">#f5f7fa</color>
     <color name="colorDateSelected">#dfdfdf</color>
+    <color name="colorDismissButton">#808080</color>
     <color name="colorBackgroundPurple">#625BC2</color>
 
 </resources>

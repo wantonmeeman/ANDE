@@ -188,14 +188,12 @@ public class HomeActivity extends AppCompatActivity {
                 myrv.addOnItemTouchListener(
                         new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
                             @Override public void onItemClick(View view, int position) {
-                                Log.i("Short press",Integer.toString(position));
                                 Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
                                 intent.putExtra("uid",ArrListAlarm.get(position).getUid());
                                 startActivity(intent);
                             }
 
                             @Override public void onLongItemClick(View view, int position) {
-                                Log.i("Long Press",Integer.toString(position));
                                 Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
                                 intent.putExtra("uid",ArrListAlarm.get(position).getUid());
                                 startActivity(intent);
@@ -247,8 +245,6 @@ public class HomeActivity extends AppCompatActivity {
                         startActivity(intent);
                         return true;
                     case R.id.home:
-                        intent = new Intent(getApplicationContext(),HomeActivity.class);
-                        startActivity(intent);
                         return true;
                     case R.id.qr:
                         intent = new Intent(getApplicationContext(), QRActivity.class);
@@ -267,6 +263,7 @@ public class HomeActivity extends AppCompatActivity {
 
         button.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
+            intent.putExtra("edit",false);
             startActivity(intent);
         });
 

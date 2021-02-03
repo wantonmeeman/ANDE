@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/box_inset_layout_padding"
-    tools:context=".TaskDetails"
-    tools:deviceIds="wear">
+    tools:context=".TaskDetails">
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -15,7 +14,7 @@
         android:id="@+id/txtFields"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/black"
+        android:background="@color/colorBackgroundPurple"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -76,6 +75,7 @@
             android:layout_width="350dp"
             android:layout_height="50dp"
             android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/colorEditText"
             android:fontFamily="@font/glacial_indifference_regular"
             android:background="@drawable/rounded_edit_text"
             android:paddingStart="10dp"
@@ -98,6 +98,7 @@
             android:id="@+id/descriptionTxt"
             android:layout_width="350dp"
             android:layout_height="100dp"
+            android:backgroundTint="@color/colorEditText"
             android:layout_marginBottom="10dp"
             android:fontFamily="@font/glacial_indifference_regular"
             android:background="@drawable/rounded_edit_text"
@@ -146,6 +147,7 @@
                 android:layout_gravity="left"
                 android:layout_weight="1"
                 android:background="@drawable/rounded_edit_text"
+                android:backgroundTint="@color/colorEditText"
                 android:fontFamily="@font/glacial_indifference_regular"
                 android:text="Date"
                 android:gravity="center"
@@ -159,6 +161,7 @@
                 android:layout_marginLeft="50dp"
                 android:layout_weight="1"
                 android:background="@drawable/rounded_edit_text"
+                android:backgroundTint="@color/colorEditText"
                 android:fontFamily="@font/glacial_indifference_regular"
                 android:text="Time"
                 android:gravity="center"
@@ -192,6 +195,7 @@
             android:fontFamily="@font/glacial_indifference_regular"
             android:textColor="@color/black"
             android:textSize="22.5dp"
+            android:backgroundTint="@color/colorEditText"
             android:layout_marginBottom="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

@@ -24,7 +24,8 @@
     <color name="colorLine">#3d8eff</color>
     <color name="colorBorder">#292929</color>
     <color name="colorHeaderDate">#121212</color>
-    <color name="colorDateSelected">#d6d6d6</color>
+    <color name="colorDateSelected">#616161</color>
+    <color name="colorDismissButton">#808080</color>
     <color name="colorBackgroundPurple">#242332</color>
 
 </resources>
