@@ -161,6 +161,14 @@ public class TaskDetails extends AppCompatActivity {
             }
         });
 
+        ImageButton backBtn = findViewById(R.id.editBtn);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         ImageButton editBtn = findViewById(R.id.editBtn);
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override

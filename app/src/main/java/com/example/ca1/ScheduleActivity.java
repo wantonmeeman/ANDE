@@ -185,10 +185,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         Button Monthly = (Button) findViewById(R.id.Monthly);
         Monthly.setOnClickListener(this);
 
-
-
-
-
         TextView todayDate = (TextView)findViewById(R.id.todayDate);
         todayDate.setText(dateFormat.format(cal));
 
@@ -229,9 +225,9 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         });
 
         FloatingActionButton addNewTask = (FloatingActionButton) findViewById(R.id.fab);
-
         addNewTask.setOnClickListener(v ->{
-            Log.v("myTag","FAB Clicked");
+            Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
+            startActivity(intent);
         });
     }
 
