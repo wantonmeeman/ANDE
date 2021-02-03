@@ -68,7 +68,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="Toggle Dark/Light Mode"
+                    android:text="Toggle Dark Mode"
                     android:fontFamily="@font/glacial_indifference_regular"
                     android:textSize="18dp"></TextView>
 
@@ -80,6 +80,7 @@
                 <Switch
                     android:id="@+id/simpleSwitch"
                     android:layout_width="wrap_content"
+                    android:theme="@style/CustomSwitchColor"
                     android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
