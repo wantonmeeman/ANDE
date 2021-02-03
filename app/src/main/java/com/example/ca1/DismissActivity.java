@@ -13,13 +13,13 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class DismissActivity extends Activity {
 
-    //This handles dismissing of a notification
+    // This handles dismissing of a notification
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //For some reason this lags when u click dismiss immediately
-        //So we just dont click it immediately
+        // Lags when dismiss is clicked immediately
+        // --> Do not click it immediately to prevent this issue
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancel(getIntent().getIntExtra("notifID", 1));
         finish(); // since finish() is called in onCreate(), onDestroy() will be called immediately

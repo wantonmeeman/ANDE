@@ -12,4 +12,8 @@
     <style name="MySpinnerDatePicker" parent="android:Widget.Material.DatePicker">
         <item name="android:datePickerMode">spinner</item>
     </style>
+    <style name="CustomSwitchColor" parent="Theme.AppCompat.Light">
+        <item name="android:textColorPrimaryDisableOnly">#00838f</item>
+        <item name="colorAccent">#3d8eff</item>
+    </style>
 </resources>

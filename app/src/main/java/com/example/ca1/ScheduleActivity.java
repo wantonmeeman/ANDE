@@ -124,7 +124,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 }
                 percentageCompletion.setText(Integer.toString(completedTaskPercentage)+"%");
                 todayProgressBar.setProgress(completedTaskPercentage);
-                completionStatus.setText("You have completed "+count+"/"+ArrListAlarm.size()+" tasks Today!");
+                completionStatus.setText("You have completed "+count+"/"+ArrListAlarm.size()+" tasks today!");
 
                 for(int i=0;i<ArrListAlarm.size()-1;i++){
                     int m = i;

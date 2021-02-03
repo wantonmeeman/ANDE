@@ -132,7 +132,7 @@
             android:fontFamily="@font/kanit_medium"
             android:gravity="center"
             android:text="@string/create_button"
-            android:textAllCaps="true"
+            android:textAllCaps="false"
             android:textColor="@color/colorText"
             android:textSize="20sp"
             android:theme="@style/Theme.MaterialComponents"
