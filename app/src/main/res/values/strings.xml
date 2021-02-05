@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CA1</string>
+    <string name="app_name">Schedular</string>
     <string name="location">location</string>
     <string name="calendar">calendar</string>
     <string name="qrscanner">qrscanner</string>

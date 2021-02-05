@@ -46,7 +46,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.taskTitle.setText(mData.get(position).getTitle());
         if(mData.get(position).getUnixTime() < System.currentTimeMillis()){//If the Time is beyond the time right now
-            holder.taskIcon.setImageResource(R.drawable.add_circle);//This is a placeholder,its supposed to represent a completed task
+            holder.taskIcon.setImageResource(R.drawable.ic_task_complete);//This is a placeholder,its supposed to represent a completed task
         }else{
             holder.taskIcon.setImageResource(R.drawable.homescreen_timeline);
         }

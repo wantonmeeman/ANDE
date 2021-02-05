@@ -17,15 +17,14 @@
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:fontFamily="@font/kanit_light"
+                android:fontFamily="@font/glacial_indifference_regular"
                 android:textColor="@color/light_black"
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp"
                 android:paddingStart="20dp"
                 android:textSize="20sp"
                 android:text="2359"
-                android:textAllCaps="true"
-                android:textStyle="bold" />
+                android:textAllCaps="true"/>
 
             <ImageView
                 android:id="@+id/taskIcon"
@@ -41,8 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:fontFamily="@font/kanit_light"
-                android:text="Task"
-                android:textStyle="bold" />
+                android:fontFamily="@font/glacial_indifference_regular"
+                android:text="Task" />
 
     </LinearLayout>
