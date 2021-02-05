@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:gravity="center_horizontal|center_vertical"
     android:orientation="vertical"
-    android:background="@color/lightpurple">
+    android:background="@color/colorBackgroundPurple">
 
     <ImageView
         android:id="@+id/splashscreen"

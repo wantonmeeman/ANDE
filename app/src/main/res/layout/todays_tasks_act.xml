@@ -169,6 +169,7 @@
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="17.5dp"
+                    android:backgroundTint="@color/colorTabActive"
                     app:cornerRadius="200dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/Today" />
@@ -191,6 +192,7 @@
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="17.5dp"
+                    android:backgroundTint="@color/colorTabInactive"
                     app:cornerRadius="200dp"
                     app:layout_constraintEnd_toStartOf="@+id/Monthly"
                     app:layout_constraintStart_toStartOf="parent" />

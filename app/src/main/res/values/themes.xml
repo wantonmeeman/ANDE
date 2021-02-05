@@ -27,5 +27,7 @@
     <color name="colorDateSelected">#dfdfdf</color>
     <color name="colorDismissButton">#808080</color>
     <color name="colorBackgroundPurple">#625BC2</color>
+    <color name="colorTabActive">#81b5fa</color>
+    <color name="colorTabInactive">#3d8eff</color>
 
 </resources>
