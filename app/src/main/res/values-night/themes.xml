@@ -29,5 +29,6 @@
     <color name="colorBackgroundPurple">#242332</color>
     <color name="colorTabActive">#555555</color>
     <color name="colorTabInactive">#3b3b3b</color>
+    <color name="colorTickIcon">#3d8eff</color>
 
 </resources>
