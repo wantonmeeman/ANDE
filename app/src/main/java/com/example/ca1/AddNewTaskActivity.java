@@ -46,9 +46,11 @@ import java.util.Random;
 
 
 public class AddNewTaskActivity extends AppCompatActivity {
+    //Date Formats
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm");
 
+    //This makes the activity change its theme when restarting/backbuttoning
     private int mLastDayNightMode;
     protected void onRestart(){
         super.onRestart();
@@ -56,12 +58,15 @@ public class AddNewTaskActivity extends AppCompatActivity {
             recreate();
         }
     }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_task_act);
         this.getSupportActionBar().hide();//Remove Title, probably not very good;
 
+        //Variable Declaration
         EditText titleTxt = findViewById(R.id.title);
         EditText descriptionTxt = findViewById(R.id.description);
         EditText timeTxt = findViewById(R.id.Time);
@@ -78,12 +83,13 @@ public class AddNewTaskActivity extends AppCompatActivity {
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE);
 
+        //This snippet handles Login via Google or Schedular Account
         final String userid;
         GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
         if(gAcc != null){
-            userid = gAcc.getId();
+            userid = gAcc.getId();//Google Account is signed in
         }else{
-            userid = pref.getString("firebaseUserId","1");
+            userid = pref.getString("firebaseUserId","1");//Schedular Account is signed in
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
