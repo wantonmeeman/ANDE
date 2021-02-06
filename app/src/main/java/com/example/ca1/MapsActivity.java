@@ -82,7 +82,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
 
         SearchView searchView = findViewById(R.id.searchLoc);
-
+        //This handles searching using the top search bar
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -92,14 +92,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if(location != null || !location.equals("")){
                    Geocoder geocoder = new Geocoder(MapsActivity.this);
                     try {
+                        //We only want 1 address
                         addressArr = geocoder.getFromLocationName(location,1);
                         Address address = addressArr.get(0);
                         LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
-                        //mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+
+                        //Animate camera to that new Address
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
                     } catch (IOException e) {
                         e.printStackTrace();
-                    } catch (IndexOutOfBoundsException e){
+                    } catch (IndexOutOfBoundsException e){//If a location cannot be found
                         Toast.makeText(getApplication(), "Location Not Found!", Toast.LENGTH_SHORT).show();
                     }
 
@@ -113,6 +115,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
+
+        //Bottom Navigation Handling
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(0).setChecked(true);//Set Middle(Home) to checked
         botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -153,6 +157,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         String userid = "";
         ArrayList<Alarm> ArrListAlarm = new ArrayList<Alarm>();
 
+        //Handles signin
         GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
         if(gAcc != null){
             userid = gAcc.getId();
@@ -175,7 +180,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         txtTitle = findViewById(R.id.alarmTitle);
         txtTimeDate = findViewById(R.id.alarmDateTime);
         editTaskBtn = findViewById(R.id.editTaskBtn);
-        //Default invis, only when clicked on a valid task.
+        //Default invisible, only when clicked on a valid task.
         editTaskBtn.setVisibility(View.INVISIBLE);
         txtTimeDate.setVisibility(View.INVISIBLE);
 
@@ -189,34 +194,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 int x = 0;
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
+
+                // Clear the arrayList and the map to prevent overlapping events
                 mMap.clear();
                 ArrListAlarm.clear();
-                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {//Asking for permisisons
                     requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PackageManager.PERMISSION_GRANTED);
                 }else {
+                    //Inputting Current Marker
                     CurrentMarker = mMap.addMarker(new MarkerOptions().position(
                            currentLoc
                             ).title(
                             "You are Here!"
                             ).icon(
+                                    //Use a special Icon
                             bitmapDescriptorFromVector(getApplicationContext(),R.drawable.current_user_icon))
                     );
+                    //As well as a special Tag
                     CurrentMarker.setTag(0);
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc,12));
                 }
 
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {//Iterate thru and add to ArrayList
                     x++;
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(System.currentTimeMillis()/1000L < alarm.getUnixTime()) {
-                        selectedDrawable = R.drawable.location_pin;
+                        selectedDrawable = R.drawable.location_pin;//If The event is active
                     }else{
-                        selectedDrawable = R.drawable.location_pin_inactive;
+                        selectedDrawable = R.drawable.location_pin_inactive;//If the event is not active
                     }
 
                         ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(), alarm.getLatitude(), alarm.getUnixTime() * 1000L, alarm.getUid()));
-                    if(alarm.getLatitude() != -1 && alarm.getLongitude() != -1) {
+                    if(alarm.getLatitude() != -1 && alarm.getLongitude() != -1) {//Fill in alarm information, if alarm has a location
                         mMap.addMarker(new MarkerOptions().position(
                                 new LatLng(alarm.getLatitude(), alarm.getLongitude())
                                 ).title(
@@ -240,19 +251,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public boolean onMarkerClick(Marker marker) {
 
-                if((int)marker.getTag() != 0){
+                if((int)marker.getTag() != 0){//If the marker clicked on is not the user's marker
                     txtTimeDate.setVisibility(View.VISIBLE);
                     String string = "";
                     Alarm alarmObj = ArrListAlarm.get((int)(marker.getTag())-1);
-
+                    //Setting of information
                     txtTimeDate.setText(dateTimeFormat.format(new Date((long)alarmObj.getUnixTime())));
                     txtTitle.setText(marker.getTitle());
 
-                    if(System.currentTimeMillis() < alarmObj.getUnixTime()) {
+                    if(System.currentTimeMillis() < alarmObj.getUnixTime()) {//If alarm is active
                         editTaskBtn.setVisibility(View.VISIBLE);
                         editTaskBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                //If edit button is pressed, get all the information from event that was clicked on, then send to edit task page
                                 Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
                                 intent.putExtra("edit",(Boolean)true);
                                 intent.putExtra("uid",alarmObj.getUid());
@@ -269,14 +281,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         editTaskBtn.setVisibility(View.INVISIBLE);
                         //string = "Event is not Active";
                     }
-                    if(alarmObj.getDescription().length() > 150){
+                    if(alarmObj.getDescription().length() > 150){//Replaces description with ... after a certain number of characters
                         txtDesc.setText(alarmObj.getDescription().substring(0,105)+"...");
                     }else{
                         txtDesc.setText(alarmObj.getDescription()+string);
                     }
 //                    txtDesc.setText(alarmObj.getDescription()+string);
                 }else{
-
+                    //If clicked on current Location
                     editTaskBtn.setVisibility(View.INVISIBLE);
                     txtTimeDate.setVisibility(View.INVISIBLE);
                     txtTitle.setText("Your Current Location");
@@ -307,7 +319,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if(CurrentMarker != null) {
                 CurrentMarker.setPosition(currentLoc);
             }else {
-                CurrentMarker = mMap.addMarker(new MarkerOptions().position(currentLoc).draggable(true).title("Location"));
+                CurrentMarker = mMap.addMarker(new MarkerOptions().position(currentLoc).draggable(true).title("You are here!"));
             }
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 12));
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

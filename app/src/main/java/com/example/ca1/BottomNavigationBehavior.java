@@ -13,7 +13,7 @@ import androidx.core.view.ViewCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+//This is a custom class, to help us move the bottomNavBar down when we need more space
 public class BottomNavigationBehavior extends CoordinatorLayout.Behavior<BottomNavigationView> {
 
     public BottomNavigationBehavior() {
@@ -39,8 +39,10 @@ public class BottomNavigationBehavior extends CoordinatorLayout.Behavior<BottomN
     @Override
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, BottomNavigationView child, View target, int dx, int dy, int[] consumed) {
         if (dy < 0) {
+            //If User scrolls up
             showBottomNavigationView(child);
         } else if (dy > 0) {
+            //If user scrolls down
             hideBottomNavigationView(child);
         }
     }

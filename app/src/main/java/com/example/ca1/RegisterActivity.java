@@ -48,8 +48,10 @@ public class RegisterActivity extends AppCompatActivity{
         DatabaseReference myDbRef = database.getReference("usersInformation");
 
         registerBtn.setOnClickListener(v->{
-            User testUser = new User(username.getText().toString(),email.getText().toString(),password.getText().toString());
+            //Fill the User Class with the data provided
+            User testUser = new User(username.getText().toString(),password.getText().toString(),email.getText().toString());
 
+            //Get random String of numbers
             String alphabet = "123456789";
 
             // create random string builder
@@ -76,6 +78,7 @@ public class RegisterActivity extends AppCompatActivity{
 
             String randomString = sb.toString();
 
+            //Create User with a unique User id
             myDbRef.child(randomString).setValue(testUser);//Maybe replace .push() with 21 length number string
             SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();

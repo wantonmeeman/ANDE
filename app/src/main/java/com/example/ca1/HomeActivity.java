@@ -65,10 +65,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class HomeActivity extends AppCompatActivity {
-
+    //DateFormats to be used
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
 
+    //Get current Time and Date
     Calendar calendar = Calendar.getInstance();
 
     TextView txtTaskTitle;
@@ -93,24 +94,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        //This refreshes each component.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                //.requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-        Log.i("Ball",Integer.toString(AppCompatDelegate.getDefaultNightMode()));
-        //Moved to SplashScreen
-//        if(pref.getBoolean("UIMode",true)){
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//            getDelegate().applyDayNight();
-//        }else{
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//            getDelegate().applyDayNight();
-//        }
         this.getSupportActionBar().hide();//Remove Title, probably not very good
 
         //Declare Variables
@@ -123,12 +107,14 @@ public class HomeActivity extends AppCompatActivity {
             userid = pref.getString("firebaseUserId","1");
         }
 
+        //Get another calendar instance
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
+        //Calculate the start and end of day in UnixTime
         long startOfDay = cal.getTimeInMillis()/1000;
         long endOfDay = startOfDay + 86400;
 
@@ -139,36 +125,54 @@ public class HomeActivity extends AppCompatActivity {
         Random rand = new Random();
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {//This has to be singleValueEvent, to prevent a bug
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int rndInt;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Alarm alarm = snapshot.getValue(Alarm.class);
+                    if(alarm.getUnixTime()*1000L > System.currentTimeMillis()){
+                        Intent intent1 = new Intent(HomeActivity.this,ReminderBroadcast.class);
+                        intent1.putExtra("alarmTitle",alarm.getTitle());
+                        intent1.putExtra("alarmDescription",alarm.getDescription());
 
-        myDbRef.addValueEventListener(new ValueEventListener() {
+                        //Need a different integer to tell the alarms apart, so i use a random integer
+                        rndInt = rand.nextInt();
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), rndInt, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+                        alarmManager.cancel(pendingIntent);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putInt(alarm.getUid(),rndInt);
+                        editor.commit();
+
+                        createNotificationChannel();
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        myDbRef.addValueEventListener(new ValueEventListener() {//This is reactive
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                ArrListAlarm.clear();
-                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                int rndInt;
+                ArrListAlarm.clear();//Clear the ArrayList to prevent the same activities being added again and again
+                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);//Set this to visualize loading
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
-                    if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
+                    if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Getting only today's date
+                        //Fill Array list
                         ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
-                        if(alarm.getUnixTime()*1000L > System.currentTimeMillis()){
-
-                            Intent intent1 = new Intent(HomeActivity.this,ReminderBroadcast.class);
-                            intent1.putExtra("alarmTitle",alarm.getTitle());
-                            intent1.putExtra("alarmLat",alarm.getLatitude());
-                            intent1.putExtra("alarmLong",alarm.getLongitude());
-                            intent1.putExtra("alarmDescription",alarm.getDescription());
-                            //Need a different integer to tell the alarms apart, so i use a random integer
-                            PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this,rand.nextInt(),intent1,0);
-                            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,alarm.getUnixTime()*1000L,pendingIntent);
-                            Log.i("currentSystemTime",Long.toString(System.currentTimeMillis()));
-                            createNotificationChannel();
-
-                        }
                     }
                 }
 
+                //Sorts the ArrayList
                 for(int i=0;i<ArrListAlarm.size()-1;i++){
                     int m = i;
                     for(int j=i+1;j<ArrListAlarm.size();j++){
@@ -187,6 +191,7 @@ public class HomeActivity extends AppCompatActivity {
                 //Get the calendar Object today's date.
                 RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
 
+                //Clicking on an child in an Recycler View
                 myrv.addOnItemTouchListener(
                         new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
                             @Override public void onItemClick(View view, int position) {
@@ -230,9 +235,25 @@ public class HomeActivity extends AppCompatActivity {
         txtTaskTitle = (TextView) findViewById(R.id.taskTitle);
         txtTaskTime = (TextView) findViewById(R.id.taskTime);
 
+        //Setting Date and Day
         txtDate.setText(currentDate);
         txtDay.setText(currentDay);
 
+        //On Click Handlers
+        Button button = findViewById(R.id.addNewTask);
+        button.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
+            intent.putExtra("edit",false);
+            startActivity(intent);
+        });
+
+        Button qrButton = findViewById(R.id.qrScanner);
+        qrButton.setOnClickListener(v ->{
+            Intent intent = new Intent(this, QRActivity.class);
+            startActivity(intent);
+        });
+
+        //Bottom Navigation Handling
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
         botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -261,19 +282,6 @@ public class HomeActivity extends AppCompatActivity {
             };
         });
 
-        Button button = findViewById(R.id.addNewTask);
-
-        button.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), AddNewTaskActivity.class);
-            intent.putExtra("edit",false);
-            startActivity(intent);
-        });
-
-        Button qrButton = findViewById(R.id.qrScanner);
-        qrButton.setOnClickListener(v ->{
-            Intent intent = new Intent(this, QRActivity.class);
-            startActivity(intent);
-        });
     }
 
     public void onBackPressed() {
@@ -287,7 +295,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void createNotificationChannel(){
+    public void createNotificationChannel(){//Creates an Notif Channel
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "SchedularAlarmChannel";
@@ -301,7 +309,6 @@ public class HomeActivity extends AppCompatActivity {
         }
 
     }
-    //@Override
 
 
 

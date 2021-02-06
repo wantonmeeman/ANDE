@@ -11,7 +11,8 @@ import androidx.core.view.ViewCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+//This is a custom class, to move the FloatingActionButton down in conjunction with the BottomNavbar
+//Note that it just moves down, it is not meant to hide Button
 public class FloatingButtonBehavior extends FloatingActionButton.Behavior {
     public FloatingButtonBehavior(){
         super();
@@ -23,11 +24,11 @@ public class FloatingButtonBehavior extends FloatingActionButton.Behavior {
     @Override
     public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-        Log.i("dxConsumed",Integer.toString(dxConsumed));
-        Log.i("dyConsumed",Integer.toString(dyConsumed));
         if (dyConsumed < 0) {
+            //If user scrolls Up
             showFAB(child);
         } else if (dyConsumed > 0) {
+            //If user scrolls down
             hideFAB(child);
         }
     }

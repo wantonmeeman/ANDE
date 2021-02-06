@@ -68,14 +68,13 @@ public class SettingsActivity extends AppCompatActivity{
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = pref.edit();
                 int mode = 0;
-                Log.i("isChecked",Boolean.toString(isChecked));
+                //Switch Theme
+
                 if (isChecked) {
                     editor.putBoolean("UIMode",true);
-                    Log.i("Mode","Dark");
                     mode = AppCompatDelegate.MODE_NIGHT_YES;
                 } else {
                     editor.putBoolean("UIMode",false);
-                    Log.i("Mode","Light");
                     mode = AppCompatDelegate.MODE_NIGHT_NO;
                 }
                 editor.commit();
@@ -87,21 +86,25 @@ public class SettingsActivity extends AppCompatActivity{
 
         });
 
+        //Handles Logout from app
         MaterialButton button = findViewById(R.id.logoutBtn);
         button.setPaintFlags(button.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         //.requestIdToken(getString(R.string.default_web_client_id))
                         .requestEmail()
                         .build();
                 GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getApplication(), gso);
-                mGoogleSignInClient.signOut();
+                mGoogleSignInClient.signOut();//Logs out of google
+
                 SharedPreferences.Editor editor = pref.edit();
-                editor.putString("firebaseUserId",null);
+                editor.putString("firebaseUserId",null);//Logs out of Schedular Account
                 editor.commit();
-                Intent intent = new Intent(getApplication(),LoginActivity.class);
+
+                Intent intent = new Intent(getApplication(),LoginActivity.class);//Sent back to Login Page
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }

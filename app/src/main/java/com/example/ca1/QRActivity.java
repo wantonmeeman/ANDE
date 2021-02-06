@@ -62,6 +62,8 @@ public class QRActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         this.getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
+
+        //Handling Login/saved user
         String userid = "";
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
@@ -77,10 +79,12 @@ public class QRActivity extends AppCompatActivity {
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
 
         setContentView(R.layout.qr_code);
+
         surfaceView = ((SurfaceView) findViewById(R.id.cameraPreview));
         surfaceView.setVisibility(View.INVISIBLE);
         textView = (TextView) findViewById(R.id.textView);
 
+        //Back Button
         ImageButton imgButton = findViewById(R.id.backButton);
         imgButton.setOnClickListener(v -> {
             Intent intent = new Intent(this,HomeActivity.class);
@@ -89,16 +93,16 @@ public class QRActivity extends AppCompatActivity {
 
         barcodeDetector = new BarcodeDetector
                 .Builder(this)
-                .setBarcodeFormats(Barcode.QR_CODE)
+                .setBarcodeFormats(Barcode.QR_CODE)//Makes it detect qr codes
                 .build();
         surfaceView.setVisibility(View.VISIBLE);
         cameraSource = new CameraSource.Builder(this, barcodeDetector).setRequestedPreviewSize(900, 480).setAutoFocusEnabled(true).build();
 
-
+        //Have to start surface view before opening camera, else user will have to restart activity to get use of camera.
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {//Checks for permissions
                     requestPermissions(new String[]{Manifest.permission.CAMERA}, PackageManager.PERMISSION_GRANTED);
                     return;
                 } else {
@@ -133,7 +137,7 @@ public class QRActivity extends AppCompatActivity {
                 geocoder = new Geocoder(getApplication(), Locale.getDefault());
                 SparseArray<Barcode> qrCodes = detections.getDetectedItems();
                 Calendar cal = Calendar.getInstance();
-                if (qrCodes.size() != 0) {
+                if (qrCodes.size() != 0) {//If a barcode is detected
                     for (int i = 0; i < qrCodes.size(); ++i) {
                         int id = qrCodes.keyAt(i);
                         Barcode qrCode = qrCodes.get(id);
@@ -141,9 +145,13 @@ public class QRActivity extends AppCompatActivity {
                         if (qrCode.getBoundingBox().centerY() > 325 && qrCode.getBoundingBox().centerY() < 575) {
                             textView.post(new Runnable() {
                                 public void run() {
-                                    cameraSource.stop();
+                                    cameraSource.stop();//Stop the camera
+
                                     Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                                    vibrator.vibrate(250);
+                                    vibrator.vibrate(250);//Vibrate for feedback
+
+                                    //Parse the QR Code
+                                    //The QR code is text, which is in JSON format.
                                     String qrcode = qrCodes.valueAt(0).displayValue;
                                     JSONObject jObject = null;
                                     try {
@@ -161,6 +169,7 @@ public class QRActivity extends AppCompatActivity {
                                         alarm.setUnixTime(jObject.getLong("unixTime"));
                                         cal.setTimeInMillis(alarm.getUnixTime()*1000L);
 
+                                        //get a random UID
                                         String alphabet = "123456789";
                                         StringBuilder sb = new StringBuilder();
                                         Random random = new Random();
@@ -180,6 +189,7 @@ public class QRActivity extends AppCompatActivity {
                                         new Handler().postDelayed(new Runnable() {//Using a handler works, for some reason.....
                                             @Override
                                             public void run() {
+                                                //Send an alert
                                                 AlertDialog.Builder builder = new AlertDialog.Builder(QRActivity.this);
                                                 builder.setMessage(
                                                         "Add this task to your calendar?\n" +
@@ -193,7 +203,9 @@ public class QRActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onCancel(DialogInterface dialog) {
                                                         try{
-                                                            cameraSource.start(surfaceView.getHolder());//This isnt really an error, its a warning, we know what we are doing
+                                                            //This isnt really an error, its a warning, we know what we are doing
+                                                            //It assumes we have not checked for the permission, which we have above
+                                                            cameraSource.start(surfaceView.getHolder());
                                                         } catch (IOException e) {
                                                             e.printStackTrace();
                                                         }
@@ -205,10 +217,13 @@ public class QRActivity extends AppCompatActivity {
                                                         new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int id) {
                                                             try{
-                                                                cameraSource.start(surfaceView.getHolder());//This isnt really an error, its a warning, we know what we are doing
+                                                                //This isnt really an error, its a warning, we know what we are doing
+                                                                //It assumes we have not checked for the permission, which we have above
+                                                                cameraSource.start(surfaceView.getHolder());
                                                             } catch (IOException e) {
                                                                 e.printStackTrace();
                                                             }
+                                                            //Add to Database
                                                                 myDbRef.child(randomString).setValue(alarm);
                                                                 dialog.cancel();
                                                             }
@@ -219,7 +234,8 @@ public class QRActivity extends AppCompatActivity {
                                                         new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int id) {
                                                                 try{
-                                                                    cameraSource.start(surfaceView.getHolder());//This isnt really an error, its a warning, we know what we are doing
+                                                                    //This isnt really an error, its a warning, we know what we are doing
+                                                                    cameraSource.start(surfaceView.getHolder());
                                                                 } catch (IOException e) {
                                                                     e.printStackTrace();
                                                                 }
@@ -232,7 +248,6 @@ public class QRActivity extends AppCompatActivity {
                                             }
                                         },100);
 
-                                        //Add some code to stop it to prevent spamming firebase
                                     }catch(JSONException | IOException e){
                                         //Add text
                                         textView.setText("Invalid JSON!");

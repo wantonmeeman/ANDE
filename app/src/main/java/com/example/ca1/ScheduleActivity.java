@@ -50,16 +50,18 @@ import java.util.Locale;
 
 public class ScheduleActivity extends AppCompatActivity implements View.OnClickListener{
 
+    //Theme Handling
     private int mLastDayNightMode;
-
     protected void onRestart(){
         super.onRestart();
         if (AppCompatDelegate.getDefaultNightMode() != mLastDayNightMode) {
             recreate();
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Format Handling
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd/MM");
         super.onCreate(savedInstanceState);
 
@@ -77,6 +79,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         long startOfDay = cal.getTimeInMillis() / 1000;
         long endOfDay = startOfDay + 86400;
 
+        //Handles Signin
         String userid = "";
         GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
         if(gAcc != null){
@@ -98,13 +101,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
                 int count = 0;
                 ArrListAlarm.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -112,20 +108,22 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     if(startOfDay < alarm.getUnixTime() && endOfDay > alarm.getUnixTime()) {//Get only today's date
                         ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
                         if(alarm.getUnixTime() * 1000L < System.currentTimeMillis()){
-                            count++;
+                            count++;//Get count of Active Alarms
                         }
                     }
                 }
 
-
                 int completedTaskPercentage = (int)Math.round(((double)count/(double)ArrListAlarm.size())*100);
+
                 if(ArrListAlarm.size() == 0){
                     completedTaskPercentage = 100;
                 }
+
                 percentageCompletion.setText(Integer.toString(completedTaskPercentage)+"%");
                 todayProgressBar.setProgress(completedTaskPercentage);
                 completionStatus.setText("You have completed "+count+"/"+ArrListAlarm.size()+" tasks today!");
 
+                //Sort Array List
                 for(int i=0;i<ArrListAlarm.size()-1;i++){
                     int m = i;
                     for(int j=i+1;j<ArrListAlarm.size();j++){
@@ -188,12 +186,14 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         TextView todayDate = (TextView)findViewById(R.id.todayDate);
         todayDate.setText(dateFormat.format(cal));
 
+        //Back Button
         ImageButton imgButton = findViewById(R.id.backButton);
         imgButton.setOnClickListener(v -> {
             Intent intent = new Intent(this,HomeActivity.class);
             startActivity(intent);
         });
 
+        //Bottom Navigation Handling
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(1).setChecked(true);//Set Middle(Home) to checked
         botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){

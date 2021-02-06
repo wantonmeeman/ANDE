@@ -74,12 +74,15 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //Dateformats
         SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMM, yyyy");
         SimpleDateFormat dayMonthFormat = new SimpleDateFormat("dd/MM");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.monthly_tasks_act);
         this.getSupportActionBar().hide();
 
+        //Bottom Navigation Handling
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(1).setChecked(true);//Set Middle(Home) to checked
         botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -110,6 +113,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             };
         });
 
+        //get current Calendar instance
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
@@ -117,6 +121,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         cal.set(Calendar.MILLISECOND, 0);
         ArrayList<Alarm> ArrListAlarm = new ArrayList<Alarm>();
 
+        //Handle login
         String userid = "";
         GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
@@ -128,6 +133,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             Log.i("Message","Cant access google account");
         }
 
+        //Setting Text
         TextView currentMonthYear = (TextView) findViewById(R.id.currentMonthYear);
         TextView currentDayMonth = (TextView)findViewById(R.id.currentDayMonth);
 
@@ -137,7 +143,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         Button Today = (Button) findViewById(R.id.Today);
         Today.setOnClickListener(this);
 
-        MCalendarView calendarView = (MCalendarView) findViewById(R.id.calendarView); // get the reference of CalendarView
+        MCalendarView calendarView = (MCalendarView) findViewById(R.id.calendarView); // get the reference of CalendarView,3rd part library
         calendarView.hasTitle(false);
 
         //Get Start and end of date.
@@ -164,6 +170,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                         ArrListAlarm.add(new Alarm(alarm.getTitle(), alarm.getDescription(), alarm.getLongitude(),alarm.getLatitude(), alarm.getUnixTime() * 1000L,alarm.getUid()));
                     }
 
+                    //Sorts thru the arrayList
                     for(int i=0;i<ArrListAlarm.size()-1;i++){
                         int m = i;
                         for(int j=i+1;j<ArrListAlarm.size();j++){
@@ -189,7 +196,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 }
 
                 RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerViewTask);
-
+                //Handles touch
                 myrv.addOnItemTouchListener(
                         new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
                             @Override public void onItemClick(View view, int position) {
@@ -228,20 +235,24 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             }
 
         });
-        calendarView.hasTitle(false);
-        calendarView.setOnDateClickListener(new OnDateClickListener() {
+        calendarView.hasTitle(false);//This has to be declared frequently, the calendarView is very finicky
+
+        calendarView.setOnDateClickListener(new OnDateClickListener() {//When a user clicks on a date
             DateData prevDataDate;
             @Override
             public void onDateClick(View view, DateData date) {
-                Log.i("Debug","DateClickListener");
+
+                //Handles marking once a new date is clicked
+                //-New date needs to be marked
+                //-Old date needs to be unmarked
                 if(prevDataDate != null) {
                     calendarView.unMarkDate(prevDataDate);
                 }
 
                 for(int i = 0;calendarView.getMarkedDates().getAll().size() > i;i++) {
                     if(date.equals(calendarView.getMarkedDates().getAll().get(i))) {
-                        calendarView.unMarkDate(date);
-                        calendarView.markDate(
+                        calendarView.unMarkDate(date);//unmark the date(remove event marking, the red dot or the current date marking)
+                        calendarView.markDate(//set the marking for a date that is clicked on
                                 date.setMarkStyle(
                                         new MarkStyle(MarkStyle.BACKGROUND, Color.parseColor("#0094f3")
                                         )
@@ -249,9 +260,9 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                         );//When an Event is already in the date selected.
                     }
                     if(prevDataDate != null && !(prevDataDate.equals(date))) {//The second condition resolves if a marked date is clicked twice.
-                        if (prevDataDate.equals(calendarView.getMarkedDates().getAll().get(i))) {
-                            calendarView.unMarkDate(prevDataDate);
-                            calendarView.markDate(
+                        if (prevDataDate.equals(calendarView.getMarkedDates().getAll().get(i))) {//set a custom mark style, if the previous date had events on it
+                            calendarView.unMarkDate(prevDataDate);//remove all marks from previous date
+                            calendarView.markDate(//add marking for events on the previous date
                                     prevDataDate.setMarkStyle(
                                         new MarkStyle(MarkStyle.DOT, Color.RED)
                                     )
@@ -259,17 +270,20 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                         }
                     }
                 }
+
                 calendarView.markDate(date).setMarkedStyle(MarkStyle.BACKGROUND);
 
-                prevDataDate = date;
+                prevDataDate = date;//set the current date clicked on as this value to prepare for the next onClickDate event
 
                 cal.set(Calendar.MONTH,date.getMonth()-1);
                 cal.set(Calendar.DATE,Integer.parseInt(date.getDayString()));
 
+                //Get the start and end of the day
                 long startOfDay = cal.getTimeInMillis() / 1000;
                 long endOfDay = startOfDay + 86400;
 
                 currentDayMonth.setText("Tasks (" + dayMonthFormat.format(cal) + ")");
+                //Loading Icon is shown
                 findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
 
                 //maybe make this a function
@@ -288,6 +302,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                             }
                         }
 
+                        //ArrayList Sorting
                         for(int i=0;i<ArrListAlarm.size()-1;i++){
                             int m = i;
                             for(int j=i+1;j<ArrListAlarm.size();j++){
@@ -321,19 +336,21 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             }
         });
 
+        //This handles Swiping
         calendarView.setOnMonthChangeListener(new OnMonthChangeListener() {
             @Override
             public void onMonthChange(int year, int month) {
-                Log.i("Debug","MnthChangeListener");
                 calendarView.hasTitle(false);
+                //YearB -> Previous Month+Year
                 int YearB = cal.get(Calendar.YEAR);
                 int MonthB = cal.get(Calendar.MONTH);
                 int YearA;
                 int MonthA;
 
+                //month-1 due to the fact that january starts at 0, but for the 3rd party calendar, it starts at 1
                 cal.set(Calendar.MONTH,month-1);
                 cal.set(Calendar.YEAR, year);
-
+                //YearA -> Swiped to Month+Year
                 YearA = cal.get(Calendar.YEAR);
                 MonthA = cal.get(Calendar.MONTH);
 
@@ -351,6 +368,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 if(cal.get(Calendar.YEAR) != year){
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR),1,1));
                 }
+                //Set Text
                 currentMonthYear.setText(monthYearFormat.format(cal));
 
             }
@@ -362,8 +380,8 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
             @Override
             public void onClick(View v) {
-                Log.i("Debug","nextMonth");
-                if(cal.get(Calendar.MONTH) == 11) {
+                // Handle moving to the next month
+                if(cal.get(Calendar.MONTH) == 11) {//If the month is december, add a year and go back to january
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR)+1, 1, 1));
                 }else{
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+2, 1));
@@ -376,7 +394,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             @Override
             public void onClick(View v) {
                 Log.i("Debug","prevMonth");
-                if(cal.get(Calendar.MONTH) == 0) {
+                if(cal.get(Calendar.MONTH) == 0) {//If the month is january, add a year and go back to december
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR)-1, 12, 1));
                 }else{
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 1));
@@ -389,6 +407,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
 
     }
+
     public void onClick(View v) {//Handle When the Monthly/Today buttons are clicked
         switch (v.getId()) {
             case R.id.Today://When Monthly is clicked
