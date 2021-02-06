@@ -21,14 +21,18 @@
     <color name="colorText">#d6d6d6</color>     <!-- main text (e.g Wednesday, Location) -->
     <color name="colorEditText">#d6d6d6</color>     <!-- text boxes-->
     <color name="colorCircle">#625bc2</color>
-    <color name="colorLine">#3d8eff</color>
+    <color name="colorLine">#625bc2</color>
     <color name="colorBorder">#292929</color>
     <color name="colorHeaderDate">#121212</color>
     <color name="colorDateSelected">#616161</color>
     <color name="colorDismissButton">#808080</color>
-    <color name="colorBackgroundPurple">#242332</color>
+    <color name="colorBackgroundPurple">#222222</color>
     <color name="colorTabActive">#555555</color>
     <color name="colorTabInactive">#3b3b3b</color>
-    <color name="colorTickIcon">#3d8eff</color>
+    <color name="colorTickIcon">#625bc2</color>
+    <color name="colorWhiteText">#d6d6d6</color>
+    <color name="colorProgressEmpty">#5B5B5B</color>
+    <color name="colorArrow">#5B5B5B</color>
+
 
 </resources>

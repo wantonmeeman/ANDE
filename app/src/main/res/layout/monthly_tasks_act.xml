@@ -163,7 +163,7 @@
             android:text="Sun"
             android:fontFamily="@font/glacial_indifference_regular"
             android:textSize="20dp"
-            android:background="@color/colorDarkGrey"
+            android:background="@color/colorBackground"
             android:textAllCaps="false"
             android:textAlignment="center"/>
             <TextView
@@ -173,7 +173,7 @@
                 android:text="Mon"
                 android:fontFamily="@font/glacial_indifference_regular"
                 android:textSize="20dp"
-                android:background="@color/colorDarkGrey"
+                android:background="@color/colorBackground"
                 android:textAllCaps="false"
                 android:textAlignment="center"/>
             <TextView
@@ -183,7 +183,7 @@
                 android:text="Tue"
                 android:fontFamily="@font/glacial_indifference_regular"
                 android:textSize="20dp"
-                android:background="@color/colorDarkGrey"
+                android:background="@color/colorBackground"
                 android:textAllCaps="false"
                 android:textAlignment="center"/>
             <TextView
@@ -192,14 +192,14 @@
                 android:layout_height="wrap_content"
                 android:text="Wed"
                 android:fontFamily="@font/glacial_indifference_regular"
-                android:background="@color/colorDarkGrey"
+                android:background="@color/colorBackground"
                 android:textSize="20dp"
                 android:textAllCaps="false"
                 android:textAlignment="center"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:background="@color/colorDarkGrey"
+                android:background="@color/colorBackground"
                 android:layout_height="wrap_content"
                 android:text="Thu"
                 android:fontFamily="@font/glacial_indifference_regular"
@@ -210,7 +210,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:background="@color/colorDarkGrey"
+                android:background="@color/colorBackground"
                 android:text="Fri"
                 android:fontFamily="@font/glacial_indifference_regular"
                 android:textSize="20dp"
@@ -222,7 +222,7 @@
                 android:layout_height="wrap_content"
                 android:text="Sat"
                 android:fontFamily="@font/glacial_indifference_regular"
-                android:background="@color/colorDarkGrey"
+                android:background="@color/colorBackground"
                 android:textSize="20dp"
                 android:textAllCaps="false"
                 android:textAlignment="center"/>
@@ -234,7 +234,7 @@
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:layout_gravity="center"
-            android:background="@color/colorDarkGrey"
+            android:background="@color/colorBackground"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/calendarDayHeader"
             app:layout_constraintStart_toStartOf="parent" />
@@ -249,6 +249,7 @@
         android:textColor="#625bc2"
         android:textSize="20dp"
         android:fontFamily="@font/glacial_indifference_regular"
+        android:background="@color/colorDarkGrey"
         app:layout_constraintTop_toBottomOf="@id/calendarWrapper"
         app:layout_constraintBottom_toTopOf="@+id/recyclerViewTask">
 
@@ -258,6 +259,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
+        android:background="@color/colorDarkGrey"
         app:layout_constraintTop_toBottomOf="@id/calendarWrapper"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -271,6 +273,7 @@
         android:id="@+id/recyclerViewTask"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/colorDarkGrey"
         app:layout_constraintTop_toBottomOf="@id/currentDayMonth"
         app:layout_constraintBottom_toBottomOf="parent"
         />
