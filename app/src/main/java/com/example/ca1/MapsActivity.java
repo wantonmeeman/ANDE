@@ -75,7 +75,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate (Bundle savedInstanceState){
         this.getSupportActionBar().hide();
-        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -94,13 +93,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                    Geocoder geocoder = new Geocoder(MapsActivity.this);
                     try {
                         addressArr = geocoder.getFromLocationName(location,1);
+                        Address address = addressArr.get(0);
+                        LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
+                        //mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
                     } catch (IOException e) {
                         e.printStackTrace();
+                    } catch (IndexOutOfBoundsException e){
+                        Toast.makeText(getApplication(), "Location Not Found!", Toast.LENGTH_SHORT).show();
                     }
-                    Address address = addressArr.get(0);
-                    LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
-                    //mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
+
                 }
 
                 return false;
@@ -195,10 +197,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     CurrentMarker = mMap.addMarker(new MarkerOptions().position(
                            currentLoc
                             ).title(
-                            "currentLocation"
+                            "You are Here!"
                             ).icon(
                             bitmapDescriptorFromVector(getApplicationContext(),R.drawable.current_user_icon))
                     );
+                    CurrentMarker.setTag(0);
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc,12));
                 }
 

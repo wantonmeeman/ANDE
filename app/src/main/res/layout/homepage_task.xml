@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<LinearLayout
-        android:background="?android:attr/selectableItemBackground"
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -30,13 +30,13 @@
                 android:id="@+id/taskIcon"
                 android:layout_width="20dp"
                 android:layout_height="100dp"
-                android:src="@drawable/homescreen_timeline"/>
+                android:src="@drawable/homescreen_timeline" />
 
             <TextView
                 android:id="@+id/taskTitle"
                 android:paddingLeft="20dp"
                 android:textSize="20dp"
-                android:textColor="@color/colorText"
+                android:textColor="@color/colorTextDistinct"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

@@ -15,6 +15,7 @@
         <!-- Customize your theme here. -->
     </style>
     <color name="colorBotNavBar">#292929</color> <!-- nav bar -->
+    <color name="colorBotNavBarInverse">#FFFFFF</color>
     <color name="colorBackground">#121212</color> <!-- main background -->
     <color name="colorDarkGrey">#292929</color>
     <color name="colorDateTime">#e6e6e6</color>     <!-- date and time in main page -->
@@ -26,6 +27,7 @@
     <color name="colorHeaderDate">#121212</color>
     <color name="colorDateSelected">#616161</color>
     <color name="colorDismissButton">#808080</color>
+    <color name="colorTextDistinct">#ebebeb</color>
     <color name="colorBackgroundPurple">#222222</color>
     <color name="colorTabActive">#555555</color>
     <color name="colorTabInactive">#3b3b3b</color>

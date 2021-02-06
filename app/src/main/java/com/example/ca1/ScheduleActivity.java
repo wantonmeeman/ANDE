@@ -160,10 +160,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 );
 
                 //Gets the Adapter from the JAVA file
-                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
+                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(ScheduleActivity.this,ArrListAlarm);
 
                 //Set Layout for the RecyclerView
-                myrv.setLayoutManager(new LinearLayoutManager(getApplication()));
+                myrv.setLayoutManager(new LinearLayoutManager(ScheduleActivity.this));
 
                 //Set an adapter for the View
                 myrv.setAdapter(myAdapter);
