@@ -14,6 +14,6 @@
     </style>
     <style name="CustomSwitchColor" parent="Theme.AppCompat.Light">
         <item name="android:textColorPrimaryDisableOnly">#00838f</item>
-        <item name="colorAccent">#3d8eff</item>
+        <item name="colorAccent">#625bc2</item>
     </style>
 </resources>
