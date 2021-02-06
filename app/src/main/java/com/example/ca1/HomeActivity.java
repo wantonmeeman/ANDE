@@ -100,15 +100,17 @@ public class HomeActivity extends AppCompatActivity {
                 .build();
 
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-        if(pref.getBoolean("UIMode",true)){
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            getDelegate().applyDayNight();
-        }else{
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            getDelegate().applyDayNight();
-        }
+        Log.i("Ball",Integer.toString(AppCompatDelegate.getDefaultNightMode()));
+        //Moved to SplashScreen
+//        if(pref.getBoolean("UIMode",true)){
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//            getDelegate().applyDayNight();
+//        }else{
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+//            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+//            getDelegate().applyDayNight();
+//        }
         this.getSupportActionBar().hide();//Remove Title, probably not very good
 
         //Declare Variables

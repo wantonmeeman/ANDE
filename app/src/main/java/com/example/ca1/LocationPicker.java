@@ -44,18 +44,45 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps2);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
+        BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
+        botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
+        botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
+            public boolean onNavigationItemSelected(@NonNull MenuItem item){
+                switch(item.getItemId()){
+                    case R.id.location:
+                        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.calendar:
+                        intent = new Intent(getApplicationContext(), ScheduleActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.home:
+                        intent = new Intent(getApplicationContext(),HomeActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.qr:
+                        intent = new Intent(getApplicationContext(), QRActivity.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.settings:
+                        intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                        startActivity(intent);
+                        return true;
+                }
+                return false;
+            };
+        });
     }
+
     public void onRequestPermissionsResult(int requestCode, String[] permissions,int[] grantResults) {//Handles the permission response from user
-
-
         if (requestCode == PackageManager.PERMISSION_GRANTED) {
             // If request is cancelled, the result arrays are empty.
             LocationTracker loc = new LocationTracker(LocationPicker.this);
@@ -89,7 +116,6 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
     }
 
     public void onMapReady(GoogleMap googleMap) {
-
         mMap = googleMap;
         LocationTracker loc = new LocationTracker(LocationPicker.this);
         LatLng currLocation;
@@ -166,34 +192,6 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
             }
         });
 
-        BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
-        botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
-        botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
-            public boolean onNavigationItemSelected(@NonNull MenuItem item){
-                switch(item.getItemId()){
-                    case R.id.location:
-                        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.calendar:
-                        intent = new Intent(getApplicationContext(), ScheduleActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.home:
-                        intent = new Intent(getApplicationContext(),HomeActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.qr:
-                        intent = new Intent(getApplicationContext(), QRActivity.class);
-                        startActivity(intent);
-                        return true;
-                    case R.id.settings:
-                        intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                        startActivity(intent);
-                        return true;
-                }
-                return false;
-            };
-        });
+
     }
 }

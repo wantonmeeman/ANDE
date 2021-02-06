@@ -209,10 +209,10 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 );
 
                 //Gets the Adapter from the JAVA file
-                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
+                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(MonthlyScheduleActivity.this,ArrListAlarm);
 
                 //Set Layout for the RecyclerView
-                myrv.setLayoutManager(new LinearLayoutManager(getApplication()));
+                myrv.setLayoutManager(new LinearLayoutManager(MonthlyScheduleActivity.this));
 
                 //Set an adapter for the View
                 myrv.setAdapter(myAdapter);

@@ -18,6 +18,7 @@ import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,6 +80,12 @@ public class QRActivity extends AppCompatActivity {
         surfaceView = ((SurfaceView) findViewById(R.id.cameraPreview));
         surfaceView.setVisibility(View.INVISIBLE);
         textView = (TextView) findViewById(R.id.textView);
+
+        ImageButton imgButton = findViewById(R.id.backButton);
+        imgButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this,HomeActivity.class);
+            startActivity(intent);
+        });
 
         barcodeDetector = new BarcodeDetector
                 .Builder(this)
