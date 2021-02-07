@@ -90,6 +90,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="@color/grey"
                 android:text="Register"
+                android:fontFamily="@font/kanit_regular"
                 android:textColor="@color/white"
                 android:textSize="17.5dp"
                 app:cornerRadius="200dp" />
@@ -102,6 +103,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="@color/blue"
                 android:text="Login"
+                android:fontFamily="@font/kanit_regular"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="17.5dp"
