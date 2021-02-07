@@ -72,6 +72,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             startActivity(intent);
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -228,7 +229,6 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 //Set an adapter for the View
                 myrv.setAdapter(myAdapter);
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                currentMonthYear.setText(monthYearFormat.format(cal));
             }
 
             @Override
@@ -245,7 +245,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             DateData prevDataDate;
             @Override
             public void onDateClick(View view, DateData date) {
-
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 //Handles marking once a new date is clicked
                 //-New date needs to be marked
                 //-Old date needs to be unmarked
@@ -324,9 +324,9 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                         RecyclerView myrv = findViewById(R.id.recyclerViewTask);
 
                         //Set Layout, here we set LinearLayout
-                        myrv.setLayoutManager(new LinearLayoutManager(getApplication()));
+                        myrv.setLayoutManager(new LinearLayoutManager(MonthlyScheduleActivity.this));//Using <Activity>.this will make the nightmode/lightmode work
 
-                        RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getApplication(),ArrListAlarm);
+                        RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(MonthlyScheduleActivity.this,ArrListAlarm);
 
                         //Set an adapter for the View
                         myrv.setAdapter(myAdapter);
