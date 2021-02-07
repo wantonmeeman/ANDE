@@ -174,7 +174,7 @@ public class QRActivity extends AppCompatActivity {
                                         StringBuilder sb = new StringBuilder();
                                         Random random = new Random();
 
-                                        locationName = geocoder.getFromLocation(alarm.getLongitude(),alarm.getLatitude(),1).get(0).getAddressLine(0);
+                                        locationName = geocoder.getFromLocation(alarm.getLatitude(),alarm.getLongitude(),1).get(0).getAddressLine(0);
 
                                         int length = 21;
 
