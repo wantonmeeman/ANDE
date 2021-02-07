@@ -149,8 +149,10 @@ public class TaskDetails extends AppCompatActivity {
                                         Intent intent1 = new Intent(TaskDetails.this,ReminderBroadcast.class);
                                         intent1.putExtra("alarmTitle",titleTxt.getText());
                                         intent1.putExtra("alarmDescription",descriptionTxt.getText());
-                                        Log.i("uid",Integer.toString(pref.getInt(Uid,0)));
                                         alarmManager.cancel(PendingIntent.getBroadcast(getApplicationContext(),pref.getInt(Uid,0),intent1,PendingIntent.FLAG_UPDATE_CURRENT));
+                                        SharedPreferences.Editor editor = pref.edit();
+                                        editor.remove(Uid);
+                                        editor.commit();
                                         dialog.cancel();
                                     }
                                 });

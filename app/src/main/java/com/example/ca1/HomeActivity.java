@@ -139,7 +139,7 @@ public class HomeActivity extends AppCompatActivity {
                         //Need a different integer to tell the alarms apart, so i use a random integer
                         rndInt = rand.nextInt();
                         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), rndInt, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
-                        alarmManager.cancel(pendingIntent);
+                        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,alarm.getUnixTime()*1000L,pendingIntent);
                         SharedPreferences.Editor editor = pref.edit();
                         editor.putInt(alarm.getUid(),rndInt);
                         editor.commit();
