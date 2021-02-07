@@ -15,6 +15,7 @@ import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MenuItem;
@@ -32,10 +33,16 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,8 +63,22 @@ public class SettingsActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.settings);
-        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         Switch switchTheme = (Switch)findViewById(R.id.simpleSwitch);
+
+        String userid = "";
+        GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
+        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+
+        if(gAcc != null){
+            userid = gAcc.getId();
+        }else{
+            userid = pref.getString("firebaseUserId","123123");
+            Log.i("Message","Cant access google account");
+        }
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
+
+        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");;
 
         switchTheme.setChecked(pref.getBoolean("UIMode",false));
         mDayNightMode = AppCompatDelegate.getDefaultNightMode();
@@ -68,14 +89,13 @@ public class SettingsActivity extends AppCompatActivity{
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = pref.edit();
                 int mode = 0;
-                Log.i("isChecked",Boolean.toString(isChecked));
+                //Switch Theme
+
                 if (isChecked) {
                     editor.putBoolean("UIMode",true);
-                    Log.i("Mode","Dark");
                     mode = AppCompatDelegate.MODE_NIGHT_YES;
                 } else {
                     editor.putBoolean("UIMode",false);
-                    Log.i("Mode","Light");
                     mode = AppCompatDelegate.MODE_NIGHT_NO;
                 }
                 editor.commit();
@@ -87,21 +107,49 @@ public class SettingsActivity extends AppCompatActivity{
 
         });
 
+        //Handles Logout from app
         MaterialButton button = findViewById(R.id.logoutBtn);
         button.setPaintFlags(button.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         //.requestIdToken(getString(R.string.default_web_client_id))
                         .requestEmail()
                         .build();
                 GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getApplication(), gso);
-                mGoogleSignInClient.signOut();
+                mGoogleSignInClient.signOut();//Logs out of google
+
+
+
                 SharedPreferences.Editor editor = pref.edit();
-                editor.putString("firebaseUserId",null);
+                editor.putString("firebaseUserId",null);//Logs out of Schedular Account
+
+                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            Alarm alarm = snapshot.getValue(Alarm.class);
+                            //Closes all current Alarms when user logs out
+                            Intent intent1 = new Intent(SettingsActivity.this, ReminderBroadcast.class);
+                            intent1.putExtra("alarmTitle", alarm.getTitle());
+                            intent1.putExtra("alarmDescription", alarm.getDescription());
+                            String Uid = alarm.getUid();
+                            alarmManager.cancel(PendingIntent.getBroadcast(getApplicationContext(), pref.getInt(Uid, 0), intent1, PendingIntent.FLAG_UPDATE_CURRENT));
+                            editor.remove(Uid);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 editor.commit();
-                Intent intent = new Intent(getApplication(),LoginActivity.class);
+
+                Intent intent = new Intent(getApplication(),LoginActivity.class);//Sent back to Login Page
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }

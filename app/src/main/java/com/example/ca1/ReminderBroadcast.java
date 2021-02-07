@@ -19,7 +19,7 @@ public class ReminderBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent){
 
-        //Intent to go to SS
+        //Intent to go to Splash Screen
         Intent notifIntent = new Intent(context, SplashScreenActivity.class);
         notifIntent.putExtra("notifID",1);
         PendingIntent redirectIntent = PendingIntent.getActivity(context,0,notifIntent,0);
@@ -30,7 +30,7 @@ public class ReminderBroadcast extends BroadcastReceiver {
 
         dismissIntent.putExtra("notifID", 1);
         PendingIntent dismissPendingIntent = PendingIntent.getActivity(context, 0, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        Log.i("title",intent.getExtras().getString("alarmTitle"));
+        //This handles the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"Alarm")
                 .setSmallIcon(R.drawable.calendar_icon)
                 .setContentTitle(intent.getExtras().getString("alarmTitle"))
@@ -53,6 +53,7 @@ public class ReminderBroadcast extends BroadcastReceiver {
         turnScreenOn(0,context);
     }
 
+    //This turns the screen on if the phone is asleep
     public static void turnScreenOn(int sec, final Context context)
     {
         final int seconds = sec;

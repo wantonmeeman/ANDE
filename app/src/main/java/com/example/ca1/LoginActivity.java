@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
 
         DatabaseReference myDbRef = database.getReference("usersInformation");
 
-        //Handles Google Signin, honestly, i dont even know if this is the correct way to do it
+        //Handles Google Signin
         if(GoogleSignIn.getLastSignedInAccount(this) != null || !(pref.getString("firebaseUserId","1").equals("1"))){//If User is already logged in via google.
             Intent intent = new Intent(this,HomeActivity.class);;
             startActivity(intent);
@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
             startActivity(intent);
         });
 
-        //Handles Login
+        //Handles Login via Schedular Account
         Button logButton = findViewById(R.id.Login);
         logButton.setOnClickListener(v -> {
                 myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -91,9 +91,10 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
                         // whenever data at this location is updated.
 
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            //gets all accounts with user information
                             User user = snapshot.getValue(User.class);
                             if(user.getUsername() != null) {
-                                if (
+                                if (//User can use Username/Email in the first text input
                                   (user.getUsername().equals(username.getText().toString()) || user.getEmail().equals(username.getText().toString()))
                                   && user.getPassword().equals(password.getText().toString())
                                 ) {
@@ -149,7 +150,7 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
     }
 
     private void updateUI(GoogleSignInAccount account) {
-        Toast.makeText(this,"Successfull",Toast.LENGTH_LONG);
+        Toast.makeText(this,"Successful",Toast.LENGTH_LONG);
         if(account != null) {
             Intent intent = new Intent(getApplication(), HomeActivity.class);
             startActivity(intent);

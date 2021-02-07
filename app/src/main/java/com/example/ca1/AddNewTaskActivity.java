@@ -46,9 +46,11 @@ import java.util.Random;
 
 
 public class AddNewTaskActivity extends AppCompatActivity {
+    //Date Formats
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm");
 
+    //This makes the activity change its theme when restarting/backbuttoning
     private int mLastDayNightMode;
     protected void onRestart(){
         super.onRestart();
@@ -56,12 +58,15 @@ public class AddNewTaskActivity extends AppCompatActivity {
             recreate();
         }
     }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_task_act);
         this.getSupportActionBar().hide();//Remove Title, probably not very good;
 
+        //Variable Declaration
         EditText titleTxt = findViewById(R.id.title);
         EditText descriptionTxt = findViewById(R.id.description);
         EditText timeTxt = findViewById(R.id.Time);
@@ -78,19 +83,23 @@ public class AddNewTaskActivity extends AppCompatActivity {
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE);
 
+        //This snippet handles Login via Google or Schedular Account
         final String userid;
         GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
         if(gAcc != null){
-            userid = gAcc.getId();
+            userid = gAcc.getId();//Google Account is signed in
         }else{
-            userid = pref.getString("firebaseUserId","1");
+            userid = pref.getString("firebaseUserId","1");//Schedular Account is signed in
         }
 
+        //Database connection to firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
 
         DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
 
+        //This gets the current Time right now
         Calendar cal = Calendar.getInstance();
+
         //Prepping the geocoder to get the Location of the Pin
         Geocoder geocoder = new Geocoder(getApplication(), Locale.getDefault());
         try {
@@ -109,19 +118,20 @@ public class AddNewTaskActivity extends AppCompatActivity {
         if(getIntent().getStringExtra("desc") != null) {
             descriptionTxt.setText(getIntent().getStringExtra("desc"));
         }
-
         if(selectedDate != -1) {
             cal.setTimeInMillis(selectedDate);
         }
 
+        //Set the Time using the calendar instance, and the formatting declared at the start
         timeTxt.setText(timeFormat.format(cal.getTime()));
         dateTxt.setText(dateFormat.format(cal.getTime()));
 
-
-        //This prevents Focusing
+        //This prevents Focusing, and thus solves the problem of having the double click to bring up dialog
         timeTxt.setInputType(InputType.TYPE_NULL);
         dateTxt.setInputType(InputType.TYPE_NULL);
 
+        //Change header text and misc depending on the previous activity
+        //If the previous activity was adding task, it will pass in edit = false
         if(getIntent().getBooleanExtra("edit",false)){
             txtHeader.setText("Edit Task");
             submitBtn.setText("Save");
@@ -130,6 +140,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
             submitBtn.setText("Add");
         }
 
+        //Back Buttons programming, finish() goes to the previous activity, and doesnt add to the backstack
         ImageButton backBtn = findViewById(R.id.backButton);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,6 +148,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
                 finish();
             }
         });
+
         MaterialButton cancelBtn = findViewById(R.id.cancelBtn);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,6 +156,8 @@ public class AddNewTaskActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        //Bring up Location Picker when this is clicked
         locTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,6 +181,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
             }
         });
 
+        //Bring up Date Dialog when this is clicked
         dateTxt.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -178,7 +193,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
                         new DatePickerDialog.OnDateSetListener(){//This creates a dialog where the user can choose the Date
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                dateTxt.setText(dayOfMonth+"/"+month+1+"/"+year);
+                                dateTxt.setText(dayOfMonth+"/"+(month+1)+"/"+year);
                                 cal.set(Calendar.DAY_OF_MONTH,dayOfMonth);
                                 cal.set(Calendar.MONTH,month);
                                 cal.set(Calendar.YEAR,year);
@@ -188,7 +203,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
             }
         });
 
-
+        //Bring up Time Dialog when this is clicked
         timeTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -209,9 +224,11 @@ public class AddNewTaskActivity extends AppCompatActivity {
             }
         });
 
+        //Submits the task to the server, either editing or adding it.
         submitBtn.setOnClickListener(v -> {
             //Here we pass in the Calendar object which we modified in the Dialogs.
-            if(titleTxt.getText().toString() == null || titleTxt.getText().toString().equals("")){
+            if(titleTxt.getText().toString() == null || titleTxt.getText().toString().equals("")){//If the Title is empty
+                //Creates an alert to handle the Title emptiness, tells the user to fill it in.
                 AlertDialog.Builder nullDialog = new AlertDialog.Builder(AddNewTaskActivity.this);
                 nullDialog.setMessage("Title cannot be empty!");
                 nullDialog.setCancelable(true);
@@ -227,8 +244,9 @@ public class AddNewTaskActivity extends AppCompatActivity {
                 AlertDialog nullDialog1 = nullDialog.create();
                 nullDialog1.show();
             }else {
-                if (userid != "1" && !getIntent().getBooleanExtra("edit", false)) {
-
+                if (userid != "1" && !getIntent().getBooleanExtra("edit", false)) {//If adding Alarm
+                    //This below snippet generates a random numerical string
+                    //We use this as a Unique IDentification(UID)
                     String alphabet = "123456789";
 
                     // create random string builder
@@ -254,39 +272,45 @@ public class AddNewTaskActivity extends AppCompatActivity {
                     }
 
                     String randomString = sb.toString();
-
+                    //Create a new Object using the user provided information
                     Alarm newAlarm = new Alarm(titleTxt.getText().toString(), descriptionTxt.getText().toString(), selectedLongitude, selectedLatitude, cal.getTimeInMillis() / 1000L, randomString);
+                    //Sets inside the database
                     myDbRef.child(randomString).setValue(newAlarm);
+                    //Redirect back to the Homescreen
                     Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                     startActivity(intent);
 
-                } else if (getIntent().getBooleanExtra("edit", false)) {
+                } else if (getIntent().getBooleanExtra("edit", false)) {//Editing Alarm
                     Map<String, Object> postValues = new HashMap<String, Object>();
-                    myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {//We just want this to happen once
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {//Search through the database
                                 Alarm alarm = snapshot.getValue(Alarm.class);
-                                if ((Uid).equals(alarm.getUid())) {
+                                if ((Uid).equals(alarm.getUid())) {// If the unique id of the alarm being edited matches one in the database.
 
                                     postValues.put("title", titleTxt.getText().toString());
                                     postValues.put("description", descriptionTxt.getText().toString());
                                     postValues.put("longitude", selectedLongitude);
                                     postValues.put("latitude", selectedLatitude);
                                     postValues.put("unixTime", cal.getTimeInMillis() / 1000L);
+
                                     myDbRef.child(Uid).updateChildren(postValues);
+                                    //Update values accordingly.
                                 }
                             }
                         }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
+                            Log.i("Error",databaseError.toString());
                         }
                     });
 
                     if (getIntent().getBooleanExtra("usedLocationPicker", false)) {
+                        //If they used the location picker,
+                        //send them back to homepage(calling finish() will land them into the locationpicker activity)
                         Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                         startActivity(intent);
                     } else {
@@ -296,6 +320,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
             }
         });
 
+        //Bottom Nav Bar Logic
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
         botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){

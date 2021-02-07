@@ -7,7 +7,7 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-
+//This is a custom class, to help us get the ID of the Item we click on
 public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
     private OnItemClickListener mListener;
 

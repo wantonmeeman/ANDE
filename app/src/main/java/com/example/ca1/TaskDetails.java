@@ -91,14 +91,15 @@ public class TaskDetails extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.getSupportActionBar().hide();
+
+        //Handles Date format
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm");
         super.onCreate(savedInstanceState);
 
-        //This refreshes each component.
-
         setContentView(R.layout.activity_task_details);
 
+        //Handles Login
         String userid = "";
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
@@ -124,12 +125,14 @@ public class TaskDetails extends AppCompatActivity {
 
         MaterialButton delBtn = findViewById(R.id.delBtn);
 
+        //Handles deleting of the Alarm
         delBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new Handler().postDelayed(new Runnable() {//Using a handler works, for some reason.....
                     @Override
                     public void run() {
+                        //Creates an Alert Dialog to confirm the user's Action
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(TaskDetails.this);
                         builder1.setMessage("Are you sure you want to delete this?");
                         builder1.setCancelable(true);
@@ -140,7 +143,16 @@ public class TaskDetails extends AppCompatActivity {
                                     public void onClick(DialogInterface dialog, int id) {
                                         Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                                         startActivity(intent);
+
                                         myDbRef.child(Uid).removeValue();
+                                        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                                        Intent intent1 = new Intent(TaskDetails.this,ReminderBroadcast.class);
+                                        intent1.putExtra("alarmTitle",titleTxt.getText());
+                                        intent1.putExtra("alarmDescription",descriptionTxt.getText());
+                                        alarmManager.cancel(PendingIntent.getBroadcast(getApplicationContext(),pref.getInt(Uid,0),intent1,PendingIntent.FLAG_UPDATE_CURRENT));
+                                        SharedPreferences.Editor editor = pref.edit();
+                                        editor.remove(Uid);
+                                        editor.commit();
                                         dialog.cancel();
                                     }
                                 });
@@ -160,7 +172,7 @@ public class TaskDetails extends AppCompatActivity {
 
             }
         });
-
+        //Back Button Handling
         ImageButton backBtn = findViewById(R.id.backButton);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,6 +181,7 @@ public class TaskDetails extends AppCompatActivity {
             }
         });
 
+        //Handles Editing
         ImageButton editBtn = findViewById(R.id.editBtn);
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,17 +198,19 @@ public class TaskDetails extends AppCompatActivity {
             }
         });
 
+        //Handles getting the Task Details and setting them to the Text
         myDbRef.child(Uid).addValueEventListener(new ValueEventListener() {
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Alarm alarm = dataSnapshot.getValue(Alarm.class);
                 if(alarm != null) {//This handles when the user deletes the object
+                    //Sets text
                     titleTxt.setText(alarm.getTitle());
                     descriptionTxt.setText(alarm.getDescription());
                     cal.setTimeInMillis(alarm.getUnixTime() * 1000L);
                     timeTxt.setText(timeFormat.format(cal.getTime()));
                     dateTxt.setText(dateFormat.format(cal.getTime()));
+
                     Geocoder geocoder = new Geocoder(getApplication(), Locale.getDefault());
                     try {
                         selectedLatitude[0] = alarm.getLatitude();
@@ -221,6 +236,7 @@ public class TaskDetails extends AppCompatActivity {
             }
         });
 
+        //Bottom navigation Handling
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
         botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -255,50 +271,3 @@ public class TaskDetails extends AppCompatActivity {
 
     }
 }
-
-//    public void onMapReady(GoogleMap googleMap) {
-//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                //.requestIdToken(getString(R.string.default_web_client_id))
-//                .requestEmail()
-//                .build();
-//
-//        SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
-//
-//        this.getSupportActionBar().hide();//Remove Title, probably not very good
-//
-//        String userid = "";
-//        GoogleSignInAccount gAcc = GoogleSignIn.getLastSignedInAccount(this);
-//        if(gAcc != null){
-//            userid = gAcc.getId();
-//        }else{
-//            userid = pref.getString("firebaseUserId","1");
-//        }
-//
-//        FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
-//
-//        DatabaseReference myDbRef = database.getReference("usersInformation").child(userid).child("UserAlarms");
-//        GoogleMap mMap = googleMap;
-//        String Uid = getIntent().getStringExtra("uid");
-//        myDbRef.child(Uid).addValueEventListener(new ValueEventListener() {
-//
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Alarm alarm = dataSnapshot.getValue(Alarm.class);
-//                LatLng currentLoc = new LatLng(alarm.getLatitude(),alarm.getLongitude());
-//                mMap.clear();
-//                mMap.addMarker(new MarkerOptions().position(
-//                        new LatLng(alarm.getLatitude(),alarm.getLongitude())
-//                ));
-//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc,12));
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//                Log.i("Error",error.toString());
-//                // Failed to read value
-//            }
-//        });
-//
-//    }
-//
-//}

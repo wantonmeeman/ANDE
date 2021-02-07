@@ -177,7 +177,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:fontFamily="@font/glacial_indifference_regular"
-                android:text="Location"
+                android:text="Location (Optional)"
                 android:textColor="@color/white"
                 android:textSize="22.5dp" />
         </LinearLayout>

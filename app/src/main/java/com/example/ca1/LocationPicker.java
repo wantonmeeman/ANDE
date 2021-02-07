@@ -35,6 +35,7 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
     Marker markerName;
     private GoogleMap mMap;
 
+    //This Snippet changes the UI when the user backbtn's
     private int mLastDayNightMode;
     protected void onRestart(){
         super.onRestart();
@@ -50,7 +51,7 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        //Bottom Navigation Handling
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
         botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
@@ -94,9 +95,11 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
                 //Else get the location that is passed
                 currLocation = new LatLng(getIntent().getDoubleExtra("latitude", 0),getIntent().getDoubleExtra("longitude", 0));
             }
-
+            //Clears the map
             mMap.clear();
-            markerName = mMap.addMarker(new MarkerOptions().position(currLocation).draggable(true).title("Location"));
+            //Sets the Current Location
+            markerName = mMap.addMarker(new MarkerOptions().position(currLocation).draggable(true).title("Current Location"));
+            //Move camera to current Location
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currLocation,12));
 
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -109,30 +112,27 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
         }else{
             Toast.makeText(getApplication(),"Permission was not given",Toast.LENGTH_LONG).show();
         }
-
-
-        // Other 'case' lines to check for other
-        // permissions this app might request.
     }
 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         LocationTracker loc = new LocationTracker(LocationPicker.this);
         LatLng currLocation;
+        //If a latitude/longitude wasnt passed, use the current Location
         if((getIntent().getDoubleExtra("latitude", -1) == -1) || (getIntent().getDoubleExtra("longitude", -1) == -1)){
-            currLocation = new LatLng(loc.getLatitude(),loc.getLongitude());
+            currLocation = new LatLng(loc.getLatitude(),loc.getLongitude());//use Current Location
         }else{
-            currLocation = new LatLng(getIntent().getDoubleExtra("latitude", 0),getIntent().getDoubleExtra("longitude", 0));
+            currLocation = new LatLng(getIntent().getDoubleExtra("latitude", 0),getIntent().getDoubleExtra("longitude", 0));//Use passed in values
         }
 
         final LatLng[] selectedLatLng = {currLocation};//This stores the selected Location of the marker
 
-        //This handles the first marker, before the user touches the map\
+        //This handles the first marker, before the user touches the map
 
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {//Checks for Permissions
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PackageManager.PERMISSION_GRANTED);
         }else {
-            markerName = mMap.addMarker(new MarkerOptions().position(currLocation).draggable(true).title("Location"));
+            markerName = mMap.addMarker(new MarkerOptions().position(currLocation).draggable(true).title("Current Location"));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currLocation,12));
         }
         //Moving the camera to the current Location of the User
@@ -157,7 +157,7 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
 
 
 
-        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){
+        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){//Same as Drag
             Marker onClickMarkerName;
             @Override
             public void onMapClick(LatLng latLng) {

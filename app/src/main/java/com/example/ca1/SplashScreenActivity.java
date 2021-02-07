@@ -27,6 +27,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Handles which theme to use for the entire Application
         SharedPreferences pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         if(pref.getBoolean("UIMode",true)){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
