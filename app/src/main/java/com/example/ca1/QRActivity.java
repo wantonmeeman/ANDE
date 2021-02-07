@@ -250,44 +250,13 @@ public class QRActivity extends AppCompatActivity {
 
                                     }catch(JSONException | IOException e){
                                         //Add text
-                                        textView.setText("Invalid JSON!");
-                                        new Handler().postDelayed(new Runnable() {//Using a handler works, for some reason.....
-                                            @Override
-                                            public void run() {
-                                                //Send an alert
-                                                AlertDialog.Builder builder = new AlertDialog.Builder(QRActivity.this);
-                                                builder.setMessage("Error Reading QR Code!");
-                                                builder.setCancelable(true);
+                                        textView.setText("Invalid QR Code!");
+                                        try {
+                                            cameraSource.start(surfaceView.getHolder());
+                                        }catch(IOException x){
 
-                                                builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                                    @Override
-                                                    public void onCancel(DialogInterface dialog) {
-                                                        try {
-                                                            //This isnt really an error, its a warning, we know what we are doing
-                                                            //It assumes we have not checked for the permission, which we have above
-                                                            cameraSource.start(surfaceView.getHolder());
-                                                        } catch (IOException e) {
-                                                            e.printStackTrace();
-                                                        }
-                                                    }
-                                                });
-
-                                                builder.setPositiveButton(
-                                                        "Yes",
-                                                        new DialogInterface.OnClickListener() {
-                                                            public void onClick(DialogInterface dialog, int id) {
-                                                                try {
-                                                                    //This isnt really an error, its a warning, we know what we are doing
-                                                                    //It assumes we have not checked for the permission, which we have above
-                                                                    cameraSource.start(surfaceView.getHolder());
-                                                                } catch (IOException e) {
-                                                                    e.printStackTrace();
-                                                                }
-                                                                dialog.cancel();
-                                                            }
-                                                        });
-                                            }
-                                        },100);
+                                        }
+                                        Toast.makeText(getApplication(), "QR Code is Invalid", Toast.LENGTH_SHORT).show();
                                         Log.e("Error",e.toString());
                                     }
 
