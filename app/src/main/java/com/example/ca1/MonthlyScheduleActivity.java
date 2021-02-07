@@ -245,7 +245,6 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             DateData prevDataDate;
             @Override
             public void onDateClick(View view, DateData date) {
-                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 //Handles marking once a new date is clicked
                 //-New date needs to be marked
                 //-Old date needs to be unmarked
