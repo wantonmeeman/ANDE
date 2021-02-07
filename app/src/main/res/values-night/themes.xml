@@ -15,7 +15,6 @@
         <!-- Customize your theme here. -->
     </style>
     <color name="colorBotNavBar">#292929</color> <!-- nav bar -->
-    <color name="colorBotNavBarInverse">#FFFFFF</color>
     <color name="colorBackground">#121212</color> <!-- main background -->
     <color name="colorDarkGrey">#292929</color>
     <color name="colorDateTime">#e6e6e6</color>     <!-- date and time in main page -->

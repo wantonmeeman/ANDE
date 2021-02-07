@@ -17,7 +17,7 @@
         android:layout_height="65dp"
         app:menu="@menu/menu"
         app:itemIconSize="32dp"
-        map:backgroundTint="@color/colorBotNavBarInverse"
+        map:backgroundTint="@color/colorBotNavBar"
         app:itemIconTint="@drawable/bottom_navigation_selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:itemRippleColor="@color/blue"
@@ -37,6 +37,18 @@
         app:tint="@color/white"
         map:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         map:layout_constraintEnd_toEndOf="parent" />
+    <SearchView
+        android:id="@+id/searchLoc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:iconifiedByDefault="false"
+        android:queryHint="Search..."
+        map:layout_constraintTop_toTopOf="parent"
+        android:elevation="5dp"
+        android:backgroundTint="@color/colorDateSelected"
+        android:queryBackground="@android:color/transparent"
+        android:background="@drawable/rounded_edit_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

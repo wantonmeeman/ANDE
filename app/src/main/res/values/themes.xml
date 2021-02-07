@@ -15,7 +15,6 @@
         <!-- Customize your theme here. -->
     </style>
     <color name="colorBotNavBar">#FFFFFF</color>
-    <color name="colorBotNavBarInverse">#292929</color>
     <color name="colorBackground">#f5f7fa</color>
     <color name="colorDarkGrey">#FFFFFF</color>
     <color name="colorDateTime">#DFDFDF</color>

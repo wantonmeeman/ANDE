@@ -59,8 +59,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private int mLastDayNightMode;
@@ -90,7 +91,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 List<Address> addressArr = null;
 
                 if(location != null || !location.equals("")){
-                   Geocoder geocoder = new Geocoder(MapsActivity.this);
+                   Geocoder geocoder = new Geocoder(MapsActivity.this, Locale.US);
                     try {
                         //We only want 1 address
                         addressArr = geocoder.getFromLocationName(location,1);

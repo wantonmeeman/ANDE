@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,6 +30,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
 public class LocationPicker extends FragmentActivity implements OnMapReadyCallback {
@@ -52,6 +54,42 @@ public class LocationPicker extends FragmentActivity implements OnMapReadyCallba
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         //Bottom Navigation Handling
+
+        SearchView searchView = findViewById(R.id.searchLoc);
+        //This handles searching using the top search bar
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                String location  = searchView.getQuery().toString();
+                List<Address> addressArr = null;
+
+                if(location != null || !location.equals("")){
+                    Geocoder geocoder = new Geocoder(LocationPicker.this, Locale.US);
+                    try {
+                        //We only want 1 address
+                        addressArr = geocoder.getFromLocationName(location,1);
+                        Address address = addressArr.get(0);
+                        LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
+
+                        //Animate camera to that new Address
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (IndexOutOfBoundsException e){//If a location cannot be found
+                        Toast.makeText(getApplication(), "Location Not Found!", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
         BottomNavigationView botNavView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
         botNavView.getMenu().getItem(2).setChecked(true);//Set Middle(Home) to checked
         botNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
