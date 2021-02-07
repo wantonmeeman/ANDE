@@ -146,6 +146,9 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         MCalendarView calendarView = (MCalendarView) findViewById(R.id.calendarView); // get the reference of CalendarView,3rd part library
         calendarView.hasTitle(false);
 
+        //Clear Previous Markings
+        calendarView.getMarkedDates().getAll().clear();
+
         //Get Start and end of date.
         long startOfDay = cal.getTimeInMillis() / 1000;
         long endOfDay = startOfDay + 86400;

@@ -193,7 +193,7 @@ public class AddNewTaskActivity extends AppCompatActivity {
                         new DatePickerDialog.OnDateSetListener(){//This creates a dialog where the user can choose the Date
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                dateTxt.setText(dayOfMonth+"/"+month+1+"/"+year);
+                                dateTxt.setText(dayOfMonth+"/"+(month+1)+"/"+year);
                                 cal.set(Calendar.DAY_OF_MONTH,dayOfMonth);
                                 cal.set(Calendar.MONTH,month);
                                 cal.set(Calendar.YEAR,year);

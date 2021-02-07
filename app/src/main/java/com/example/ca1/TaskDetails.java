@@ -204,11 +204,13 @@ public class TaskDetails extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Alarm alarm = dataSnapshot.getValue(Alarm.class);
                 if(alarm != null) {//This handles when the user deletes the object
+                    //Sets text
                     titleTxt.setText(alarm.getTitle());
                     descriptionTxt.setText(alarm.getDescription());
                     cal.setTimeInMillis(alarm.getUnixTime() * 1000L);
                     timeTxt.setText(timeFormat.format(cal.getTime()));
                     dateTxt.setText(dateFormat.format(cal.getTime()));
+
                     Geocoder geocoder = new Geocoder(getApplication(), Locale.getDefault());
                     try {
                         selectedLatitude[0] = alarm.getLatitude();
