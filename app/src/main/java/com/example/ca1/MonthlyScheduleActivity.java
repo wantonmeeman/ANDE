@@ -119,6 +119,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
+
         ArrayList<Alarm> ArrListAlarm = new ArrayList<Alarm>();
 
         //Handle login
@@ -146,8 +147,9 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         MCalendarView calendarView = (MCalendarView) findViewById(R.id.calendarView); // get the reference of CalendarView,3rd part library
         calendarView.hasTitle(false);
 
-        //Clear Previous Markings
+        //Clear Previous calendar state and Markings
         calendarView.getMarkedDates().getAll().clear();
+        calendarView.travelTo(new DateData(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH)+1,1));
 
         //Get Start and end of date.
         long startOfDay = cal.getTimeInMillis() / 1000;
@@ -163,7 +165,6 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-
                 ArrListAlarm.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
@@ -188,7 +189,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
                     //This snippet goes through every date and assigns them into the calendarView.
                     Calendar calendarInstance = Calendar.getInstance();
-                    calendarInstance.setTime(new Date((long)alarm.getUnixTime()*1000));
+                    calendarInstance.setTime(new Date(alarm.getUnixTime()*1000));
                     calendarView.markDate(
                             new DateData(
                                     calendarInstance.get(Calendar.YEAR),
@@ -227,8 +228,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 //Set an adapter for the View
                 myrv.setAdapter(myAdapter);
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-
-
+                currentMonthYear.setText(monthYearFormat.format(cal));
             }
 
             @Override
@@ -238,6 +238,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             }
 
         });
+
         calendarView.hasTitle(false);//This has to be declared frequently, the calendarView is very finicky
 
         calendarView.setOnDateClickListener(new OnDateClickListener() {//When a user clicks on a date
@@ -280,6 +281,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
                 cal.set(Calendar.MONTH,date.getMonth()-1);
                 cal.set(Calendar.DATE,Integer.parseInt(date.getDayString()));
+
 
                 //Get the start and end of the day
                 long startOfDay = cal.getTimeInMillis() / 1000;
@@ -338,11 +340,11 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 });
             }
         });
-
         //This handles Swiping
         calendarView.setOnMonthChangeListener(new OnMonthChangeListener() {
             @Override
             public void onMonthChange(int year, int month) {
+
                 calendarView.hasTitle(false);
                 //YearB -> Previous Month+Year
                 int YearB = cal.get(Calendar.YEAR);
@@ -389,6 +391,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 }else{
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+2, 1));
                 }
+                currentMonthYear.setText(monthYearFormat.format(cal));
                 calendarView.hasTitle(false);
             }
         });
@@ -396,19 +399,16 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         prevMnth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("Debug","prevMonth");
+                //Handle Previous month
                 if(cal.get(Calendar.MONTH) == 0) {//If the month is january, add a year and go back to december
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR)-1, 12, 1));
                 }else{
                     calendarView.travelTo(new DateData(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 1));
                 }
+                currentMonthYear.setText(monthYearFormat.format(cal));
                 calendarView.hasTitle(false);
             }
         });
-
-
-
-
     }
 
     public void onClick(View v) {//Handle When the Monthly/Today buttons are clicked
