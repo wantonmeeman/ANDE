@@ -87,7 +87,7 @@ public class QRActivity extends AppCompatActivity {
         //Back Button
         ImageButton imgButton = findViewById(R.id.backButton);
         imgButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this,HomeActivity.class);
+            Intent intent = new Intent(this, HomeActivity.class);
             startActivity(intent);
         });
 
@@ -157,7 +157,8 @@ public class QRActivity extends AppCompatActivity {
                                     try {
                                         if (textView.getText() != "Place the QR code in the middle of the screen.") {
                                             textView.setText("Place the QR code in the middle of the screen.");
-                                        };
+                                        }
+                                        ;
 
                                         Alarm alarm = new Alarm();
                                         jObject = new JSONObject(qrcode);
@@ -167,14 +168,14 @@ public class QRActivity extends AppCompatActivity {
                                         alarm.setLongitude(jObject.getDouble("longitude"));
                                         alarm.setLatitude(jObject.getDouble("latitude"));
                                         alarm.setUnixTime(jObject.getLong("unixTime"));
-                                        cal.setTimeInMillis(alarm.getUnixTime()*1000L);
+                                        cal.setTimeInMillis(alarm.getUnixTime() * 1000L);
 
                                         //get a random UID
                                         String alphabet = "123456789";
                                         StringBuilder sb = new StringBuilder();
                                         Random random = new Random();
 
-                                        locationName = geocoder.getFromLocation(alarm.getLatitude(),alarm.getLongitude(),1).get(0).getAddressLine(0);
+                                        locationName = geocoder.getFromLocation(alarm.getLatitude(), alarm.getLongitude(), 1).get(0).getAddressLine(0);
 
                                         int length = 21;
 
@@ -193,18 +194,28 @@ public class QRActivity extends AppCompatActivity {
                                                 AlertDialog.Builder builder = new AlertDialog.Builder(QRActivity.this);
                                                 builder.setMessage(
                                                         "Add this task to your calendar?\n" +
-                                                        "\nTitle: "+alarm.getTitle()+
-                                                        "\nDescription: "+alarm.getDescription()+
-                                                        "\nDate and Time: "+dateFormat.format(cal)+
-                                                        "\nLocation: "+locationName);
+                                                                "\nTitle: " + alarm.getTitle() +
+                                                                "\nDescription: " + alarm.getDescription() +
+                                                                "\nDate and Time: " + dateFormat.format(cal) +
+                                                                "\nLocation: " + locationName);
                                                 builder.setCancelable(true);
 
                                                 builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
                                                     @Override
                                                     public void onCancel(DialogInterface dialog) {
-                                                        try{
+                                                        try {
                                                             //This isnt really an error, its a warning, we know what we are doing
                                                             //It assumes we have not checked for the permission, which we have above
+                                                            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                                                                // TODO: Consider calling
+                                                                //    ActivityCompat#requestPermissions
+                                                                // here to request the missing permissions, and then overriding
+                                                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                                                //                                          int[] grantResults)
+                                                                // to handle the case where the user grants the permission. See the documentation
+                                                                // for ActivityCompat#requestPermissions for more details.
+                                                                return;
+                                                            }
                                                             cameraSource.start(surfaceView.getHolder());
                                                         } catch (IOException e) {
                                                             e.printStackTrace();
@@ -216,14 +227,24 @@ public class QRActivity extends AppCompatActivity {
                                                         "Yes",
                                                         new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int id) {
-                                                            try{
-                                                                //This isnt really an error, its a warning, we know what we are doing
-                                                                //It assumes we have not checked for the permission, which we have above
-                                                                cameraSource.start(surfaceView.getHolder());
-                                                            } catch (IOException e) {
-                                                                e.printStackTrace();
-                                                            }
-                                                            //Add to Database
+                                                                try {
+                                                                    //This isnt really an error, its a warning, we know what we are doing
+                                                                    //It assumes we have not checked for the permission, which we have above
+                                                                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                                                                        // TODO: Consider calling
+                                                                        //    ActivityCompat#requestPermissions
+                                                                        // here to request the missing permissions, and then overriding
+                                                                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                                                        //                                          int[] grantResults)
+                                                                        // to handle the case where the user grants the permission. See the documentation
+                                                                        // for ActivityCompat#requestPermissions for more details.
+                                                                        return;
+                                                                    }
+                                                                    cameraSource.start(surfaceView.getHolder());
+                                                                } catch (IOException e) {
+                                                                    e.printStackTrace();
+                                                                }
+                                                                //Add to Database
                                                                 myDbRef.child(randomString).setValue(alarm);
                                                                 dialog.cancel();
                                                             }
@@ -233,8 +254,18 @@ public class QRActivity extends AppCompatActivity {
                                                         "No",
                                                         new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int id) {
-                                                                try{
+                                                                try {
                                                                     //This isnt really an error, its a warning, we know what we are doing
+                                                                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                                                                        // TODO: Consider calling
+                                                                        //    ActivityCompat#requestPermissions
+                                                                        // here to request the missing permissions, and then overriding
+                                                                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                                                        //                                          int[] grantResults)
+                                                                        // to handle the case where the user grants the permission. See the documentation
+                                                                        // for ActivityCompat#requestPermissions for more details.
+                                                                        return;
+                                                                    }
                                                                     cameraSource.start(surfaceView.getHolder());
                                                                 } catch (IOException e) {
                                                                     e.printStackTrace();
@@ -246,9 +277,9 @@ public class QRActivity extends AppCompatActivity {
                                                 AlertDialog alert11 = builder.create();
                                                 alert11.show();
                                             }
-                                        },100);
+                                        }, 100);
 
-                                    }catch(JSONException | IOException e){
+                                    } catch (JSONException | IOException e) {
                                         //Add text
                                         textView.setText("Invalid QR Code!");
                                         new Handler().postDelayed(new Runnable() {//Using a handler works, for some reason.....
@@ -262,9 +293,19 @@ public class QRActivity extends AppCompatActivity {
                                                 builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
                                                     @Override
                                                     public void onCancel(DialogInterface dialog) {
-                                                        try{
+                                                        try {
                                                             //This isnt really an error, its a warning, we know what we are doing
                                                             //It assumes we have not checked for the permission, which we have above
+                                                            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                                                                // TODO: Consider calling
+                                                                //    ActivityCompat#requestPermissions
+                                                                // here to request the missing permissions, and then overriding
+                                                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                                                //                                          int[] grantResults)
+                                                                // to handle the case where the user grants the permission. See the documentation
+                                                                // for ActivityCompat#requestPermissions for more details.
+                                                                return;
+                                                            }
                                                             cameraSource.start(surfaceView.getHolder());
                                                         } catch (IOException e) {
                                                             e.printStackTrace();
@@ -276,9 +317,19 @@ public class QRActivity extends AppCompatActivity {
                                                         "Ok",
                                                         new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int id) {
-                                                                try{
+                                                                try {
                                                                     //This isnt really an error, its a warning, we know what we are doing
                                                                     //It assumes we have not checked for the permission, which we have above
+                                                                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                                                                        // TODO: Consider calling
+                                                                        //    ActivityCompat#requestPermissions
+                                                                        // here to request the missing permissions, and then overriding
+                                                                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                                                        //                                          int[] grantResults)
+                                                                        // to handle the case where the user grants the permission. See the documentation
+                                                                        // for ActivityCompat#requestPermissions for more details.
+                                                                        return;
+                                                                    }
                                                                     cameraSource.start(surfaceView.getHolder());
                                                                 } catch (IOException e) {
                                                                     e.printStackTrace();
@@ -290,9 +341,9 @@ public class QRActivity extends AppCompatActivity {
                                                 AlertDialog alert11 = builder.create();
                                                 alert11.show();
                                             }
-                                        },100);
+                                        }, 100);
                                         Toast.makeText(getApplication(), "QR Code is Invalid", Toast.LENGTH_SHORT).show();
-                                        Log.e("Error",e.toString());
+                                        Log.e("Error", e.toString());
                                     }
 
                                 }
@@ -306,19 +357,28 @@ public class QRActivity extends AppCompatActivity {
         });
 
     }
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,int[] grantResults) {//Handles the permission response from user
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {//Handles the permission response from user
         if (requestCode == PackageManager.PERMISSION_GRANTED) {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i("Accepted","Accepted");
-                    try {
-                        cameraSource.start(surfaceView.getHolder());//This error can be ignored
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                try {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
+                    cameraSource.start(surfaceView.getHolder());//This error can be ignored
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    Log.i("Denied","Denied");
                 }
                 return;
         }

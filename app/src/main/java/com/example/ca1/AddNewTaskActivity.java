@@ -304,7 +304,6 @@ public class AddNewTaskActivity extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-                            Log.i("Error",databaseError.toString());
                         }
                     });
 

@@ -6,7 +6,11 @@ import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.Context;
 import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.os.Build;
 import android.os.PowerManager;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -14,22 +18,40 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import static android.content.Context.VIBRATOR_SERVICE;
+
 
 public class ReminderBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent){
 
-        //Intent to go to Splash Screen
-        Intent notifIntent = new Intent(context, SplashScreenActivity.class);
-        notifIntent.putExtra("notifID",1);
-        PendingIntent redirectIntent = PendingIntent.getActivity(context,0,notifIntent,0);
+        //Intent to go to Task Details
+        Intent notifIntent = new Intent(context, TaskDetails.class);
+        notifIntent.putExtra("uid",intent.getExtras().getString("alarmID"));
+        notifIntent.putExtra("cancelNotification",true);
+
+        PendingIntent redirectIntent = PendingIntent.getActivity(context,0,notifIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
         //Intent to Dismiss notification
         Intent dismissIntent = new Intent(context, DismissActivity.class);
         dismissIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        dismissIntent.putExtra("notifID", 1);
         PendingIntent dismissPendingIntent = PendingIntent.getActivity(context, 0, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        //Set Vibrator
+        Vibrator vibrator = (Vibrator) context.getSystemService(VIBRATOR_SERVICE);
+        long[] pattern = {0,100,1000};
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            AudioAttributes audioAttributes = new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .build();
+            VibrationEffect ve = VibrationEffect.createWaveform(pattern,0);
+            vibrator.vibrate(ve,audioAttributes);
+        } else {
+            vibrator.vibrate(pattern, 0);
+        }
+
         //This handles the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"Alarm")
                 .setSmallIcon(R.drawable.calendar_icon)
@@ -45,7 +67,6 @@ public class ReminderBroadcast extends BroadcastReceiver {
 
         Notification mNotification = builder.build();
         mNotification.flags |= Notification.FLAG_INSISTENT;
-        mNotification.defaults|= Notification.DEFAULT_VIBRATE;
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
@@ -63,9 +84,9 @@ public class ReminderBroadcast extends BroadcastReceiver {
 
         if( !isScreenOn )
         {
-            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |PowerManager.ACQUIRE_CAUSES_WAKEUP |PowerManager.ON_AFTER_RELEASE,"MyLock");
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK |PowerManager.ACQUIRE_CAUSES_WAKEUP |PowerManager.ON_AFTER_RELEASE,"MyLock:");
             wl.acquire(seconds*1000);
-            PowerManager.WakeLock wl_cpu = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MyCpuLock");
+            PowerManager.WakeLock wl_cpu = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MyCpuLock:");
             wl_cpu.acquire(seconds*1000);
         }
     }

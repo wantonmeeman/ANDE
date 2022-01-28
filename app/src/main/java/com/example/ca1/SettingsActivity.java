@@ -73,7 +73,6 @@ public class SettingsActivity extends AppCompatActivity{
             userid = gAcc.getId();
         }else{
             userid = pref.getString("firebaseUserId","123123");
-            Log.i("Message","Cant access google account");
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://schedulardb-default-rtdb.firebaseio.com");
@@ -136,6 +135,8 @@ public class SettingsActivity extends AppCompatActivity{
                             Intent intent1 = new Intent(SettingsActivity.this, ReminderBroadcast.class);
                             intent1.putExtra("alarmTitle", alarm.getTitle());
                             intent1.putExtra("alarmDescription", alarm.getDescription());
+                            intent1.putExtra("alarmID",alarm.getUid());
+
                             String Uid = alarm.getUid();
                             alarmManager.cancel(PendingIntent.getBroadcast(getApplicationContext(), pref.getInt(Uid, 0), intent1, PendingIntent.FLAG_UPDATE_CURRENT));
                             editor.remove(Uid);

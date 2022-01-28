@@ -132,9 +132,13 @@ public class HomeActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     if(alarm.getUnixTime()*1000L > System.currentTimeMillis()){
+
+
                         Intent intent1 = new Intent(HomeActivity.this,ReminderBroadcast.class);
+
                         intent1.putExtra("alarmTitle",alarm.getTitle());
                         intent1.putExtra("alarmDescription",alarm.getDescription());
+                        intent1.putExtra("alarmID",alarm.getUid());
 
                         //Need a different integer to tell the alarms apart, so i use a random integer
                         rndInt = rand.nextInt();
@@ -224,7 +228,6 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError error) {
-                Log.i("Error",error.toString());
                 // Failed to read value
             }
         });

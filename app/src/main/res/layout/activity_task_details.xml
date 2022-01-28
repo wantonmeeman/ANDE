@@ -78,9 +78,14 @@
             android:backgroundTint="@color/colorEditText"
             android:fontFamily="@font/glacial_indifference_regular"
             android:background="@drawable/rounded_edit_text"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:textColor="@color/black" />
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="10dp"
+            android:textSize="25dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:text="Panda Panda Panda Panda Panda Panda Panda Panda Panda Panda"/>
 
 
         <TextView
@@ -102,8 +107,14 @@
             android:layout_marginBottom="10dp"
             android:fontFamily="@font/glacial_indifference_regular"
             android:background="@drawable/rounded_edit_text"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textSize="20dp"
+            android:text="Pandas Pandas Pandas Pandas Pandas Pandas Pandas Pandas Pandas Pandas Pandas Pandas Pandas Pandas Pandas Pandas Pandas Pandas"
             android:textColor="@color/black" />
 
 
@@ -177,6 +188,7 @@
             android:layout_marginBottom="10dp">
 
             <TextView
+                android:id="@+id/locNotifText"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -186,39 +198,56 @@
                 android:textSize="22.5dp" />
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/location"
-            android:layout_width="350dp"
-            android:layout_height="50dp"
-            android:background="@drawable/rounded_edit_text"
-            android:fontFamily="@font/glacial_indifference_regular"
-            android:textColor="@color/black"
-            android:textSize="22.5dp"
-            android:backgroundTint="@color/colorEditText"
-            android:layout_marginBottom="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+    <ImageView
+        android:id="@+id/location"
+        android:layout_width="350dp"
+        android:layout_height="150dp"></ImageView>
+<!--        <TextView-->
+<!--            android:id="@+id/location"-->
+<!--            android:layout_width="350dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background="@drawable/rounded_edit_text"-->
+<!--            android:fontFamily="@font/glacial_indifference_regular"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textSize="22.5dp"-->
+<!--            android:backgroundTint="@color/colorEditText"-->
+<!--            android:layout_marginBottom="20dp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent" />-->
         <LinearLayout
             android:id="@+id/submitBtnWrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             >
 
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/delBtn"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="70dp"-->
+<!--                android:layout_marginLeft="95dp"-->
+<!--                android:layout_marginRight="95dp"-->
+<!--                android:layout_weight="2"-->
+<!--                android:backgroundTint="#F32013"-->
+<!--                android:fontFamily="@font/kanit_regular"-->
+<!--                android:text="Delete Task"-->
+<!--                android:textAllCaps="true"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="17.5dp"-->
+<!--                app:cornerRadius="200dp" />-->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/delBtn"
-                android:layout_width="wrap_content"
+                android:layout_width="70dp"
                 android:layout_height="70dp"
-                android:layout_marginLeft="95dp"
-                android:layout_marginRight="95dp"
-                android:layout_weight="2"
                 android:backgroundTint="#F32013"
                 android:fontFamily="@font/kanit_regular"
-                android:text="Delete Task"
-                android:textAllCaps="true"
                 android:textColor="@color/white"
-                android:textSize="17.5dp"
-                app:cornerRadius="200dp" />
+                app:icon="@drawable/ic_baseline_privacy_tip_24"
+                app:iconPadding="0dp"
+                app:iconTint="@color/white"
+                app:iconGravity="textStart"
+                app:iconSize="25dp"
+                app:cornerRadius="20dp" />
         </LinearLayout>
 <!--        <fragment-->
 <!--            android:id="@+id/map"-->

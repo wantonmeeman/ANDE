@@ -67,6 +67,7 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
                 .requestEmail()
                 .build();
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
         ((SignInButton)findViewById(R.id.googleSignIn)).setSize(SignInButton.SIZE_WIDE);
         
         findViewById(R.id.googleSignIn).setOnClickListener( v -> {
@@ -115,7 +116,7 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
 
                     @Override
                     public void onCancelled(DatabaseError error) {
-                        Log.i("Error",error.toString());
+
                         // Failed to read value
                     }
                 });
@@ -126,12 +127,12 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN ) {
+        //if (requestCode == RC_SIGN_IN ) {
             // The Task returned from this call is always completed, no need to attach
             // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
-        }
+        //}
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
@@ -143,8 +144,6 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.i("Login Failed","Yes");
-            Log.i("API",e.toString());
             updateUI(null);
         }
     }

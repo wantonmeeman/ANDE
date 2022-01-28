@@ -141,15 +141,12 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 myrv.addOnItemTouchListener(
                         new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
                             @Override public void onItemClick(View view, int position) {
-                                Log.i("Short press",Integer.toString(position));
                                 Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
-                                Log.i("nword",ArrListAlarm.get(position).getUid());
                                 intent.putExtra("uid",ArrListAlarm.get(position).getUid());
                                 startActivity(intent);
                             }
 
                             @Override public void onLongItemClick(View view, int position) {
-                                Log.i("Long Press",Integer.toString(position));
                                 Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
                                 intent.putExtra("uid",ArrListAlarm.get(position).getUid());
                                 startActivity(intent);
@@ -172,7 +169,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onCancelled(DatabaseError error) {
-                Log.i("Error",error.toString());
                 // Failed to read value
             }
         });
@@ -238,7 +234,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 startActivity(intent);
                 break;
             default:
-                Log.i("Error","There has been an error");
                 break;
         }
     }

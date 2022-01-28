@@ -114,12 +114,7 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             };
         });
 
-        //get current Calendar instance
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
+
 
         ArrayList<Alarm> ArrListAlarm = new ArrayList<Alarm>();
 
@@ -132,12 +127,28 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
             userid = gAcc.getId();
         }else{
             userid = pref.getString("firebaseUserId","123123");
-            Log.i("Message","Cant access google account");
         }
 
         //Setting Text
         TextView currentMonthYear = (TextView) findViewById(R.id.currentMonthYear);
         TextView currentDayMonth = (TextView)findViewById(R.id.currentDayMonth);
+
+        MCalendarView calendarView = (MCalendarView) findViewById(R.id.calendarView); // get the reference of CalendarView,3rd part library
+
+        Calendar cal = Calendar.getInstance();;
+
+        Intent intent = getIntent();
+        Long unixDateTime = intent.getLongExtra("datetime",-1);
+
+        if(unixDateTime != -1) {
+            cal.setTimeInMillis(unixDateTime);
+
+        }
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        calendarView.travelTo(new DateData(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, 1));
 
         currentMonthYear.setText(monthYearFormat.format(cal));
         currentDayMonth.setText("Tasks (" + dayMonthFormat.format(cal) + ")");
@@ -145,12 +156,13 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         Button Today = (Button) findViewById(R.id.Today);
         Today.setOnClickListener(this);
 
-        MCalendarView calendarView = (MCalendarView) findViewById(R.id.calendarView); // get the reference of CalendarView,3rd part library
+
         calendarView.hasTitle(false);
 
         //Clear Previous calendar state and Markings
         calendarView.getMarkedDates().getAll().clear();
-        calendarView.travelTo(new DateData(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH)+1,1));
+
+        //get current Calendar instance
 
         //Get Start and end of date.
         long startOfDay = cal.getTimeInMillis() / 1000;
@@ -163,6 +175,10 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
         myDbRef.child("UserAlarms").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                calendarView.markDate(//set the marking for a date that is clicked on
+                        new DateData(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH)).setMarkStyle(new MarkStyle(MarkStyle.BACKGROUND, Color.parseColor("#0094f3"))
+                        )
+                );
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
@@ -205,14 +221,12 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 myrv.addOnItemTouchListener(
                         new RecyclerItemClickListener(getApplication(), myrv ,new RecyclerItemClickListener.OnItemClickListener() {
                             @Override public void onItemClick(View view, int position) {
-                                Log.i("Short press",Integer.toString(position));
                                 Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
                                 intent.putExtra("uid",ArrListAlarm.get(position).getUid());
                                 startActivity(intent);
                             }
 
                             @Override public void onLongItemClick(View view, int position) {
-                                Log.i("Long Press",Integer.toString(position));
                                 Intent intent = new Intent(getApplicationContext(), TaskDetails.class);
                                 intent.putExtra("uid",ArrListAlarm.get(position).getUid());
                                 startActivity(intent);
@@ -233,7 +247,6 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
             @Override
             public void onCancelled(DatabaseError error) {
-                Log.i("Error",error.toString());
                 // Failed to read value
             }
 
@@ -241,16 +254,17 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
 
         calendarView.hasTitle(false);//This has to be declared frequently, the calendarView is very finicky
 
+        calendarView.setFocusedByDefault(false);
+
         calendarView.setOnDateClickListener(new OnDateClickListener() {//When a user clicks on a date
-            DateData prevDataDate;
+            DateData prevDataDate = new DateData(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
             @Override
             public void onDateClick(View view, DateData date) {
                 //Handles marking once a new date is clicked
                 //-New date needs to be marked
                 //-Old date needs to be unmarked
-                if(prevDataDate != null) {
-                    calendarView.unMarkDate(prevDataDate);
-                }
+
+                calendarView.unMarkDate(prevDataDate);
 
                 for(int i = 0;calendarView.getMarkedDates().getAll().size() > i;i++) {
                     if(date.equals(calendarView.getMarkedDates().getAll().get(i))) {
@@ -333,7 +347,6 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                     }
                     @Override
                     public void onCancelled(DatabaseError error) {
-                        Log.i("Error",error.toString());
                         // Failed to read value
                     }
                 });
@@ -417,7 +430,6 @@ public class MonthlyScheduleActivity extends AppCompatActivity implements View.O
                 startActivity(intent);
                 break;
             default:
-                Log.i("Error","There has been an error");
                 break;
         }
     }

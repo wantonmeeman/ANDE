@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -22,7 +23,14 @@ public class DismissActivity extends Activity {
         // --> Do not click it immediately to prevent this issue
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancel(getIntent().getIntExtra("notifID", 1));
+
         finish(); // since finish() is called in onCreate(), onDestroy() will be called immediately
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Vibrator vibrator = (Vibrator) getApplication().getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.cancel();
+    }
 }
