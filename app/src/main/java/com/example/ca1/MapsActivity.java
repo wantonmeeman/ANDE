@@ -99,7 +99,7 @@ import java.util.Locale;
                         LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
 
                         //Animate camera to that new Address
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (IndexOutOfBoundsException e){//If a location cannot be found
